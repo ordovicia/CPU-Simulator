@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 2.8)
 
 project(cpu-simulator CXX)
 
@@ -45,5 +45,4 @@ add_custom_target(cmake-clean
 
 add_custom_target(full-clean
     COMMAND make clean
-    COMMAND make doc-clean
     COMMAND make cmake-clean)
