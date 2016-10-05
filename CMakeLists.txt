@@ -35,8 +35,13 @@ else()
     message("Compile flags:\n\t${CMAKE_CXX_FLAGS}")
 endif()
 
+# Generate Simulator::initInst()
+add_custom_target(gen_initInst
+    COMMAND python ${CMAKE_CURRENT_LIST_DIR}/gen_initInst.py > ${CMAKE_CURRENT_LIST_DIR}/init_inst.cpp)
+
 # Build executable
 add_executable(simulator ${SOURCES})
+add_dependencies(simulator gen_initInst)
 
 # Clean
 add_custom_target(cmake-clean

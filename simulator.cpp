@@ -9,15 +9,7 @@ Simulator::Simulator(const std::string& binfile)
         throw std::runtime_error("File " + binfile + " couldn't be opened");
     }
 
-    m_inst_funcs.emplace(OpCode::NOP, [this](Instruction inst) { nop(inst); });
-    m_inst_funcs.emplace(OpCode::ADD, [this](Instruction inst) { add(inst); });
-    m_inst_funcs.emplace(OpCode::ADDI, [this](Instruction inst) { addi(inst); });
-    m_inst_funcs.emplace(OpCode::SUB, [this](Instruction inst) { sub(inst); });
-
-    m_inst_cnt.emplace(OpCode::NOP, 0);
-    m_inst_cnt.emplace(OpCode::ADD, 0);
-    m_inst_cnt.emplace(OpCode::ADDI, 0);
-    m_inst_cnt.emplace(OpCode::SUB, 0);
+    initInst();
 }
 
 void Simulator::run()

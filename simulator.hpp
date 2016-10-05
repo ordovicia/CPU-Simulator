@@ -14,8 +14,6 @@ public:
 
 private:
     std::ifstream m_binfile;
-
-    // Program counter
     int m_pc = 0;
     int64_t m_dynamic_inst_cnt = 0;
 
@@ -27,6 +25,8 @@ private:
     // Floating point registers
     static constexpr int FREG_SIZE = 32;
     std::array<float, FREG_SIZE> m_freg = {0};
+
+    // TODO Memory
 
     // 32bit Instruction code
     using Instruction = uint32_t;
@@ -91,10 +91,12 @@ private:
         int immediate;
     };
 
+    void initInst();
+
     OperandR decodeR(Instruction);
     OperandI decodeI(Instruction);
 
-    // Extract bits string
+    // Extract bit string
     int32_t bitset(int32_t inst, int begin, int end)
     {
         int len = end - begin;
