@@ -65,9 +65,9 @@ private:
     /*
      * Type R:
      * -----------------------------------------
-     * | opcode | rs | rt | rd | shamt | funct |
+     * | opcode | rs | rt | rd | shamt |       |
      * -----------------------------------------
-     * | 6      | 5  | 5  | 5  | 5     | 6     |
+     * | 6      | 5  | 5  | 5  | 5     |       |
      * -----------------------------------------
      */
     struct OperandR {
@@ -75,7 +75,6 @@ private:
         int rt;
         int rd;
         int shamt;
-        int funct;
     };
 
     /*

@@ -77,8 +77,7 @@ Simulator::OperandR Simulator::decodeR(Instruction inst)
         bitset(inst, 6, 11),
         bitset(inst, 11, 16),
         bitset(inst, 16, 21),
-        bitset(inst, 21, 26),
-        bitset(inst, 26, 32)};
+        bitset(inst, 21, 26)};
 }
 
 Simulator::OperandI Simulator::decodeI(Instruction inst)
