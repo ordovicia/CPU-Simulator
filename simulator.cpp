@@ -29,7 +29,7 @@ Simulator::Instruction Simulator::fetch()
     return r;
 }
 
-Simulator::OpCode Simulator::decodeOpCode(Instruction inst)
+OpCode Simulator::decodeOpCode(Instruction inst)
 {
     return static_cast<OpCode>(bitset(inst, 0, 6));
 }

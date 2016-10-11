@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <functional>
 #include <exception>
+#include "opcode.hpp"
 
 class Simulator
 {
@@ -30,21 +31,6 @@ private:
 
     // 32bit Instruction code
     using Instruction = uint32_t;
-
-    // OpCode
-    enum class OpCode : uint32_t {
-        NOP = 0x0,
-        ADD = 0x1,
-        ADDI = 0x2,
-        SUB = 0x3,
-    };
-
-    struct OpCodeHash {
-        size_t operator()(OpCode op) const noexcept
-        {
-            return std::hash<uint32_t>{}(static_cast<uint32_t>(op));
-        }
-    };
 
     Instruction fetch();
     OpCode decodeOpCode(Instruction);
@@ -96,7 +82,10 @@ private:
     OperandR decodeR(Instruction);
     OperandI decodeI(Instruction);
 
-    // Extract bit string
+    /*
+     * Extract bit string
+     * bitset(10110111000..., 0, 8) = 10110111
+     */
     int32_t bitset(int32_t inst, int begin, int end)
     {
         int len = end - begin;
