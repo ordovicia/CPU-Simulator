@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <fstream>
 #include <array>
 #include <unordered_map>
@@ -31,6 +32,8 @@ private:
 
     // TODO Memory
 
+    void initInst();
+
     // 32bit Instruction code
     using Instruction = uint32_t;
 
@@ -53,16 +56,17 @@ private:
     /*
      * Type R:
      * -----------------------------------------
-     * | opcode | rs | rt | rd | shamt |       |
+     * | opcode | rs | rt | rd | shamt |(fanct)|
      * -----------------------------------------
-     * | 6      | 5  | 5  | 5  | 5     |       |
+     * | 6      | 5  | 5  | 5  | 5     |(6    )|
      * -----------------------------------------
      */
     struct OperandR {
-        int rs;
-        int rt;
-        int rd;
-        int shamt;
+        uint32_t rs;
+        uint32_t rt;
+        uint32_t rd;
+        uint32_t shamt;
+        uint32_t fanct;
     };
 
     /*
@@ -74,25 +78,23 @@ private:
      * -----------------------------------------
      */
     struct OperandI {
-        int rs;
-        int rt;
-        int immediate;
+        uint32_t rs;
+        uint32_t rt;
+        uint32_t immediate;
     };
-
-    void initInst();
 
     OperandR decodeR(Instruction);
     OperandI decodeI(Instruction);
 
     /*
-     * Extract bit string
-     * bitset(10110111000..., 0, 8) = 10110111
+     * Extract bit string.
+     * bitset(10110111000..., 0, 8) = 0..010110111
      */
-    int32_t bitset(int32_t inst, int begin, int end)
-    {
-        int len = end - begin;
-        inst <<= begin;
-        inst >>= (32 - len);
-        return inst;
-    }
+    uint32_t bitset(uint32_t inst, int begin, int end);
+
+    void printBitset(uint32_t bits, int begin, int end, bool endl = false);
+    void printOperandR(const OperandR& op);
+    void printOperandI(const OperandI& op);
+
+    void printRegister();
 };
