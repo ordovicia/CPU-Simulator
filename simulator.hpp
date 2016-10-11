@@ -18,14 +18,16 @@ private:
     int m_pc = 0;
     int64_t m_dynamic_inst_cnt = 0;
 
-    // General purpose registers
-    // R0 is zero register
+    /*
+     * General purpose registers
+     * R0 is zero register
+     */
     static constexpr int REG_SIZE = 32;
-    std::array<int32_t, REG_SIZE> m_reg = {0};
+    std::array<int32_t, REG_SIZE> m_reg = {{0}};
 
     // Floating point registers
     static constexpr int FREG_SIZE = 32;
-    std::array<float, FREG_SIZE> m_freg = {0};
+    std::array<float, FREG_SIZE> m_freg = {{0}};
 
     // TODO Memory
 
