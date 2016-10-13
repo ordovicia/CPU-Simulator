@@ -9,14 +9,16 @@ Simulator::Simulator(const std::string& binfile)
         throw std::runtime_error("File " + binfile + " couldn't be opened");
     }
 
-    initInst();
+    initInstruction();
+
+    m_state_hist.emplace_front();
+    m_state_hist_iter = m_state_hist.begin();
 }
 
 void Simulator::run()
 {
     while (not m_binfile.eof()) {
-        std::cout << std::endl;
-        printRegister();
+        printState(m_state_hist_iter);
 
         Instruction inst = fetch();
         std::cout << "[instruction] ";
@@ -26,8 +28,11 @@ void Simulator::run()
         std::cout << " || ";
         printBitset(inst, 0, 6);
 
+        auto new_state = exec(opcode, inst, m_state_hist_iter);
+        m_state_hist.insert(m_state_hist.end(), new_state);
+        m_state_hist_iter++;
+
         m_dynamic_inst_cnt++;
-        exec(opcode, inst);
     }
 }
 
@@ -43,10 +48,11 @@ OpCode Simulator::decodeOpCode(Instruction inst)
     return static_cast<OpCode>(bitset(inst, 0, 6));
 }
 
-void Simulator::exec(OpCode opcode, Instruction inst)
+Simulator::State Simulator::exec(
+    OpCode opcode, Instruction inst, StateIter state_iter)
 {
     m_inst_cnt.at(opcode)++;
-    (m_inst_funcs.at(opcode))(inst);
+    return (m_inst_funcs.at(opcode))(inst, state_iter);
 }
 
 Simulator::OperandR Simulator::decodeR(Instruction inst)
@@ -110,33 +116,55 @@ void Simulator::printOperandI(const OperandI& op)
     printBitset(op.immediate, 16, 32, true);
 }
 
-void Simulator::printRegister()
+void Simulator::printState(StateIter state_iter)
 {
-    std::cout << "[register] ";
-    for (int i = 0; i < REG_SIZE; i++) {
-        if (i != 0 and i % 8 == 0)
-            std::cout << "           ";
-        std::printf("r%02d = %08x", i, m_reg.at(i));
-        if (i % 8 == 7)
-            std::cout << std::endl;
-        else
-            std::cout << ' ';
+    printf("\e[2J\e[0;0H");
+
+    // Program counter
+    std::cout << "PC = " << state_iter->pc << std::endl;
+
+    std::cout << "============== + ============== + "
+                 " ============= + ============== + "
+                 " ============= + ============== + "
+                 " ============= + ==============" << std::endl;
+    {  // Register
+        auto reg = state_iter->reg;
+
+        for (int i = 0; i < REG_SIZE; i++) {
+            std::printf("r%-2d = %08x", i, reg.at(i));
+            if (i % 8 == 7)
+                std::cout << std::endl;
+            else
+                std::cout << " | ";
+        }
     }
 
-    union FloatBit {
-        float f;
-        uint32_t b;
-    };
+    std::cout << "-------------- + -------------- + "
+                 " ------------- + -------------- + "
+                 " ------------- + -------------- + "
+                 " ------------- + --------------" << std::endl;
 
-    for (int i = 0; i < FREG_SIZE; i++) {
-        if (i % 8 == 0)
-            std::cout << "           ";
-        FloatBit fb{m_freg.at(i)};
-        uint32_t b = fb.b;
-        std::printf("f%02d = %08x", i, b);
-        if (i % 8 == 7)
-            std::cout << std::endl;
-        else
-            std::cout << ' ';
+    {  // Floating point register
+        auto freg = state_iter->freg;
+
+        union FloatBit {
+            float f;
+            uint32_t b;
+        };
+
+        for (int i = 0; i < FREG_SIZE; i++) {
+            FloatBit fb{freg.at(i)};
+            uint32_t b = fb.b;
+            std::printf("f%-2d = %08x", i, b);
+            if (i % 8 == 7)
+                std::cout << std::endl;
+            else
+                std::cout << " | ";
+        }
     }
+
+    std::cout << "============== + ============== + "
+                 " ============= + ============== + "
+                 " ============= + ============== + "
+                 " ============= + ==============" << std::endl;
 }

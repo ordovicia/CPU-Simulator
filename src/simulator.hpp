@@ -4,6 +4,7 @@
 #include <fstream>
 #include <array>
 #include <unordered_map>
+#include <list>
 #include <functional>
 #include <exception>
 #include "opcode.hpp"
@@ -16,41 +17,31 @@ public:
 
 private:
     std::ifstream m_binfile;
-    int m_pc = 0;
+
     int64_t m_dynamic_inst_cnt = 0;
-
-    /*
-     * General purpose registers
-     * R0 is zero register
-     */
-    static constexpr int REG_SIZE = 32;
-    std::array<int32_t, REG_SIZE> m_reg = {{0}};
-
-    // Floating point registers
-    static constexpr int FREG_SIZE = 32;
-    std::array<float, FREG_SIZE> m_freg = {{0}};
-
-    // TODO Memory
-
-    void initInst();
 
     // 32bit Instruction code
     using Instruction = uint32_t;
 
-    Instruction fetch();
-    OpCode decodeOpCode(Instruction);
-    void exec(OpCode, Instruction);
+    static constexpr int REG_SIZE = 32;
+    static constexpr int FREG_SIZE = 32;
 
-    // Function for each instruction
-    void nop(Instruction);
-    void add(Instruction);
-    void addi(Instruction);
-    void sub(Instruction);
+    struct State {
+        int pc = 0;
 
-    std::unordered_map<OpCode,
-        std::function<void(Instruction)>, OpCodeHash> m_inst_funcs;
-    std::unordered_map<OpCode,
-        int64_t, OpCodeHash> m_inst_cnt;
+        /*
+         * General purpose registers
+         * R0 is zero register
+         */
+        std::array<int32_t, REG_SIZE> reg = {{0}};
+
+        // Floating point registers
+        std::array<float, FREG_SIZE> freg = {{0}};
+
+        // TODO Memory
+    };
+
+    using StateIter = std::list<State>::const_iterator;
 
     // Operand
     /*
@@ -83,6 +74,28 @@ private:
         uint32_t immediate;
     };
 
+    std::unordered_map<OpCode,
+        std::function<State(Instruction, StateIter)>, OpCodeHash> m_inst_funcs;
+    std::unordered_map<OpCode,
+        int64_t, OpCodeHash> m_inst_cnt;
+
+    std::list<State> m_state_hist;
+    StateIter m_state_hist_iter;
+
+    void initInstruction();
+
+    void printState(StateIter);
+
+    Instruction fetch();
+    OpCode decodeOpCode(Instruction);
+    State exec(OpCode, Instruction, StateIter);
+
+    // Function for each instruction
+    State nop(Instruction, StateIter);
+    State add(Instruction, StateIter);
+    State addi(Instruction, StateIter);
+    State sub(Instruction, StateIter);
+
     OperandR decodeR(Instruction);
     OperandI decodeI(Instruction);
 
@@ -95,6 +108,4 @@ private:
     void printBitset(uint32_t bits, int begin, int end, bool endl = false);
     void printOperandR(const OperandR& op);
     void printOperandI(const OperandI& op);
-
-    void printRegister();
 };
