@@ -41,7 +41,7 @@ add_custom_target(gen_initInst
 
 # Build executable
 add_executable(simulator ${SOURCES})
-add_dependencies(simulator gen_initInst)
+#add_dependencies(simulator gen_initInst)
 
 # Clean
 add_custom_target(cmake-clean
