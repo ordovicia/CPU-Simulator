@@ -28,4 +28,5 @@
 *.app
 
 build/
-init_inst.cpp
+generated/*
+!generated/.gitkeep

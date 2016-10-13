@@ -22,8 +22,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-old-style-cast -Wno-pragmas")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
 
 # Sources and headers
-file(GLOB SOURCES ${CMAKE_CURRENT_LIST_DIR} *.cpp)
-include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
+file(GLOB SOURCES ${CMAKE_CURRENT_LIST_DIR} src/*.cpp generated/*.cpp)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/src)
 
 # Echo compile flags
 message("Build type:\n\t${CMAKE_BUILD_TYPE}")
@@ -37,7 +37,7 @@ endif()
 
 # Generate Simulator::initInst()
 add_custom_target(gen_initInst
-    COMMAND python ${CMAKE_CURRENT_LIST_DIR}/gen_initInst.py > ${CMAKE_CURRENT_LIST_DIR}/init_inst.cpp)
+    COMMAND python ${CMAKE_CURRENT_LIST_DIR}/gen_initInst.py > ${CMAKE_CURRENT_LIST_DIR}/generated/init_inst.cpp)
 
 # Build executable
 add_executable(simulator ${SOURCES})
