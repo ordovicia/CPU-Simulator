@@ -35,6 +35,8 @@ else()
     message("Compile flags:\n\t${CMAKE_CXX_FLAGS}")
 endif()
 
+add_subdirectory(tools)
+
 # Generate Simulator::initInst()
 add_custom_target(gen_initInst
     COMMAND python ${CMAKE_CURRENT_LIST_DIR}/gen_initInst.py > ${CMAKE_CURRENT_LIST_DIR}/generated/init_inst.cpp)
