@@ -16,14 +16,11 @@ public:
     explicit Simulator(const std::string& binfile);
     void run();
 
-    ~Simulator();
-
 private:
     std::ifstream m_binfile;
+    bool m_halt = false;
 
     int64_t m_dynamic_inst_cnt = 0;
-
-    bool m_finish = false;
 
     // 32bit Instruction code
     using Instruction = uint32_t;
@@ -88,7 +85,7 @@ private:
         int64_t, OpCodeHash> m_inst_cnt;
 
     std::list<State> m_state_hist;
-    StateIter m_state;
+    StateIter m_state_iter;
 
     void initInstruction();
 

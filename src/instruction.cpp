@@ -58,7 +58,7 @@ Simulator::State Simulator::halt(Instruction inst, StateIter state_iter)
 {
     OperandR op = decodeR(inst);
     printOperandR(op);
-    m_finish = true;
+    m_halt = true;
 
     return *state_iter;
 }

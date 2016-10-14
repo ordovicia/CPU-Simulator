@@ -1,4 +1,5 @@
 #include <iostream>
+#include <ncurses.h>
 #include "simulator.hpp"
 
 int main(int argc, char** argv)
@@ -9,6 +10,11 @@ int main(int argc, char** argv)
             return 1;
         }
 
+        // ncurses setting
+        initscr();
+        nocbreak();
+        echo();
+
         Simulator sim{argv[1]};
         sim.run();
     } catch (const std::exception& e) {
@@ -16,6 +22,9 @@ int main(int argc, char** argv)
     } catch (...) {
         std::cerr << "Unknown exception" << std::endl;
     }
+
+    getch();
+    endwin();
 
     return 0;
 }

@@ -6,17 +6,15 @@
 
 Simulator::Simulator(const std::string& binfile)
 {
-    initscr();
-
     m_binfile.open(binfile, std::ios::binary);
     if (m_binfile.fail()) {
-        throw std::runtime_error("File " + binfile + " couldn't be opened");
+        throw std::runtime_error{"File " + binfile + " couldn't be opened"};
     }
 
     initInstruction();
 
     m_state_hist.emplace_front();
-    m_state = m_state_hist.begin();
+    m_state_iter = m_state_hist.begin();
 
     m_codes.reserve(CODE_INITIAL_SIZE);
     while (not m_binfile.eof()) {
@@ -26,26 +24,40 @@ Simulator::Simulator(const std::string& binfile)
     }
 }
 
-Simulator::~Simulator()
-{
-    getch();
-    endwin();
-}
-
 void Simulator::run()
 {
-    while (not m_finish) {
+    bool run = false;
+
+    while (true) {
         erase();
-        printState(m_state);
-        printCode(m_state);
+        printState(m_state_iter);
+        printCode(m_state_iter);
 
-        Instruction inst = m_codes.at(m_state->pc);  // fetch
-        auto opcode = decodeOpCode(inst);
-        auto new_state = exec(opcode, inst, m_state);
-        m_state_hist.insert(m_state_hist.end(), new_state);
-        m_state++;
+        if (m_halt or not run) {
+            addstr(">> ");
+            int k = getch();
+            switch (k) {
+            case 'q':
+                return;
+            case 'r':
+                run = true;
+                break;
+            case 'n':
+                break;
+            default:
+                continue;
+            };
+        }
 
-        m_dynamic_inst_cnt++;
+        if (not m_halt) {
+            Instruction inst = m_codes.at(m_state_iter->pc);  // fetch
+            auto opcode = decodeOpCode(inst);
+            auto new_state = exec(opcode, inst, m_state_iter);
+            m_state_hist.insert(m_state_hist.end(), new_state);
+            m_state_iter++;
+
+            m_dynamic_inst_cnt++;
+        }
     }
 }
 
@@ -130,25 +142,40 @@ void Simulator::printOperandI(const OperandI& op)
 
 void Simulator::printState(StateIter state_iter)
 {
-    addstr(
-        "============== + ============== + ============== + ============== + "
-        "============== + ============== + ============== + ==============\n");
+    int cwidth, cheight;
+    getmaxyx(stdscr, cheight, cwidth);
+    (void)cheight;
+    bool col8 = cwidth >= 14 * 8 + 3 * 7;
+
+    if (col8)
+        addstr("============== + ============== + "
+               "============== + ============== + "
+               "============== + ============== + "
+               "============== + ==============\n");
+    else
+        addstr("============== + ============== + "
+               "============== + ==============\n");
 
     {  // Register
         auto reg = state_iter->reg;
 
         for (size_t i = 0; i < REG_SIZE; i++) {
             printw("r%-2d = %08x", i, reg.at(i));
-            if (i % 8 == 7)
+            if ((col8 and i % 8 == 7) or (not col8 and i % 4 == 3))
                 addch('\n');
             else
                 addstr(" | ");
         }
     }
 
-    addstr(
-        "-------------- + -------------- + -------------- + -------------- + "
-        "-------------- + -------------- + -------------- + --------------\n");
+    if (col8)
+        addstr("-------------- + -------------- + "
+               "-------------- + -------------- + "
+               "-------------- + -------------- + "
+               "-------------- + --------------\n");
+    else
+        addstr("-------------- + -------------- + "
+               "-------------- + --------------\n");
 
     {  // Floating point register
         auto freg = state_iter->freg;
@@ -162,16 +189,21 @@ void Simulator::printState(StateIter state_iter)
             FloatBit fb{freg.at(i)};
             uint32_t b = fb.b;
             printw("f%-2d = %08x", i, b);
-            if (i % 8 == 7)
+            if ((col8 and i % 8 == 7) or (not col8 and i % 4 == 3))
                 addch('\n');
             else
                 addstr(" | ");
         }
     }
 
-    addstr(
-        "============== + ============== + ============== + ============== + "
-        "============== + ============== + ============== + ==============\n");
+    if (col8)
+        addstr("============== + ============== + "
+               "============== + ============== + "
+               "============== + ============== + "
+               "============== + ==============\n");
+    else
+        addstr("============== + ============== + "
+               "============== + ==============\n");
     refresh();
 }
 
@@ -179,15 +211,17 @@ void Simulator::printCode(StateIter state)
 {
     int cwidth, cheight;
     getmaxyx(stdscr, cheight, cwidth);
-    (void)cwidth;
-    int print_len = (cheight - 11) / 2 - 1;
+    bool col8 = cwidth >= 14 * 8 + 3 * 7;
+    int print_len = (cheight - (col8 ? 11 : 19)) / 2 - 1;
 
     int pc = state->pc;
 
-    int begin = std::max(pc - print_len, 0);
-    int end = std::min(pc + print_len, static_cast<int>(m_codes.size()));
+    for (int c = pc - print_len; c < pc + print_len; c++) {
+        if (c < 0 or c >= pc + print_len) {
+            addstr("        |\n");
+            continue;
+        }
 
-    for (int c = begin; c < end; c++) {
         if (c == pc)
             printw("> %5d | ", c);
         else
@@ -195,8 +229,12 @@ void Simulator::printCode(StateIter state)
         printBitset(m_codes.at(c), 0, 32, true);
     }
 
-    addstr(
-        "============== + ============== + ============== + ============== + "
-        "============== + ============== + ============== + ==============\n");
+    if (col8)
+        addstr(
+            "===================================================================="
+            "=================================================================\n");
+    else
+        addstr(
+            "=================================================================\n");
     refresh();
 }
