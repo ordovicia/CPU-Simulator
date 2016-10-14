@@ -1,9 +1,13 @@
+#include <cmath>
 #include <iostream>
 #include <sstream>
+#include <ncurses.h>
 #include "simulator.hpp"
 
 Simulator::Simulator(const std::string& binfile)
 {
+    initscr();
+
     m_binfile.open(binfile, std::ios::binary);
     if (m_binfile.fail()) {
         throw std::runtime_error("File " + binfile + " couldn't be opened");
@@ -12,35 +16,37 @@ Simulator::Simulator(const std::string& binfile)
     initInstruction();
 
     m_state_hist.emplace_front();
-    m_state_hist_iter = m_state_hist.begin();
+    m_state = m_state_hist.begin();
+
+    m_codes.reserve(CODE_INITIAL_SIZE);
+    while (not m_binfile.eof()) {
+        Instruction r;
+        m_binfile.read(reinterpret_cast<char*>(&r), sizeof r);
+        m_codes.emplace_back(r);
+    }
+}
+
+Simulator::~Simulator()
+{
+    getch();
+    endwin();
 }
 
 void Simulator::run()
 {
-    while (not m_binfile.eof()) {
-        printState(m_state_hist_iter);
+    while (not m_finish) {
+        erase();
+        printState(m_state);
+        printCode(m_state);
 
-        Instruction inst = fetch();
-        std::cout << "[instruction] ";
-        printBitset(inst, 0, 32);
-
+        Instruction inst = m_codes.at(m_state->pc);  // fetch
         auto opcode = decodeOpCode(inst);
-        std::cout << " || ";
-        printBitset(inst, 0, 6);
-
-        auto new_state = exec(opcode, inst, m_state_hist_iter);
+        auto new_state = exec(opcode, inst, m_state);
         m_state_hist.insert(m_state_hist.end(), new_state);
-        m_state_hist_iter++;
+        m_state++;
 
         m_dynamic_inst_cnt++;
     }
-}
-
-Simulator::Instruction Simulator::fetch()
-{
-    Instruction r;
-    m_binfile.read(reinterpret_cast<char*>(&r), sizeof r);
-    return r;
 }
 
 OpCode Simulator::decodeOpCode(Instruction inst)
@@ -85,15 +91,18 @@ void Simulator::printBitset(uint32_t bits, int begin, int end, bool endl)
 {
     for (int b = begin; b < end; b++) {
         uint32_t bit = (bits << b) >> 31;
-        std::cout << bit;
+        printw("%d", bit);
     }
 
     if (endl)
-        std::cout << std::endl;
+        addch('\n');
+
+    refresh();
 }
 
 void Simulator::printOperandR(const OperandR& op)
 {
+    /*
     std::cout << " | ";
     printBitset(op.rs, 27, 32);
     std::cout << " | ";
@@ -104,45 +113,42 @@ void Simulator::printOperandR(const OperandR& op)
     printBitset(op.shamt, 27, 32);
     std::cout << " | ";
     printBitset(op.fanct, 26, 32, true);
+    */
 }
 
 void Simulator::printOperandI(const OperandI& op)
 {
+    /*
     std::cout << " | ";
     printBitset(op.rs, 27, 32);
     std::cout << " | ";
     printBitset(op.rt, 27, 32);
     std::cout << " | ";
     printBitset(op.immediate, 16, 32, true);
+    */
 }
 
 void Simulator::printState(StateIter state_iter)
 {
-    printf("\e[2J\e[0;0H");
+    addstr(
+        "============== + ============== + ============== + ============== + "
+        "============== + ============== + ============== + ==============\n");
 
-    // Program counter
-    std::cout << "PC = " << state_iter->pc << std::endl;
-
-    std::cout << "============== + ============== + "
-                 " ============= + ============== + "
-                 " ============= + ============== + "
-                 " ============= + ==============" << std::endl;
     {  // Register
         auto reg = state_iter->reg;
 
-        for (int i = 0; i < REG_SIZE; i++) {
-            std::printf("r%-2d = %08x", i, reg.at(i));
+        for (size_t i = 0; i < REG_SIZE; i++) {
+            printw("r%-2d = %08x", i, reg.at(i));
             if (i % 8 == 7)
-                std::cout << std::endl;
+                addch('\n');
             else
-                std::cout << " | ";
+                addstr(" | ");
         }
     }
 
-    std::cout << "-------------- + -------------- + "
-                 " ------------- + -------------- + "
-                 " ------------- + -------------- + "
-                 " ------------- + --------------" << std::endl;
+    addstr(
+        "-------------- + -------------- + -------------- + -------------- + "
+        "-------------- + -------------- + -------------- + --------------\n");
 
     {  // Floating point register
         auto freg = state_iter->freg;
@@ -152,19 +158,45 @@ void Simulator::printState(StateIter state_iter)
             uint32_t b;
         };
 
-        for (int i = 0; i < FREG_SIZE; i++) {
+        for (size_t i = 0; i < FREG_SIZE; i++) {
             FloatBit fb{freg.at(i)};
             uint32_t b = fb.b;
-            std::printf("f%-2d = %08x", i, b);
+            printw("f%-2d = %08x", i, b);
             if (i % 8 == 7)
-                std::cout << std::endl;
+                addch('\n');
             else
-                std::cout << " | ";
+                addstr(" | ");
         }
     }
 
-    std::cout << "============== + ============== + "
-                 " ============= + ============== + "
-                 " ============= + ============== + "
-                 " ============= + ==============" << std::endl;
+    addstr(
+        "============== + ============== + ============== + ============== + "
+        "============== + ============== + ============== + ==============\n");
+    refresh();
+}
+
+void Simulator::printCode(StateIter state)
+{
+    int cwidth, cheight;
+    getmaxyx(stdscr, cheight, cwidth);
+    (void)cwidth;
+    int print_len = (cheight - 11) / 2 - 1;
+
+    int pc = state->pc;
+
+    int begin = std::max(pc - print_len, 0);
+    int end = std::min(pc + print_len, static_cast<int>(m_codes.size()));
+
+    for (int c = begin; c < end; c++) {
+        if (c == pc)
+            printw("> %5d | ", c);
+        else
+            printw("%7d | ", c);
+        printBitset(m_codes.at(c), 0, 32, true);
+    }
+
+    addstr(
+        "============== + ============== + ============== + ============== + "
+        "============== + ============== + ============== + ==============\n");
+    refresh();
 }

@@ -3,6 +3,7 @@ insts = [
     'ADD',
     'ADDI',
     'SUB',
+    'HALT'
 ]
 
 print('''#include "simulator.hpp"

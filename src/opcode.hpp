@@ -4,10 +4,11 @@
 #include <functional>
 
 enum class OpCode : uint32_t {
-    NOP = 0x0,
-    ADD = 0x1,
-    ADDI = 0x2,
-    SUB = 0x3,
+    NOP = 0,
+    ADD = 1,
+    ADDI = 2,
+    SUB = 3,
+    HALT = 60,
 };
 
 struct OpCodeHash {

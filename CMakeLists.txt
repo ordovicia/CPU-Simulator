@@ -43,6 +43,7 @@ add_custom_target(gen_initInst
 
 # Build executable
 add_executable(simulator ${SOURCES})
+target_link_libraries(simulator ncurses)
 #add_dependencies(simulator gen_initInst)
 
 # Clean

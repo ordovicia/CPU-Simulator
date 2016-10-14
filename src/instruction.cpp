@@ -53,3 +53,12 @@ Simulator::State Simulator::sub(Instruction inst, StateIter state_iter)
     new_state.reg.at(op.rd) = ans;
     return new_state;
 }
+
+Simulator::State Simulator::halt(Instruction inst, StateIter state_iter)
+{
+    OperandR op = decodeR(inst);
+    printOperandR(op);
+    m_finish = true;
+
+    return *state_iter;
+}

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <array>
+#include <vector>
 #include <unordered_map>
 #include <list>
 #include <functional>
@@ -15,16 +16,23 @@ public:
     explicit Simulator(const std::string& binfile);
     void run();
 
+    ~Simulator();
+
 private:
     std::ifstream m_binfile;
 
     int64_t m_dynamic_inst_cnt = 0;
 
+    bool m_finish = false;
+
     // 32bit Instruction code
     using Instruction = uint32_t;
 
-    static constexpr int REG_SIZE = 32;
-    static constexpr int FREG_SIZE = 32;
+    static constexpr size_t CODE_INITIAL_SIZE = 30000;
+    std::vector<Instruction> m_codes;
+
+    static constexpr size_t REG_SIZE = 32;
+    static constexpr size_t FREG_SIZE = 32;
 
     struct State {
         int pc = 0;
@@ -80,13 +88,13 @@ private:
         int64_t, OpCodeHash> m_inst_cnt;
 
     std::list<State> m_state_hist;
-    StateIter m_state_hist_iter;
+    StateIter m_state;
 
     void initInstruction();
 
     void printState(StateIter);
+    void printCode(StateIter);
 
-    Instruction fetch();
     OpCode decodeOpCode(Instruction);
     State exec(OpCode, Instruction, StateIter);
 
@@ -95,6 +103,7 @@ private:
     State add(Instruction, StateIter);
     State addi(Instruction, StateIter);
     State sub(Instruction, StateIter);
+    State halt(Instruction, StateIter);
 
     OperandR decodeR(Instruction);
     OperandI decodeI(Instruction);
