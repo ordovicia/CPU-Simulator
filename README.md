@@ -18,7 +18,8 @@ $ make
 
 ```shell
 $ cd build
-$ cmake ..  # 必要なら
+$ make gen_initInst     # 命令を増やしたら
+$ cmake ..  # .cppファイルを増やしたら
 $ make
 ```
 
