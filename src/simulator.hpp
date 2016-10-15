@@ -114,4 +114,6 @@ private:
     void printBitset(uint32_t bits, int begin, int end, bool endl = false);
     void printOperandR(const OperandR& op);
     void printOperandI(const OperandI& op);
+
+    void printHelp();
 };

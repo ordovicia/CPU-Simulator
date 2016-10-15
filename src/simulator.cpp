@@ -45,15 +45,25 @@ void Simulator::run()
 
             int k = getch();
             switch (k) {
-            case 'r':
+            case 'r':  // run to the end
                 run = true;
                 break;
-            case 's':
+            case 's':  // next instruction
                 break;
-            case 'h':
-                // printHelp();
+            case 'p':  // prev inst
+                if (m_halt) {
+                    m_halt = false;
+                    if (m_state_iter != m_state_hist.begin())
+                        m_state_iter--;
+                }
+                if (m_state_iter != m_state_hist.begin())
+                    m_state_iter--;
                 continue;
-            case 'q':
+            case 'h':  // print help
+                printHelp();
+                getch();
+                continue;
+            case 'q':  // quit
                 return;
             default:
                 continue;
@@ -65,8 +75,12 @@ void Simulator::run()
                 Instruction inst = m_codes.at(m_state_iter->pc);  // fetch
                 auto opcode = decodeOpCode(inst);
                 auto new_state = exec(opcode, inst, m_state_iter);
-                m_state_hist.insert(m_state_hist.end(), new_state);
-                m_state_iter++;
+                if (m_state_iter == std::prev(m_state_hist.end())) {
+                    m_state_iter
+                        = m_state_hist.insert(m_state_hist.end(), new_state);
+                } else {
+                    m_state_iter++;
+                }
 
                 m_dynamic_inst_cnt++;
             } catch (std::out_of_range e) {
@@ -164,7 +178,7 @@ void Simulator::printState(StateIter state_iter)
     int cwidth, cheight;
     getmaxyx(stdscr, cheight, cwidth);
     (void)cheight;
-    bool col8 = cwidth >= 14 * 8 + 3 * 7;
+    bool col8 = (cwidth > 14 * 8 + 3 * 7);
 
     if (col8)
         addstr("============== + ============== + "
@@ -231,8 +245,8 @@ void Simulator::printCode(StateIter state)
 {
     int cwidth, cheight;
     getmaxyx(stdscr, cheight, cwidth);
-    bool col8 = cwidth >= 14 * 8 + 3 * 7;
-    int row_len = (cheight - (col8 ? 8 : 12) - 6) / 2;
+    bool col8 = (cwidth > 14 * 8 + 3 * 7);
+    int row_len = (cheight - (col8 ? 8 : 16) - 6) / 2;
 
     int pc = state->pc;
 
@@ -250,12 +264,20 @@ void Simulator::printCode(StateIter state)
     }
 
     if (col8)
-        addstr(
-            "===================================================================="
-            "=================================================================\n");
+        addstr("============================================="
+               "============================================="
+               "===========================================\n");
     else
-        addstr(
-            "=================================================================\n");
+        addstr("================================="
+               "================================\n");
 
+    refresh();
+}
+
+void Simulator::printHelp()
+{
+    addstr("r: run to the 'halt', s: next instruction, p: prev inst, "
+           "h: help, q: quit\n");
+    getch();
     refresh();
 }
