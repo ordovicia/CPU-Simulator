@@ -41,19 +41,26 @@ void Simulator::run()
 
             int k = getch();
             switch (k) {
-            case 'r':  // run to the end
+            case 'r':  // run to the 'halt', or reset
+                if (run) {
+                    m_state_iter = m_state_hist.begin();
+                    m_halt = false;
+                    run = false;
+                    continue;
+                }
                 run = true;
                 break;
             case 's':  // next instruction
                 break;
             case 'p':  // prev inst
-                if (m_halt) {
-                    m_halt = false;
+                if (m_halt)
                     if (m_state_iter != m_state_hist.begin())
                         m_state_iter--;
-                }
                 if (m_state_iter != m_state_hist.begin())
                     m_state_iter--;
+
+                run = false;
+                m_halt = false;
                 continue;
             case 'q':  // quit
                 return;
@@ -274,7 +281,7 @@ void Simulator::printCode(StateIter state)
 
 void Simulator::printHelp()
 {
-    addstr("r: run to the 'halt', s: next instruction, p: prev inst, "
+    addstr("r: run to the 'halt' or reset, s: next instruction, p: prev inst, "
            "q: quit, h: help\n");
     getch();
     refresh();
