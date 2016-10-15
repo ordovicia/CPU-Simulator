@@ -4,6 +4,11 @@
 #include <ncurses.h>
 #include "simulator.hpp"
 
+#define FAIL(msg)                  \
+    endwin();                      \
+    std::cerr << msg << std::endl; \
+    std::exit(1);
+
 Simulator::Simulator(const std::string& binfile)
 {
     m_binfile.open(binfile, std::ios::binary);
@@ -33,30 +38,40 @@ void Simulator::run()
         printState(m_state_iter);
         printCode(m_state_iter);
 
+        // Input command
         if (m_halt or not run) {
             addstr(">> ");
+            refresh();
+
             int k = getch();
             switch (k) {
-            case 'q':
-                return;
             case 'r':
                 run = true;
                 break;
-            case 'n':
+            case 's':
                 break;
+            case 'h':
+                // printHelp();
+                continue;
+            case 'q':
+                return;
             default:
                 continue;
             };
         }
 
         if (not m_halt) {
-            Instruction inst = m_codes.at(m_state_iter->pc);  // fetch
-            auto opcode = decodeOpCode(inst);
-            auto new_state = exec(opcode, inst, m_state_iter);
-            m_state_hist.insert(m_state_hist.end(), new_state);
-            m_state_iter++;
+            try {
+                Instruction inst = m_codes.at(m_state_iter->pc);  // fetch
+                auto opcode = decodeOpCode(inst);
+                auto new_state = exec(opcode, inst, m_state_iter);
+                m_state_hist.insert(m_state_hist.end(), new_state);
+                m_state_iter++;
 
-            m_dynamic_inst_cnt++;
+                m_dynamic_inst_cnt++;
+            } catch (std::out_of_range e) {
+                FAIL("Program counter out of range\n" << e.what());
+            }
         }
     }
 }
@@ -69,8 +84,12 @@ OpCode Simulator::decodeOpCode(Instruction inst)
 Simulator::State Simulator::exec(
     OpCode opcode, Instruction inst, StateIter state_iter)
 {
-    m_inst_cnt.at(opcode)++;
-    return (m_inst_funcs.at(opcode))(inst, state_iter);
+    try {
+        m_inst_cnt.at(opcode)++;
+        return (m_inst_funcs.at(opcode))(inst, state_iter);
+    } catch (std::out_of_range e) {
+        FAIL("Invalid instruction code\n" << e.what());
+    }
 }
 
 Simulator::OperandR Simulator::decodeR(Instruction inst)
@@ -112,7 +131,7 @@ void Simulator::printBitset(uint32_t bits, int begin, int end, bool endl)
     refresh();
 }
 
-void Simulator::printOperandR(const OperandR& op)
+void Simulator::printOperandR(const OperandR& /* op */)
 {
     /*
     std::cout << " | ";
@@ -128,7 +147,7 @@ void Simulator::printOperandR(const OperandR& op)
     */
 }
 
-void Simulator::printOperandI(const OperandI& op)
+void Simulator::printOperandI(const OperandI& /* op */)
 {
     /*
     std::cout << " | ";
@@ -204,6 +223,7 @@ void Simulator::printState(StateIter state_iter)
     else
         addstr("============== + ============== + "
                "============== + ==============\n");
+
     refresh();
 }
 
@@ -212,12 +232,12 @@ void Simulator::printCode(StateIter state)
     int cwidth, cheight;
     getmaxyx(stdscr, cheight, cwidth);
     bool col8 = cwidth >= 14 * 8 + 3 * 7;
-    int print_len = (cheight - (col8 ? 11 : 19)) / 2 - 1;
+    int row_len = (cheight - (col8 ? 8 : 12) - 6) / 2;
 
     int pc = state->pc;
 
-    for (int c = pc - print_len; c < pc + print_len; c++) {
-        if (c < 0 or c >= pc + print_len) {
+    for (int c = pc - row_len; c < pc + row_len; c++) {
+        if (c < 0 or c >= pc + row_len) {
             addstr("        |\n");
             continue;
         }
@@ -236,5 +256,6 @@ void Simulator::printCode(StateIter state)
     else
         addstr(
             "=================================================================\n");
+
     refresh();
 }

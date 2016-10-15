@@ -17,14 +17,14 @@ int main(int argc, char** argv)
 
         Simulator sim{argv[1]};
         sim.run();
+
+        getch();
+        endwin();
     } catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
     } catch (...) {
         std::cerr << "Unknown exception" << std::endl;
     }
-
-    getch();
-    endwin();
 
     return 0;
 }
