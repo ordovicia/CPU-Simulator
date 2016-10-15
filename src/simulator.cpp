@@ -2,12 +2,8 @@
 #include <iostream>
 #include <sstream>
 #include <ncurses.h>
+#include "util.hpp"
 #include "simulator.hpp"
-
-#define FAIL(msg)                  \
-    endwin();                      \
-    std::cerr << msg << std::endl; \
-    std::exit(1);
 
 Simulator::Simulator(const std::string& binfile)
 {

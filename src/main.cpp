@@ -1,5 +1,6 @@
 #include <iostream>
 #include <ncurses.h>
+#include "util.hpp"
 #include "simulator.hpp"
 
 int main(int argc, char** argv)
@@ -21,9 +22,9 @@ int main(int argc, char** argv)
         getch();  // do not work?
         endwin();
     } catch (const std::exception& e) {
-        std::cerr << e.what() << std::endl;
+        FAIL(e.what());
     } catch (...) {
-        std::cerr << "Unknown exception" << std::endl;
+        FAIL("Unknown exception");
     }
 
     return 0;
