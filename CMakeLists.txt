@@ -35,7 +35,7 @@ else()
     message("Compile flags:\n\t${CMAKE_CXX_FLAGS}")
 endif()
 
-add_subdirectory(tools)
+#add_subdirectory(tools)
 
 # Generate Simulator::initInst()
 add_custom_target(gen_initInst
