@@ -59,12 +59,12 @@ void Simulator::run()
                 if (m_state_iter != m_state_hist.begin())
                     m_state_iter--;
                 continue;
+            case 'q':  // quit
+                return;
             case 'h':  // print help
                 printHelp();
                 getch();
                 continue;
-            case 'q':  // quit
-                return;
             default:
                 continue;
             };
@@ -277,7 +277,7 @@ void Simulator::printCode(StateIter state)
 void Simulator::printHelp()
 {
     addstr("r: run to the 'halt', s: next instruction, p: prev inst, "
-           "h: help, q: quit\n");
+           "q: quit, h: help\n");
     getch();
     refresh();
 }
