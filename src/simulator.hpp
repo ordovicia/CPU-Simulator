@@ -18,12 +18,12 @@ public:
 
 private:
     std::ifstream m_binfile;
+
     bool m_halt = false;
 
     int64_t m_dynamic_inst_cnt = 0;
 
-    // 32bit Instruction code
-    using Instruction = uint32_t;
+    using Instruction = uint32_t;  // 32bit Instruction code
 
     static constexpr size_t CODE_INITIAL_SIZE = 30000;
     std::vector<Instruction> m_codes;
@@ -79,11 +79,15 @@ private:
         uint32_t immediate;
     };
 
+    // Function for each instruction
     std::unordered_map<OpCode,
         std::function<State(Instruction, StateIter)>, OpCodeHash> m_inst_funcs;
+
+    // Instruction called counter
     std::unordered_map<OpCode,
         int64_t, OpCodeHash> m_inst_cnt;
 
+    // State history
     std::list<State> m_state_hist;
     StateIter m_state_iter;
 
@@ -94,13 +98,6 @@ private:
 
     OpCode decodeOpCode(Instruction);
     State exec(OpCode, Instruction, StateIter);
-
-    // Function for each instruction
-    State nop(Instruction, StateIter);
-    State add(Instruction, StateIter);
-    State addi(Instruction, StateIter);
-    State sub(Instruction, StateIter);
-    State halt(Instruction, StateIter);
 
     OperandR decodeR(Instruction);
     OperandI decodeI(Instruction);
@@ -116,4 +113,6 @@ private:
     void printOperandI(const OperandI& op);
 
     void printHelp();
+
+#include "instruction.hpp"
 };

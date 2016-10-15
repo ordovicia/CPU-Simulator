@@ -26,14 +26,14 @@ Example input:
 import sys, struct
 
 if len(sys.argv) != 3:
-    print("Usage: {} [input ascii file] [output binary file]".format(sys.argv[0], ))
+    print('Usage: {} [input ascii file] [output binary file]'.format(sys.argv[0], ))
     exit(1)
 
-fin = open(sys.argv[1], "r")
-fout = open(sys.argv[2], "wb")
+fin = open(sys.argv[1], 'r')
+fout = open(sys.argv[2], 'wb')
 
 def invalid_line(i, l):
-    print("Invalid line\n{}: {}".format(i, l))
+    print('Invalid line\n{}: {}'.format(i, l))
     exit(1)
 
 for (i, l) in enumerate(fin.readlines()):
