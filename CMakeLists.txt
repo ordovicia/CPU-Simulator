@@ -22,7 +22,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-old-style-cast -Wno-pragmas")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
 
 # Sources and headers
-file(GLOB SOURCES ${CMAKE_CURRENT_LIST_DIR} src/*.cpp generated/*.cpp)
+file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_LIST_DIR} src/*.cpp generated/*.cpp)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/src ${CMAKE_CURRENT_LIST_DIR}/generated)
 
 # Echo compile flags

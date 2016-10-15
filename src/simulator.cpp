@@ -135,6 +135,14 @@ uint32_t Simulator::bitset(uint32_t inst, int begin, int end)
     return inst;
 }
 
+uint32_t Simulator::signExt5(uint32_t x)
+{
+    if (x & (1 << 4))
+        return 0xffffffffu & x;
+    else
+        return x;
+}
+
 void Simulator::printBitset(uint32_t bits, int begin, int end, bool endl)
 {
     for (int b = begin; b < end; b++) {
@@ -146,34 +154,6 @@ void Simulator::printBitset(uint32_t bits, int begin, int end, bool endl)
         addch('\n');
 
     refresh();
-}
-
-void Simulator::printOperandR(const OperandR& /* op */)
-{
-    /*
-    std::cout << " | ";
-    printBitset(op.rs, 27, 32);
-    std::cout << " | ";
-    printBitset(op.rt, 27, 32);
-    std::cout << " | ";
-    printBitset(op.rd, 27, 32);
-    std::cout << " | ";
-    printBitset(op.shamt, 27, 32);
-    std::cout << " | ";
-    printBitset(op.fanct, 26, 32, true);
-    */
-}
-
-void Simulator::printOperandI(const OperandI& /* op */)
-{
-    /*
-    std::cout << " | ";
-    printBitset(op.rs, 27, 32);
-    std::cout << " | ";
-    printBitset(op.rt, 27, 32);
-    std::cout << " | ";
-    printBitset(op.immediate, 16, 32, true);
-    */
 }
 
 void Simulator::printState(StateIter state_iter)

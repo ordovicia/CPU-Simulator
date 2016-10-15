@@ -6,6 +6,20 @@ insts = {
     2: 'ADDI',
     3: 'SUB',
     60: 'HALT',
+    4: 'LUI',
+    5: 'SLL',
+    6: 'SLLV',
+    7: 'SRA',
+    8: 'SRAV',
+    9: 'SRL',
+    10: 'SRLV',
+    11: 'AND_',
+    12: 'ANDI',
+    13: 'OR_',
+    14: 'ORI',
+    15: 'XOR_',
+    16: 'XORI',
+    17: 'NOR',
 }
 
 opcode_name = 'opcode.hpp'
