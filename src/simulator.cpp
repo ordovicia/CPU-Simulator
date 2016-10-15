@@ -42,7 +42,7 @@ void Simulator::run()
             int k = getch();
             switch (k) {
             case 'r':  // run to the 'halt', or reset
-                if (run) {
+                if (run or m_halt) {
                     m_state_iter = m_state_hist.begin();
                     m_halt = false;
                     run = false;
