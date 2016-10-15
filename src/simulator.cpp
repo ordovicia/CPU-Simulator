@@ -242,12 +242,14 @@ void Simulator::printCode(StateIter state)
     int cwidth, cheight;
     getmaxyx(stdscr, cheight, cwidth);
     bool col8 = (cwidth > 14 * 8 + 3 * 7);
-    int row_len = (cheight - (col8 ? 8 : 16) - 6) / 2;
+    int row_width = (cheight - (col8 ? 8 : 16) - 6) / 2;
 
     int pc = state->pc;
+    int min_code_idx
+        = std::min(pc + row_width, static_cast<int>(m_codes.size()));
 
-    for (int c = pc - row_len; c < pc + row_len; c++) {
-        if (c < 0 or c >= pc + row_len) {
+    for (int c = pc - row_width; c < pc + row_width; c++) {
+        if (c < 0 or c >= min_code_idx) {
             addstr("        |\n");
             continue;
         }
