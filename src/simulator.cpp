@@ -75,7 +75,7 @@ void Simulator::run()
 
         if (not m_halt) {
             try {
-                Instruction inst = m_codes.at(m_state_iter->pc);  // fetch
+                Instruction inst = m_codes.at(m_state_iter->pc / 4);  // fetch
                 auto opcode = decodeOpCode(inst);
                 auto new_state = exec(opcode, inst, m_state_iter);
                 if (m_state_iter == std::prev(m_state_hist.end())) {
@@ -135,6 +135,14 @@ uint32_t Simulator::bitset(uint32_t inst, int begin, int end)
     return inst;
 }
 
+uint32_t Simulator::bitset64(uint64_t inst, int begin, int end)
+{
+    int len = end - begin;
+    inst <<= begin;
+    inst >>= (64 - len);
+    return static_cast<uint32_t>(inst);
+}
+
 uint32_t Simulator::signExt5(uint32_t x)
 {
     if (x & (1 << 4))
@@ -182,6 +190,8 @@ void Simulator::printState(StateIter state_iter)
             else
                 addstr(" | ");
         }
+
+        printw("hi  = %08x | lo  = %08x\n", state_iter->hi, state_iter->lo);
     }
 
     if (col8)
@@ -229,22 +239,22 @@ void Simulator::printCode(StateIter state)
     int cwidth, cheight;
     getmaxyx(stdscr, cheight, cwidth);
     bool col8 = (cwidth > 14 * 8 + 3 * 7);
-    int row_width = (cheight - (col8 ? 8 : 16) - 6) / 2;
+    int row_width = (cheight - (col8 ? 8 : 16) - 8) / 2;
 
-    int pc = state->pc;
+    int pc4 = state->pc / 4;
     int min_code_idx
-        = std::min(pc + row_width, static_cast<int>(m_codes.size()));
+        = std::min(pc4 + row_width, static_cast<int>(m_codes.size()));
 
-    for (int c = pc - row_width; c < pc + row_width; c++) {
+    for (int c = pc4 - row_width; c < pc4 + row_width; c++) {
         if (c < 0 or c >= min_code_idx) {
             addstr("        |\n");
             continue;
         }
 
-        if (c == pc)
-            printw("> %5d | ", c);
+        if (c == pc4)
+            printw("> %5d | ", c * 4);
         else
-            printw("%7d | ", c);
+            printw("%7d | ", c * 4);
         printBitset(m_codes.at(c), 0, 32, true);
     }
 

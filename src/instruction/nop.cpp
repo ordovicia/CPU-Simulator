@@ -5,7 +5,7 @@ Simulator::State Simulator::nop(Instruction /* inst */, StateIter state_iter)
     auto now_state = *state_iter;
     auto new_state = now_state;
 
-    new_state.pc++;
+    new_state.pc += 4;
 
     return new_state;
 }

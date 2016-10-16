@@ -38,10 +38,13 @@ private:
          * General purpose registers
          * R0 is zero register
          */
-        std::array<int32_t, REG_SIZE> reg = {{0}};
+        std::array<uint32_t, REG_SIZE> reg = {{0}};
 
         // Floating point registers
         std::array<float, FREG_SIZE> freg = {{0}};
+
+        uint32_t hi = 0;
+        uint32_t lo = 0;
 
         // TODO Memory
     };
@@ -104,6 +107,8 @@ private:
      * bitset(10110111000..., 0, 8) = 0..010110111
      */
     uint32_t bitset(uint32_t inst, int begin, int end);
+    uint32_t bitset64(uint64_t inst, int begin, int end);
+
     /*
      * Sign extention for 5bit
      * signExt5(01010) -> 0..00001010

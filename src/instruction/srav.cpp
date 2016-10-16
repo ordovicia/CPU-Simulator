@@ -7,7 +7,7 @@ Simulator::State Simulator::srav(Instruction inst, StateIter state_iter)
 
     auto op = decodeR(inst);
 
-    new_state.pc++;
+    new_state.pc += 4;
     new_state.reg.at(op.rd) = signExt5(now_state.reg.at(op.rs))
                               >> bitset(now_state.reg.at(op.rt), 28, 32);
 
