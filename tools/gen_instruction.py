@@ -35,10 +35,10 @@ insts = {
     30: 'BLTZ',
     31: 'BGEZAL',
     32: 'BLTZAL',
-    # 33: 'J',
-    # 34: 'JAL',
-    # 35: 'JR',
-    # 36: 'JALR',
+    33: 'J',
+    34: 'JAL',
+    35: 'JR',
+    36: 'JALR',
 }
 
 opcode_name = 'opcode.hpp'

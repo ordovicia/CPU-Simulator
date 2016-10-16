@@ -127,6 +127,13 @@ Simulator::OperandI Simulator::decodeI(Instruction inst)
         bitset(inst, 16, 32)};
 }
 
+Simulator::OperandJ Simulator::decodeJ(Instruction inst)
+{
+    return OperandJ{
+        bitset(inst, 6, 11),
+        bitset(inst, 11, 32)};
+}
+
 uint32_t Simulator::bitset(uint32_t inst, int begin, int end)
 {
     int len = end - begin;

@@ -32,7 +32,7 @@ private:
     static constexpr size_t FREG_SIZE = 32;
 
     struct State {
-        int pc = 0;
+        uint32_t pc = 0;
 
         /*
          * General purpose registers
@@ -82,6 +82,19 @@ private:
         uint32_t immediate;
     };
 
+    /*
+     * Type J:
+     * -----------------------------------------
+     * | opcode | addr                         |
+     * -----------------------------------------
+     * | 6      | 26                           |
+     * -----------------------------------------
+     */
+    struct OperandJ {
+        uint32_t rs;
+        uint32_t addr;
+    };
+
     // Function for each instruction
     std::unordered_map<OpCode,
         std::function<State(Instruction, StateIter)>, OpCodeHash> m_inst_funcs;
@@ -101,6 +114,7 @@ private:
 
     OperandR decodeR(Instruction);
     OperandI decodeI(Instruction);
+    OperandJ decodeJ(Instruction);
 
     /*
      * Extract bit string.
