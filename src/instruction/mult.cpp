@@ -7,8 +7,8 @@ Simulator::State Simulator::mult(Instruction inst, StateIter state_iter)
 
     auto op = decodeR(inst);
 
-    int32_t rs_signed = now_state.reg.at(op.rs);
-    int32_t rt_signed = now_state.reg.at(op.rt);
+    int64_t rs_signed = now_state.reg.at(op.rs);
+    int64_t rt_signed = now_state.reg.at(op.rt);
     int64_t acc = rs_signed * rt_signed;
 
     new_state.pc += 4;
