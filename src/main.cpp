@@ -22,7 +22,6 @@ int main(int argc, char** argv)
         Simulator sim{argv[1]};
         sim.run();
 
-        getch();  // do not work?
         endwin();
     } catch (const std::exception& e) {
         FAIL(e.what());

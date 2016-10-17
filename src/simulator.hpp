@@ -20,6 +20,7 @@ private:
     std::ifstream m_binfile;
 
     bool m_halt = false;
+    int32_t m_breakpoint = -1;
 
     int64_t m_dynamic_inst_cnt = 0;
 
@@ -109,31 +110,18 @@ private:
 
     void initInstruction();
 
-    OpCode decodeOpCode(Instruction);
+    static OpCode decodeOpCode(Instruction);
     State exec(OpCode, Instruction, StateIter);
 
-    OperandR decodeR(Instruction);
-    OperandI decodeI(Instruction);
-    OperandJ decodeJ(Instruction);
+    static OperandR decodeR(Instruction);
+    static OperandI decodeI(Instruction);
+    static OperandJ decodeJ(Instruction);
 
-    /*
-     * Extract bit string.
-     * bitset(10110111000..., 0, 8) = 0..010110111
-     */
-    uint32_t bitset(uint32_t inst, int begin, int end);
-    uint32_t bitset64(uint64_t inst, int begin, int end);
-
-    /*
-     * Sign extention for 5bit
-     * signExt5(01010) -> 0..00001010
-     * signExt5(11010) -> 1..11111010
-     */
-    uint32_t signExt5(uint32_t x);
-
-    void printBitset(uint32_t bits, int begin, int end, bool endl = false);
-    void printState(StateIter);
-    void printCode(StateIter);
-    void printHelp();
+    static void printBitset(
+        uint32_t bits, int begin, int end, bool endl = false);
+    void printState(StateIter) const;
+    void printCode(StateIter) const;
+    static void printHelp();
 
 #include "instruction.hpp"
 };

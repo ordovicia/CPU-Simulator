@@ -1,3 +1,4 @@
+#include "util.hpp"
 #include "simulator.hpp"
 
 Simulator::State Simulator::sra(Instruction inst, StateIter state_iter)

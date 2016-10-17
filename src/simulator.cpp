@@ -39,9 +39,10 @@ void Simulator::run()
             addstr(">> ");
             refresh();
 
-            int k = getch();
-            switch (k) {
-            case 'r':  // run to the 'halt', or reset
+            char input[16];
+            getnstr(input, 16);
+
+            if (streq(input, "run") or streq(input, "r")) {
                 if (run or m_halt) {
                     m_state_iter = m_state_hist.begin();
                     m_halt = false;
@@ -49,10 +50,15 @@ void Simulator::run()
                     continue;
                 }
                 run = true;
-                break;
-            case 's':  // next instruction
-                break;
-            case 'p':  // prev inst
+            } else if (streqn(input, "break", 5)) {
+                sscanf(input + 5, "%d", &m_breakpoint);
+                continue;
+            } else if (streqn(input, "b", 1)) {
+                sscanf(input + 1, "%d", &m_breakpoint);
+                continue;
+            } else if (streq(input, "step") or streq(input, "s")) {
+                // break;
+            } else if (streq(input, "prev") or streq(input, "p")) {
                 if (m_halt)
                     if (m_state_iter != m_state_hist.begin())
                         m_state_iter--;
@@ -62,15 +68,15 @@ void Simulator::run()
                 run = false;
                 m_halt = false;
                 continue;
-            case 'q':  // quit
+            } else if (streq(input, "quit") or streq(input, "q")) {
                 return;
-            case 'h':  // print help
+            } else if (streq(input, "help") or streq(input, "h")) {
                 printHelp();
                 getch();
                 continue;
-            default:
+            } else {
                 continue;
-            };
+            }
         }
 
         if (not m_halt) {
@@ -86,6 +92,10 @@ void Simulator::run()
                 }
 
                 m_dynamic_inst_cnt++;
+
+                if (m_breakpoint > 0
+                    and static_cast<uint32_t>(m_breakpoint) == m_state_iter->pc)
+                    run = false;
             } catch (std::out_of_range e) {
                 FAIL("Program counter out of range\n" << e.what());
             }
@@ -134,30 +144,6 @@ Simulator::OperandJ Simulator::decodeJ(Instruction inst)
         bitset(inst, 11, 32)};
 }
 
-uint32_t Simulator::bitset(uint32_t inst, int begin, int end)
-{
-    int len = end - begin;
-    inst <<= begin;
-    inst >>= (32 - len);
-    return inst;
-}
-
-uint32_t Simulator::bitset64(uint64_t inst, int begin, int end)
-{
-    int len = end - begin;
-    inst <<= begin;
-    inst >>= (64 - len);
-    return static_cast<uint32_t>(inst);
-}
-
-uint32_t Simulator::signExt5(uint32_t x)
-{
-    if (x & (1 << 4))
-        return 0xffffffffu & x;
-    else
-        return x;
-}
-
 void Simulator::printBitset(uint32_t bits, int begin, int end, bool endl)
 {
     for (int b = begin; b < end; b++) {
@@ -171,7 +157,7 @@ void Simulator::printBitset(uint32_t bits, int begin, int end, bool endl)
     refresh();
 }
 
-void Simulator::printState(StateIter state_iter)
+void Simulator::printState(StateIter state_iter) const
 {
     int cwidth, cheight;
     getmaxyx(stdscr, cheight, cwidth);
@@ -197,8 +183,6 @@ void Simulator::printState(StateIter state_iter)
             else
                 addstr(" | ");
         }
-
-        printw("hi  = %08x | lo  = %08x\n", state_iter->hi, state_iter->lo);
     }
 
     if (col8)
@@ -230,6 +214,18 @@ void Simulator::printState(StateIter state_iter)
     }
 
     if (col8)
+        addstr("-------------- + -------------- + "
+               "-------------- + -------------- + "
+               "-------------- + -------------- + "
+               "-------------- + --------------\n");
+    else
+        addstr("-------------- + -------------- + "
+               "-------------- + --------------\n");
+
+    printw("hi  = %08x | lo  = %08x | bp  = %8d |\n",
+        state_iter->hi, state_iter->lo, m_breakpoint);
+
+    if (col8)
         addstr("============== + ============== + "
                "============== + ============== + "
                "============== + ============== + "
@@ -241,12 +237,12 @@ void Simulator::printState(StateIter state_iter)
     refresh();
 }
 
-void Simulator::printCode(StateIter state)
+void Simulator::printCode(StateIter state) const
 {
     int cwidth, cheight;
     getmaxyx(stdscr, cheight, cwidth);
     bool col8 = (cwidth > 14 * 8 + 3 * 7);
-    int row_width = (cheight - (col8 ? 8 : 16) - 8) / 2;
+    int row_width = (cheight - (col8 ? 8 : 16) - 12) / 2;
 
     int pc4 = state->pc / 4;
     int min_code_idx
@@ -280,8 +276,10 @@ void Simulator::printCode(StateIter state)
 
 void Simulator::printHelp()
 {
-    addstr("r: run to the 'halt' or reset, s: next instruction, p: prev inst, "
-           "q: quit, h: help\n");
-    getch();
+    addstr("run|r: run to the 'halt' or reset\n"
+           "(break|b)[int]: set breakpoint\n"
+           "step|s: next instruction, "
+           "prev|p: rewind to previous instruction\n"
+           "quit|q, help|h\n");
     refresh();
 }

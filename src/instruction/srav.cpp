@@ -1,3 +1,4 @@
+#include "util.hpp"
 #include "simulator.hpp"
 
 Simulator::State Simulator::srav(Instruction inst, StateIter state_iter)
