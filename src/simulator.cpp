@@ -254,15 +254,17 @@ void Simulator::printCode(StateIter state)
 
     for (int c = pc4 - row_width; c < pc4 + row_width; c++) {
         if (c < 0 or c >= min_code_idx) {
-            addstr("        |\n");
+            addstr("      |\n");
             continue;
         }
 
         if (c == pc4)
-            printw("> %5d | ", c * 4);
-        else
-            printw("%7d | ", c * 4);
+            attrset(COLOR_PAIR(0) | A_REVERSE);
+
+        printw("%5d | ", c * 4);
         printBitset(m_codes.at(c), 0, 32, true);
+
+        attrset(COLOR_PAIR(0));
     }
 
     if (col8)
