@@ -30,3 +30,11 @@ bool streq(const char* s1, const char* s2);
  * streqn("hoge1", "hoge2", 4) == true
  */
 bool streqn(const char* s1, const char* s2, int n);
+
+union FloatBit {
+    float f;
+    uint32_t b;
+};
+
+uint32_t ftob(float f);
+float btof(uint32_t b);

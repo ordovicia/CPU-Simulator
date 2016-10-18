@@ -1,4 +1,5 @@
 #include <cmath>
+#include <sstream>
 #include <exception>
 #include <ncurses.h>
 #include "util.hpp"
@@ -14,6 +15,7 @@ Simulator::Simulator(const std::string& binfile, int print_step)
 
     initInstruction();
 
+    constexpr size_t CODE_RESERVE_SIZE = 30000;
     m_codes.reserve(CODE_RESERVE_SIZE);
     while (not m_binfile.eof()) {
         Instruction r;
@@ -32,6 +34,7 @@ void Simulator::run()
     while (true) {
         if (m_dynamic_inst_cnt % m_print_step == 0) {
             erase();
+            m_screen.update();
             printState();
             printCode();
         }
@@ -184,99 +187,97 @@ void Simulator::printBitset(uint32_t bits, int begin, int end, bool endl)
     refresh();
 }
 
+void Simulator::Screen::update()
+{
+    getmaxyx(stdscr, height, width);
+    col_num = (width + 2) / 17;
+    code_window_len
+        = (height
+              - REG_SIZE / col_num - (REG_SIZE % col_num == 0 ? 0 : 1)
+              - FREG_SIZE / col_num - (FREG_SIZE % col_num == 0 ? 0 : 1)
+              - 12) / 2;
+}
+
+void Simulator::Screen::printBoarder(char c, bool p) const
+{
+    std::ostringstream iss;
+    for (int i = 0; i < 14; i++)
+        iss << c;
+
+    for (int i = 0; i < col_num; i++) {
+        addstr(iss.str().c_str());
+        if (i != col_num - 1) {
+            if (p)
+                addstr(" + ");
+            else
+                printw("%c%c%c", c, c, c);
+        } else
+            addch('\n');
+    }
+}
+
 void Simulator::printState() const
 {
-    int cwidth, cheight;
-    getmaxyx(stdscr, cheight, cwidth);
-    (void)cheight;
-    bool col8 = (cwidth > 14 * 8 + 3 * 7);
-
-    if (col8)
-        addstr("============== + ============== + "
-               "============== + ============== + "
-               "============== + ============== + "
-               "============== + ==============\n");
-    else
-        addstr("============== + ============== + "
-               "============== + ==============\n");
+    m_screen.printBoarder('=', false);
+    auto cn = m_screen.col_num;
 
     {  // Register
         auto reg = m_state_iter->reg;
 
-        for (size_t i = 0; i < REG_SIZE; i++) {
+        int i;
+        for (i = 0; i < REG_SIZE; i++) {
             printw("r%-2d = %08x", i, reg.at(i));
-            if ((col8 and i % 8 == 7) or (not col8 and i % 4 == 3))
+            if (i % cn + 1 == cn)
                 addch('\n');
             else
                 addstr(" | ");
         }
+        if (i % cn != 0) {
+            for (; i % cn + 1 != cn; i++)
+                addstr("               | ");
+            addch('\n');
+        }
     }
 
-    if (col8)
-        addstr("-------------- + -------------- + "
-               "-------------- + -------------- + "
-               "-------------- + -------------- + "
-               "-------------- + --------------\n");
-    else
-        addstr("-------------- + -------------- + "
-               "-------------- + --------------\n");
+    m_screen.printBoarder('-');
 
     {  // Floating point register
         auto freg = m_state_iter->freg;
 
-        union FloatBit {
-            float f;
-            uint32_t b;
-        };
-
-        for (size_t i = 0; i < FREG_SIZE; i++) {
-            FloatBit fb{freg.at(i)};
-            uint32_t b = fb.b;
+        int i;
+        for (i = 0; i < FREG_SIZE; i++) {
+            uint32_t b = ftob(freg.at(i));
             printw("f%-2d = %08x", i, b);
-            if ((col8 and i % 8 == 7) or (not col8 and i % 4 == 3))
+            if (i % cn + 1 == cn)
                 addch('\n');
             else
                 addstr(" | ");
         }
+        if (i % cn != 0) {
+            for (; i % cn + 1 != cn; i++)
+                addstr("               | ");
+            addch('\n');
+        }
     }
 
-    if (col8)
-        addstr("-------------- + -------------- + "
-               "-------------- + -------------- + "
-               "-------------- + -------------- + "
-               "-------------- + --------------\n");
-    else
-        addstr("-------------- + -------------- + "
-               "-------------- + --------------\n");
+    m_screen.printBoarder('-');
 
-    printw("hi  = %08x | lo  = %08x dynamic isnt cnt = %d\n",
+    printw("hi  = %08x | lo  = %08x | dynamic isnt cnt = %d\n",
         m_state_iter->hi, m_state_iter->lo, m_dynamic_inst_cnt);
 
-    if (col8)
-        addstr("============== + ============== + "
-               "============== + ============== + "
-               "============== + ============== + "
-               "============== + ==============\n");
-    else
-        addstr("============== + ============== + "
-               "============== + ==============\n");
-
+    m_screen.printBoarder('=', false);
     refresh();
 }
 
 void Simulator::printCode() const
 {
-    int cwidth, cheight;
-    getmaxyx(stdscr, cheight, cwidth);
-    bool col8 = (cwidth > 14 * 8 + 3 * 7);
-    int row_width = (cheight - (col8 ? 8 : 16) - 12) / 2;
+    auto cwl = m_screen.code_window_len;
 
     int pc4 = m_state_iter->pc / 4;
-    int min_code_idx
-        = std::min(pc4 + row_width, static_cast<int>(m_codes.size()));
+    int max_code_idx = std::min(pc4 + cwl, static_cast<int>(m_codes.size()));
 
-    for (int c = pc4 - row_width; c < pc4 + row_width; c++) {
-        if (c < 0 or c >= min_code_idx) {
+    for (int c = pc4 - cwl; c < pc4 + cwl; c++) {
+        if (c < 0 or c >= max_code_idx) {
             addstr("      |\n");
             continue;
         }
@@ -290,14 +291,7 @@ void Simulator::printCode() const
         attrset(COLOR_PAIR(0));
     }
 
-    if (col8)
-        addstr("============================================="
-               "============================================="
-               "===========================================\n");
-    else
-        addstr("================================="
-               "================================\n");
-
+    m_screen.printBoarder('=', false);
     refresh();
 }
 
@@ -311,12 +305,29 @@ void Simulator::printBreakPoints() const
 
 void Simulator::printHelp()
 {
-    addstr("run|r: run to the 'halt', "
-           "reset: reset\n"
-           "(break|b) [int]: set breakpoint, "
-           "pb: show breakpoints, dp [int]: delete breakpoint\n"
-           "step|s: next instruction, "
-           "prev|p: rewind to previous instruction\n"
-           "quit|q, help|h\n");
+#define ADDSTR_STANDOUT(str)         \
+    attrset(COLOR_PAIR(0) | A_BOLD); \
+    addstr(str);
+#define ADDSTR_NORMAL(str)  \
+    attrset(COLOR_PAIR(0)); \
+    addstr(str);
+
+    ADDSTR_STANDOUT("run|r");
+    ADDSTR_NORMAL(": run to the 'halt', ");
+    ADDSTR_STANDOUT("reset");
+    ADDSTR_NORMAL(": reset\n");
+    ADDSTR_STANDOUT("(break|b) [int]");
+    ADDSTR_NORMAL(": set breakpoint, ");
+    ADDSTR_STANDOUT("pb");
+    ADDSTR_NORMAL(": show breakpoints, ");
+    ADDSTR_STANDOUT("db [int]");
+    ADDSTR_NORMAL(": delete breakpoint\n");
+    ADDSTR_STANDOUT("step|s");
+    ADDSTR_NORMAL(": next instruction, ");
+    ADDSTR_STANDOUT("prev|p");
+    ADDSTR_NORMAL(": rewind to previous instruction\n");
+    ADDSTR_STANDOUT("quit|q, help|h\n");
+    attrset(COLOR_PAIR(0));
+
     refresh();
 }

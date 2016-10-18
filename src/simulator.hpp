@@ -23,15 +23,15 @@ private:
     bool m_halt = false;
     std::unordered_set<uint32_t> m_breakpoints;
 
-    int64_t m_dynamic_inst_cnt = 0;
-
+    // Instruction
     using Instruction = uint32_t;  // 32bit Instruction code
-
-    static constexpr size_t CODE_RESERVE_SIZE = 30000;
     std::vector<Instruction> m_codes;
 
-    static constexpr size_t REG_SIZE = 32;
-    static constexpr size_t FREG_SIZE = 32;
+    int64_t m_dynamic_inst_cnt = 0;
+
+    // State
+    static constexpr int REG_SIZE = 32;
+    static constexpr int FREG_SIZE = 32;
 
     struct State {
         uint32_t pc = 0;
@@ -121,6 +121,15 @@ private:
 
     static void printBitset(
         uint32_t bits, int begin, int end, bool endl = false);
+
+    struct Screen {
+        int width = 0, height = 0;
+        int col_num = 0;
+        int code_window_len = 0;
+
+        void update();
+        void printBoarder(char c, bool p = true) const;
+    } m_screen;
 
     void printState() const;
     void printCode() const;

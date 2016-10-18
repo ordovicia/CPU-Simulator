@@ -39,3 +39,16 @@ bool streqn(const char* s1, const char* s2, int n)
 
     return true;
 }
+
+uint32_t ftob(float f)
+{
+    FloatBit fb{f};
+    return fb.b;
+}
+
+float btof(uint32_t b)
+{
+    FloatBit fb;
+    fb.b = b;
+    return fb.f;
+}

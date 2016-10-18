@@ -92,3 +92,7 @@ if (not os.path.exists(opcode_name) or subprocess.call(['diff', opcode_name, opc
     shutil.move(opcode_name + '.tmp', opcode_name)
     shutil.move(hpp_name + '.tmp', hpp_name)
     shutil.move(cpp_name + '.tmp', cpp_name)
+else:
+    os.remove(opcode_name + '.tmp')
+    os.remove(hpp_name + '.tmp')
+    os.remove(cpp_name + '.tmp')
