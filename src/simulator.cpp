@@ -52,10 +52,25 @@ void Simulator::run()
                 }
                 run = true;
             } else if (streqn(input, "break", 5)) {
-                sscanf(input + 5, "%d", &m_breakpoint);
+                int b;
+                sscanf(input + 5, "%d", &b);
+                m_breakpoints.insert(b);
+
                 continue;
             } else if (streqn(input, "b", 1)) {
-                sscanf(input + 1, "%d", &m_breakpoint);
+                int b;
+                sscanf(input + 1, "%d", &b);
+                m_breakpoints.insert(b);
+
+                continue;
+            } else if (streq(input, "pb")) {
+                printBreakPoints();
+                getch();
+                continue;
+            } else if (streqn(input, "dp", 2)) {
+                int b;
+                sscanf(input + 2, "%d", &b);
+                m_breakpoints.erase(b);
                 continue;
             } else if (streq(input, "step") or streq(input, "s")) {
                 // break;
@@ -96,8 +111,7 @@ void Simulator::run()
                     m_state_iter++;
                 }
 
-                if (m_breakpoint > 0
-                    and static_cast<uint32_t>(m_breakpoint) == m_state_iter->pc)
+                if (m_breakpoints.find(m_state_iter->pc) != m_breakpoints.end())
                     run = false;
             } catch (std::out_of_range e) {
                 FAIL("Program counter out of range\n" << e.what());
@@ -236,8 +250,8 @@ void Simulator::printState() const
         addstr("-------------- + -------------- + "
                "-------------- + --------------\n");
 
-    printw("hi  = %08x | lo  = %08x | bp  = %8d | dynamic isnt cnt = %d\n",
-        m_state_iter->hi, m_state_iter->lo, m_breakpoint, m_dynamic_inst_cnt);
+    printw("hi  = %08x | lo  = %08x dynamic isnt cnt = %d\n",
+        m_state_iter->hi, m_state_iter->lo, m_dynamic_inst_cnt);
 
     if (col8)
         addstr("============== + ============== + "
@@ -285,6 +299,14 @@ void Simulator::printCode() const
         addstr("================================="
                "================================\n");
 
+    refresh();
+}
+
+void Simulator::printBreakPoints() const
+{
+    for (auto b : m_breakpoints) {
+        printw("%d, ", b);
+    }
     refresh();
 }
 

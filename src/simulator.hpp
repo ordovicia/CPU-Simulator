@@ -4,6 +4,7 @@
 #include <fstream>
 #include <array>
 #include <vector>
+#include <unordered_set>
 #include <unordered_map>
 #include <functional>
 #include "sized_deque.hpp"
@@ -20,7 +21,7 @@ private:
     const int m_print_step;
 
     bool m_halt = false;
-    int32_t m_breakpoint = -1;
+    std::unordered_set<uint32_t> m_breakpoints;
 
     int64_t m_dynamic_inst_cnt = 0;
 
@@ -120,8 +121,11 @@ private:
 
     static void printBitset(
         uint32_t bits, int begin, int end, bool endl = false);
+
     void printState() const;
     void printCode() const;
+    void printBreakPoints() const;
+
     static void printHelp();
 
 #include "instruction.hpp"
