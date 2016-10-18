@@ -45,12 +45,11 @@ void Simulator::run()
             getnstr(input, 16);
 
             if (streq(input, "run") or streq(input, "r")) {
-                if (run or m_halt) {  // reset
-                    reset();
-                    run = false;
-                    continue;
-                }
                 run = true;
+            } else if (streq(input, "reset")) {
+                reset();
+                run = false;
+                continue;
             } else if (streqn(input, "break", 5)) {
                 int b;
                 sscanf(input + 5, "%d", &b);
@@ -312,8 +311,10 @@ void Simulator::printBreakPoints() const
 
 void Simulator::printHelp()
 {
-    addstr("run|r: run to the 'halt' or reset\n"
-           "(break|b)[int]: set breakpoint\n"
+    addstr("run|r: run to the 'halt', "
+           "reset: reset\n"
+           "(break|b) [int]: set breakpoint, "
+           "pb: show breakpoints, dp [int]: delete breakpoint\n"
            "step|s: next instruction, "
            "prev|p: rewind to previous instruction\n"
            "quit|q, help|h\n");
