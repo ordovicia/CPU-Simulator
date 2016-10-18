@@ -13,12 +13,11 @@
 class Simulator
 {
 public:
-    explicit Simulator(const std::string& binfile, int print_step);
+    explicit Simulator(const std::string& binfile);
     void run();
 
 private:
     std::ifstream m_binfile;
-    const int m_print_step;
 
     bool m_halt = false;
     std::unordered_set<uint32_t> m_breakpoints;

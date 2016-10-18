@@ -5,8 +5,7 @@
 #include "util.hpp"
 #include "simulator.hpp"
 
-Simulator::Simulator(const std::string& binfile, int print_step)
-    : m_print_step(print_step)
+Simulator::Simulator(const std::string& binfile)
 {
     m_binfile.open(binfile, std::ios::binary);
     if (m_binfile.fail()) {
@@ -32,15 +31,14 @@ void Simulator::run()
     bool run = false;
 
     while (true) {
-        if (m_dynamic_inst_cnt % m_print_step == 0) {
+        if (not run or m_halt) {
+            // Console output
             erase();
             m_screen.update();
             printState();
             printCode();
-        }
 
-        // Input command
-        if (m_halt or not run) {
+            // Input command
             addstr(">> ");
             refresh();
 
@@ -78,7 +76,7 @@ void Simulator::run()
                 // break;
             } else if (streq(input, "prev") or streq(input, "p")) {
                 if (m_state_iter == m_state_hist.deque.begin()) {
-                    addstr("Out of saved history\n");
+                    addstr("Error: Out of saved history");
                     refresh();
                     getch();
                     continue;
@@ -100,7 +98,7 @@ void Simulator::run()
             }
         }
 
-        if (not m_halt) {
+        if (not m_halt) {  // next instruction
             try {
                 Instruction inst = m_codes.at(m_state_iter->pc / 4);  // fetch
                 auto opcode = decodeOpCode(inst);
@@ -126,6 +124,7 @@ void Simulator::reset()
 {
     m_halt = false;
     m_dynamic_inst_cnt = 0;
+    m_breakpoints.clear();
     m_state_hist.deque.clear();
     m_state_hist.push(State{});
     m_state_iter = m_state_hist.deque.begin();
@@ -183,8 +182,6 @@ void Simulator::printBitset(uint32_t bits, int begin, int end, bool endl)
 
     if (endl)
         addch('\n');
-
-    refresh();
 }
 
 void Simulator::Screen::update()
