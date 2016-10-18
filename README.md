@@ -30,7 +30,7 @@ $ ./simulator -ftest.bin -m256
 * reset -- 初期状態にリセットします。
 * (break|b) [int] -- 指定したプログラムカウンタにbreakpointをはります。
 * pb -- breakpointを表示します。
-* dp [int] -- 指定したbreakpointを削除します。
+* db [int] -- 指定したbreakpointを削除します。
 * step|s -- 命令をひとつ実行します。
 * prev|p -- ひとつ前の状態に戻ります。
 * quit|q -- 終了します。

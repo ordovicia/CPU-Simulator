@@ -66,7 +66,7 @@ void Simulator::run()
                 printBreakPoints();
                 getch();
                 continue;
-            } else if (streqn(input, "dp", 2)) {
+            } else if (streqn(input, "db", 2)) {
                 int b;
                 sscanf(input + 2, "%d", &b);
                 m_breakpoints.erase(b);
