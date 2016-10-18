@@ -12,11 +12,12 @@
 class Simulator
 {
 public:
-    explicit Simulator(const std::string& binfile);
+    explicit Simulator(const std::string& binfile, int print_step);
     void run();
 
 private:
     std::ifstream m_binfile;
+    const int m_print_step;
 
     bool m_halt = false;
     int32_t m_breakpoint = -1;

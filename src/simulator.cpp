@@ -4,7 +4,8 @@
 #include "util.hpp"
 #include "simulator.hpp"
 
-Simulator::Simulator(const std::string& binfile)
+Simulator::Simulator(const std::string& binfile, int print_step)
+    : m_print_step(print_step)
 {
     m_binfile.open(binfile, std::ios::binary);
     if (m_binfile.fail()) {
@@ -29,9 +30,11 @@ void Simulator::run()
     bool run = false;
 
     while (true) {
-        erase();
-        printState();
-        printCode();
+        if (m_dynamic_inst_cnt % m_print_step == 0) {
+            erase();
+            printState();
+            printCode();
+        }
 
         // Input command
         if (m_halt or not run) {
