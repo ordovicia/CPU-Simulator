@@ -5,9 +5,8 @@
 #include <array>
 #include <vector>
 #include <unordered_map>
-#include <list>
 #include <functional>
-#include <exception>
+#include "sized_deque.hpp"
 #include "opcode.hpp"
 
 class Simulator
@@ -26,7 +25,7 @@ private:
 
     using Instruction = uint32_t;  // 32bit Instruction code
 
-    static constexpr size_t CODE_INITIAL_SIZE = 30000;
+    static constexpr size_t CODE_RESERVE_SIZE = 30000;
     std::vector<Instruction> m_codes;
 
     static constexpr size_t REG_SIZE = 32;
@@ -50,7 +49,13 @@ private:
         // TODO Memory
     };
 
-    using StateIter = std::list<State>::const_iterator;
+    // State history
+    static constexpr size_t STATE_HIST_SIZE = 256;
+    SizedDeque<State, STATE_HIST_SIZE> m_state_hist;
+    using StateIter = typename decltype(m_state_hist)::Iterator;
+    StateIter m_state_iter;
+
+    void reset();
 
     // Operand
     /*
@@ -101,17 +106,12 @@ private:
         std::function<State(Instruction, StateIter)>, OpCodeHash> m_inst_funcs;
 
     // Instruction called counter
-    std::unordered_map<OpCode,
-        int64_t, OpCodeHash> m_inst_cnt;
-
-    // State history
-    std::list<State> m_state_hist;
-    StateIter m_state_iter;
+    std::unordered_map<OpCode, int64_t, OpCodeHash> m_inst_cnt;
 
     void initInstruction();
 
     static OpCode decodeOpCode(Instruction);
-    State exec(OpCode, Instruction, StateIter);
+    State exec(OpCode, Instruction);
 
     static OperandR decodeR(Instruction);
     static OperandI decodeI(Instruction);
@@ -119,8 +119,8 @@ private:
 
     static void printBitset(
         uint32_t bits, int begin, int end, bool endl = false);
-    void printState(StateIter) const;
-    void printCode(StateIter) const;
+    void printState() const;
+    void printCode() const;
     static void printHelp();
 
 #include "instruction.hpp"

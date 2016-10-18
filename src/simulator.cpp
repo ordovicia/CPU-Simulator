@@ -1,6 +1,5 @@
 #include <cmath>
-#include <iostream>
-#include <sstream>
+#include <exception>
 #include <ncurses.h>
 #include "util.hpp"
 #include "simulator.hpp"
@@ -14,15 +13,15 @@ Simulator::Simulator(const std::string& binfile)
 
     initInstruction();
 
-    m_state_hist.emplace_front();
-    m_state_iter = m_state_hist.begin();
-
-    m_codes.reserve(CODE_INITIAL_SIZE);
+    m_codes.reserve(CODE_RESERVE_SIZE);
     while (not m_binfile.eof()) {
         Instruction r;
         m_binfile.read(reinterpret_cast<char*>(&r), sizeof r);
         m_codes.emplace_back(r);
     }
+
+    m_state_hist.push(State{});
+    m_state_iter = m_state_hist.deque.begin();
 }
 
 void Simulator::run()
@@ -31,8 +30,8 @@ void Simulator::run()
 
     while (true) {
         erase();
-        printState(m_state_iter);
-        printCode(m_state_iter);
+        printState();
+        printCode();
 
         // Input command
         if (m_halt or not run) {
@@ -43,9 +42,8 @@ void Simulator::run()
             getnstr(input, 16);
 
             if (streq(input, "run") or streq(input, "r")) {
-                if (run or m_halt) {
-                    m_state_iter = m_state_hist.begin();
-                    m_halt = false;
+                if (run or m_halt) {  // reset
+                    reset();
                     run = false;
                     continue;
                 }
@@ -59,11 +57,14 @@ void Simulator::run()
             } else if (streq(input, "step") or streq(input, "s")) {
                 // break;
             } else if (streq(input, "prev") or streq(input, "p")) {
-                if (m_halt)
-                    if (m_state_iter != m_state_hist.begin())
-                        m_state_iter--;
-                if (m_state_iter != m_state_hist.begin())
+                if (m_state_iter == m_state_hist.deque.begin()) {
+                    addstr("Out of saved history\n");
+                    refresh();
+                    getch();
+                    continue;
+                } else {
                     m_state_iter--;
+                }
 
                 run = false;
                 m_halt = false;
@@ -83,15 +84,14 @@ void Simulator::run()
             try {
                 Instruction inst = m_codes.at(m_state_iter->pc / 4);  // fetch
                 auto opcode = decodeOpCode(inst);
-                auto new_state = exec(opcode, inst, m_state_iter);
-                if (m_state_iter == std::prev(m_state_hist.end())) {
-                    m_state_iter
-                        = m_state_hist.insert(m_state_hist.end(), new_state);
+                auto new_state = exec(opcode, inst);
+
+                if (m_state_iter == std::prev(m_state_hist.deque.end())) {
+                    m_state_iter = m_state_hist.push(new_state);
+                    m_dynamic_inst_cnt++;
                 } else {
                     m_state_iter++;
                 }
-
-                m_dynamic_inst_cnt++;
 
                 if (m_breakpoint > 0
                     and static_cast<uint32_t>(m_breakpoint) == m_state_iter->pc)
@@ -103,17 +103,28 @@ void Simulator::run()
     }
 }
 
+void Simulator::reset()
+{
+    m_halt = false;
+    m_dynamic_inst_cnt = 0;
+    m_state_hist.deque.clear();
+    m_state_hist.push(State{});
+    m_state_iter = m_state_hist.deque.begin();
+
+    for (auto& p : m_inst_cnt)
+        p.second = 0;
+}
+
 OpCode Simulator::decodeOpCode(Instruction inst)
 {
     return static_cast<OpCode>(bitset(inst, 0, 6));
 }
 
-Simulator::State Simulator::exec(
-    OpCode opcode, Instruction inst, StateIter state_iter)
+Simulator::State Simulator::exec(OpCode opcode, Instruction inst)
 {
     try {
         m_inst_cnt.at(opcode)++;
-        return (m_inst_funcs.at(opcode))(inst, state_iter);
+        return (m_inst_funcs.at(opcode))(inst, m_state_iter);
     } catch (std::out_of_range e) {
         FAIL("Invalid instruction code\n" << e.what());
     }
@@ -157,7 +168,7 @@ void Simulator::printBitset(uint32_t bits, int begin, int end, bool endl)
     refresh();
 }
 
-void Simulator::printState(StateIter state_iter) const
+void Simulator::printState() const
 {
     int cwidth, cheight;
     getmaxyx(stdscr, cheight, cwidth);
@@ -174,7 +185,7 @@ void Simulator::printState(StateIter state_iter) const
                "============== + ==============\n");
 
     {  // Register
-        auto reg = state_iter->reg;
+        auto reg = m_state_iter->reg;
 
         for (size_t i = 0; i < REG_SIZE; i++) {
             printw("r%-2d = %08x", i, reg.at(i));
@@ -195,7 +206,7 @@ void Simulator::printState(StateIter state_iter) const
                "-------------- + --------------\n");
 
     {  // Floating point register
-        auto freg = state_iter->freg;
+        auto freg = m_state_iter->freg;
 
         union FloatBit {
             float f;
@@ -222,8 +233,8 @@ void Simulator::printState(StateIter state_iter) const
         addstr("-------------- + -------------- + "
                "-------------- + --------------\n");
 
-    printw("hi  = %08x | lo  = %08x | bp  = %8d |\n",
-        state_iter->hi, state_iter->lo, m_breakpoint);
+    printw("hi  = %08x | lo  = %08x | bp  = %8d | dynamic isnt cnt = %d\n",
+        m_state_iter->hi, m_state_iter->lo, m_breakpoint, m_dynamic_inst_cnt);
 
     if (col8)
         addstr("============== + ============== + "
@@ -237,14 +248,14 @@ void Simulator::printState(StateIter state_iter) const
     refresh();
 }
 
-void Simulator::printCode(StateIter state) const
+void Simulator::printCode() const
 {
     int cwidth, cheight;
     getmaxyx(stdscr, cheight, cwidth);
     bool col8 = (cwidth > 14 * 8 + 3 * 7);
     int row_width = (cheight - (col8 ? 8 : 16) - 12) / 2;
 
-    int pc4 = state->pc / 4;
+    int pc4 = m_state_iter->pc / 4;
     int min_code_idx
         = std::min(pc4 + row_width, static_cast<int>(m_codes.size()));
 
