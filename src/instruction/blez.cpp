@@ -1,12 +1,11 @@
 #include "simulator.hpp"
 
-Simulator::State Simulator::blez(Instruction inst, StateIter state_iter)
+Simulator::State Simulator::blez(Instruction inst)
 {
-    auto now_state = *state_iter;
-    auto new_state = now_state;
+    auto new_state = *m_state_iter;
 
     auto op = decodeI(inst);
-    int32_t rs = now_state.reg.at(op.rs);
+    int32_t rs = m_state_iter->reg.at(op.rs);
 
     if (rs <= 0)
         new_state.pc += static_cast<int32_t>(op.immediate << 2);

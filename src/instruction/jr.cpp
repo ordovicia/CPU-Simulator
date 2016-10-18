@@ -1,13 +1,12 @@
 #include "simulator.hpp"
 
-Simulator::State Simulator::jr(Instruction inst, StateIter state_iter)
+Simulator::State Simulator::jr(Instruction inst)
 {
-    auto now_state = *state_iter;
-    auto new_state = now_state;
+    auto new_state = *m_state_iter;
 
     auto op = decodeR(inst);
 
-    new_state.pc = now_state.reg.at(op.rs);
+    new_state.pc = m_state_iter->reg.at(op.rs);
 
     return new_state;
 }

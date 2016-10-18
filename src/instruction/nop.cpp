@@ -1,9 +1,8 @@
 #include "simulator.hpp"
 
-Simulator::State Simulator::nop(Instruction /* inst */, StateIter state_iter)
+Simulator::State Simulator::nop(Instruction /* inst */)
 {
-    auto now_state = *state_iter;
-    auto new_state = now_state;
+    auto new_state = *m_state_iter;
 
     new_state.pc += 4;
 

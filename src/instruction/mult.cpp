@@ -1,15 +1,14 @@
 #include "util.hpp"
 #include "simulator.hpp"
 
-Simulator::State Simulator::mult(Instruction inst, StateIter state_iter)
+Simulator::State Simulator::mult(Instruction inst)
 {
-    auto now_state = *state_iter;
-    auto new_state = now_state;
+    auto new_state = *m_state_iter;
 
     auto op = decodeR(inst);
 
-    int64_t rs_signed = now_state.reg.at(op.rs);
-    int64_t rt_signed = now_state.reg.at(op.rt);
+    int64_t rs_signed = m_state_iter->reg.at(op.rs);
+    int64_t rt_signed = m_state_iter->reg.at(op.rt);
     int64_t acc = rs_signed * rt_signed;
 
     new_state.pc += 4;

@@ -1,14 +1,13 @@
 #include "simulator.hpp"
 
-Simulator::State Simulator::jal(Instruction inst, StateIter state_iter)
+Simulator::State Simulator::jal(Instruction inst)
 {
-    auto now_state = *state_iter;
-    auto new_state = now_state;
+    auto new_state = *m_state_iter;
 
     auto op = decodeJ(inst);
 
-    new_state.reg.at(31) = now_state.pc;
-    new_state.pc = (now_state.pc & 0xfffffff) | (op.addr << 2);
+    new_state.reg.at(31) = m_state_iter->pc;
+    new_state.pc = (m_state_iter->pc & 0xfffffff) | (op.addr << 2);
 
     return new_state;
 }

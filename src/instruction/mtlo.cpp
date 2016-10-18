@@ -1,14 +1,13 @@
 #include "simulator.hpp"
 
-Simulator::State Simulator::mtlo(Instruction inst, StateIter state_iter)
+Simulator::State Simulator::mtlo(Instruction inst)
 {
-    auto now_state = *state_iter;
-    auto new_state = now_state;
+    auto new_state = *m_state_iter;
 
     auto op = decodeR(inst);
 
     new_state.pc += 4;
-    new_state.lo = now_state.reg.at(op.rs);
+    new_state.lo = m_state_iter->reg.at(op.rs);
 
     return new_state;
 }

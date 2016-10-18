@@ -75,24 +75,20 @@ with open(opcode_name + '.tmp', 'w') as opcode_tmp:
         opcode_tmp.write('    {} = {},\n'.format(c, n))
     opcode_tmp.write(opcode_footer)
 
-# Detect diff
-if not os.path.exists(opcode_name) or subprocess.call(['diff', opcode_name, opcode_name + '.tmp']):
-    mv = True
-else:
-    mv = False
-
 # instruction.hpp and init_inst.cpp
 with open(hpp_name + '.tmp', 'w') as hpp_tmp:
     with open(cpp_name + '.tmp', 'w') as cpp_tmp:
         cpp_tmp.write(cpp_header)
         for inst in insts.values():
-            hpp_tmp.write('    State {}(Instruction, StateIter);\n'.format(inst.lower(), ))
-            cpp_tmp.write('    m_inst_funcs.emplace(OpCode::{}, [this](Instruction inst, StateIter si) {{ return {}(inst, si); }});\n'.format(inst, inst.lower()))
+            hpp_tmp.write('    State {}(Instruction);\n'.format(inst.lower(), ))
+            cpp_tmp.write('    m_inst_funcs.emplace(OpCode::{}, [this](Instruction inst) {{ return {}(inst); }});\n'.format(inst, inst.lower()))
             cpp_tmp.write('    m_inst_cnt.emplace(OpCode::{}, 0);\n'.format(inst))
         cpp_tmp.write('}\n')
 
-# Move if differed
-if mv:
+# Detect diff
+if (not os.path.exists(opcode_name) or subprocess.call(['diff', opcode_name, opcode_name + '.tmp'])) \
+    or (not os.path.exists(hpp_name) or subprocess.call(['diff', hpp_name, hpp_name + '.tmp'])) \
+    or (not os.path.exists(cpp_name) or subprocess.call(['diff', cpp_name, cpp_name + '.tmp'])):
     shutil.move(opcode_name + '.tmp', opcode_name)
     shutil.move(hpp_name + '.tmp', hpp_name)
     shutil.move(cpp_name + '.tmp', cpp_name)

@@ -1,14 +1,13 @@
 #include "simulator.hpp"
 
-Simulator::State Simulator::div(Instruction inst, StateIter state_iter)
+Simulator::State Simulator::div(Instruction inst)
 {
-    auto now_state = *state_iter;
-    auto new_state = now_state;
+    auto new_state = *m_state_iter;
 
     auto op = decodeR(inst);
 
-    int32_t rs_signed = now_state.reg.at(op.rs);
-    int32_t rt_signed = now_state.reg.at(op.rt);
+    int32_t rs_signed = m_state_iter->reg.at(op.rs);
+    int32_t rt_signed = m_state_iter->reg.at(op.rt);
 
     new_state.pc += 4;
     new_state.reg.at(op.rd) = rs_signed / rt_signed;
