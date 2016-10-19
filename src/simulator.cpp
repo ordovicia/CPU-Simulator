@@ -275,14 +275,14 @@ void Simulator::printCode() const
 
     for (int c = pc4 - cwl; c < pc4 + cwl; c++) {
         if (c < 0 or c >= max_code_idx) {
-            addstr("      |\n");
+            addstr("       |\n");
             continue;
         }
 
         if (c == pc4)
             attrset(COLOR_PAIR(0) | A_REVERSE);
 
-        printw("%5d | ", c * 4);
+        printw("%6d | ", c * 4);
         printBitset(m_codes.at(c), 0, 32, true);
 
         attrset(COLOR_PAIR(0));
@@ -294,37 +294,29 @@ void Simulator::printCode() const
 
 void Simulator::printBreakPoints() const
 {
-    for (auto b : m_breakpoints) {
+    if (m_breakpoints.size() == 0)
+        addstr("No breakpoint");
+    for (auto b : m_breakpoints)
         printw("%d, ", b);
-    }
     refresh();
 }
 
 void Simulator::printHelp()
 {
-#define ADDSTR_STANDOUT(str)         \
+#define PRINT_CMD_DESC(cmd, desc)    \
     attrset(COLOR_PAIR(0) | A_BOLD); \
-    addstr(str);
-#define ADDSTR_NORMAL(str)  \
-    attrset(COLOR_PAIR(0)); \
-    addstr(str);
+    addstr(cmd);                     \
+    attrset(COLOR_PAIR(0));          \
+    addstr(desc);
 
-    ADDSTR_STANDOUT("run|r");
-    ADDSTR_NORMAL(": run to the 'halt', ");
-    ADDSTR_STANDOUT("reset");
-    ADDSTR_NORMAL(": reset\n");
-    ADDSTR_STANDOUT("(break|b) [int]");
-    ADDSTR_NORMAL(": set breakpoint, ");
-    ADDSTR_STANDOUT("pb");
-    ADDSTR_NORMAL(": show breakpoints, ");
-    ADDSTR_STANDOUT("db [int]");
-    ADDSTR_NORMAL(": delete breakpoint\n");
-    ADDSTR_STANDOUT("step|s");
-    ADDSTR_NORMAL(": next instruction, ");
-    ADDSTR_STANDOUT("prev|p");
-    ADDSTR_NORMAL(": rewind to previous instruction\n");
-    ADDSTR_STANDOUT("quit|q, help|h\n");
-    attrset(COLOR_PAIR(0));
+    PRINT_CMD_DESC("run|r", ": run to the 'halt', ");
+    PRINT_CMD_DESC("reset", ": reset\n");
+    PRINT_CMD_DESC("(break|b) [int]", ": set breakpoint, ");
+    PRINT_CMD_DESC("pb", ": show breakpoints, ");
+    PRINT_CMD_DESC("db [int]", ": delete breakpoint\n");
+    PRINT_CMD_DESC("step|s", ": next instruction, ");
+    PRINT_CMD_DESC("prev|p", ": rewind to previous instruction\n");
+    PRINT_CMD_DESC("quit|q, help|h\n", "");
 
     refresh();
 }
