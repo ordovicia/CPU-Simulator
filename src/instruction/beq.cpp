@@ -8,6 +8,8 @@ Simulator::State Simulator::beq(Instruction inst)
 
     if (m_state_iter->reg.at(op.rs) == m_state_iter->reg.at(op.rt))
         new_state.pc += static_cast<int32_t>(op.immediate << 2);
+    else
+        new_state.pc += 4;
 
     return new_state;
 }

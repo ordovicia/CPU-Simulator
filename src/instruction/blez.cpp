@@ -9,6 +9,8 @@ Simulator::State Simulator::blez(Instruction inst)
 
     if (rs <= 0)
         new_state.pc += static_cast<int32_t>(op.immediate << 2);
+    else
+        new_state.pc += 4;
 
     return new_state;
 }
