@@ -49,12 +49,18 @@ insts = {
     45: 'SUB_S',
     46: 'MUL_S',
     47: 'DIV_S',
+    48: 'CVT_S_W',
+    49: 'CVT_W_S',
     50: 'MOV_S',
     51: 'C_EQ_S',
     52: 'C_LE_S',
     53: 'C_LT_S',
     54: 'BC1T',
     55: 'BC1F',
+    56: 'LWC1',
+    57:	'SWC1',
+    58:	'MTC1',
+    59:	'MFC1',
     60: 'HALT',
 }
 
