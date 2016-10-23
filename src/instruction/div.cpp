@@ -6,12 +6,12 @@ Simulator::State Simulator::div(Instruction inst)
 
     auto op = decodeR(inst);
 
-    int32_t rs_signed = m_state_iter->reg.at(op.rs);
-    int32_t rt_signed = m_state_iter->reg.at(op.rt);
+    auto rs_s = static_cast<int32_t>(m_state_iter->reg.at(op.rs));
+    auto rt_s = static_cast<int32_t>(m_state_iter->reg.at(op.rt));
 
     new_state.pc += 4;
-    new_state.reg.at(op.rd) = rs_signed / rt_signed;
-    new_state.hi = rs_signed % rt_signed;
+    new_state.lo = rs_s / rt_s;
+    new_state.hi = rs_s % rt_s;
 
     return new_state;
 }

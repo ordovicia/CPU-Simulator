@@ -6,7 +6,7 @@ Simulator::State Simulator::j(Instruction inst)
 
     auto op = decodeJ(inst);
 
-    new_state.pc = (m_state_iter->pc & 0xfffffff) | (op.addr << 2);
+    new_state.pc = op.addr << 2;
 
     return new_state;
 }

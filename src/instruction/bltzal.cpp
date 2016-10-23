@@ -5,7 +5,7 @@ Simulator::State Simulator::bltzal(Instruction inst)
     auto new_state = *m_state_iter;
 
     auto op = decodeI(inst);
-    int32_t rs = m_state_iter->reg.at(op.rs);
+    auto rs = static_cast<int32_t>(m_state_iter->reg.at(op.rs));
 
     if (rs < 0) {
         new_state.reg.at(31) = m_state_iter->pc + 4;

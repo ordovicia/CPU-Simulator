@@ -6,6 +6,7 @@ Simulator::State Simulator::halt(Instruction /* inst */)
 
     if (m_run) {
         std::ofstream ofs{"register.log"};
+        ofs << std::hex;
         for (auto r : m_state_iter->reg)
             ofs << r << ' ';
         std::cout << std::endl;

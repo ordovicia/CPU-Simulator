@@ -20,7 +20,7 @@ uint32_t bitset64(uint64_t inst, int begin, int end)
 uint32_t signExt5(uint32_t x)
 {
     if (x & (1 << 4))
-        return 0xffffffffu & x;
+        return (0x7ffffffu << 5) | x;
     else
         return x;
 }

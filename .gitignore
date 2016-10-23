@@ -27,6 +27,8 @@
 *.out
 *.app
 
+*.bin
+*.log
 build/
 generated/*
 !generated/.gitkeep

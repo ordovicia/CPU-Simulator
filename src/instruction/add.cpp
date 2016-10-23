@@ -7,7 +7,8 @@ Simulator::State Simulator::add(Instruction inst)
     auto op = decodeR(inst);
 
     new_state.pc += 4;
-    new_state.reg.at(op.rd) = m_state_iter->reg.at(op.rs) + m_state_iter->reg.at(op.rt);
+    new_state.reg.at(op.rd)
+        = m_state_iter->reg.at(op.rs) + m_state_iter->reg.at(op.rt);
 
     return new_state;
 }
