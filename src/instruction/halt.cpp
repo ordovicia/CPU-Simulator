@@ -9,10 +9,10 @@ Simulator::State Simulator::halt(Instruction /* inst */)
         ofs << std::hex;
         for (auto r : m_state_iter->reg)
             ofs << r << ' ';
-        std::cout << std::endl;
+        ofs << std::endl;
         for (auto r : m_state_iter->freg)
             ofs << r << ' ';
-        std::cout << std::endl;
+        ofs << std::endl;
         ofs.close();
     }
 
