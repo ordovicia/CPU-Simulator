@@ -5,7 +5,6 @@ insts = {
     1: 'ADD',
     2: 'ADDI',
     3: 'SUB',
-    60: 'HALT',
     4: 'LUI',
     5: 'SLL',
     6: 'SLLV',
@@ -39,6 +38,7 @@ insts = {
     34: 'JAL',
     35: 'JR',
     36: 'JALR',
+    60: 'HALT',
 }
 
 opcode_name = 'opcode.hpp'

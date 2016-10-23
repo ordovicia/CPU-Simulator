@@ -7,17 +7,19 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <functional>
+#include <string>
 #include "sized_deque.hpp"
 #include "opcode.hpp"
 
 class Simulator
 {
 public:
-    explicit Simulator(const std::string& binfile);
+    explicit Simulator(const std::string& binfile, bool run);
     void run();
 
 private:
     std::ifstream m_binfile;
+    const bool m_run;
 
     bool m_halt = false;
     std::unordered_set<uint32_t> m_breakpoints;

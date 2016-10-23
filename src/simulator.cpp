@@ -5,7 +5,7 @@
 #include "util.hpp"
 #include "simulator.hpp"
 
-Simulator::Simulator(const std::string& binfile)
+Simulator::Simulator(const std::string& binfile, bool run) : m_run(run)
 {
     m_binfile.open(binfile, std::ios::binary);
     if (m_binfile.fail()) {
@@ -31,7 +31,7 @@ void Simulator::run()
     bool run = false;
 
     while (true) {
-        if (not run or m_halt) {
+        if (not m_run and (not run or m_halt)) {
             // Console output
             erase();
             m_screen.update();
@@ -116,7 +116,8 @@ void Simulator::run()
             } catch (std::out_of_range e) {
                 FAIL("Program counter out of range\n" << e.what());
             }
-        }
+        } else if (m_run)
+            return;
     }
 }
 

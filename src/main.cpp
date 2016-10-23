@@ -1,5 +1,6 @@
 #include <iostream>
 #include <ncurses.h>
+#include <getopt.h>
 #include "util.hpp"
 #include "simulator.hpp"
 
@@ -11,6 +12,28 @@ int main(int argc, char** argv)
             return 1;
         }
 
+        int result;
+        bool run = false;
+        std::string binfile;
+        while ((result = getopt(argc, argv, "rf:")) != -1) {
+            switch (result) {
+            case 'r':
+                run = true;
+                break;
+            case 'f':
+                binfile = optarg;
+                break;
+            case '?':
+            default:
+                break;
+            }
+        }
+
+        if (binfile.empty()) {
+            std::cerr << "No binfile given" << std::endl;
+            return 1;
+        }
+
         // ncurses setting
         initscr();
         nocbreak();
@@ -19,7 +42,7 @@ int main(int argc, char** argv)
         init_pair(0, COLOR_WHITE, COLOR_BLACK);
         // bkgd(COLOR_PAIR(0));
 
-        Simulator sim{argv[1]};
+        Simulator sim{binfile, run};
         sim.run();
 
         endwin();
