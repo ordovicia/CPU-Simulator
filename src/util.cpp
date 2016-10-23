@@ -25,6 +25,14 @@ uint32_t signExt5(uint32_t x)
         return x;
 }
 
+uint32_t signExt8(uint32_t x)
+{
+    if (x & (1 << 7))
+        return (0xffffffu << 8) | x;
+    else
+        return x;
+}
+
 bool streq(const char* s1, const char* s2) { return strcmp(s1, s2) == 0; }
 bool streqn(const char* s1, const char* s2, int n)
 {

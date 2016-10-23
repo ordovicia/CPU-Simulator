@@ -28,6 +28,8 @@ int main()
 
     myassert(signExt5(0x0f) == 0x0f);
     myassert(signExt5(0x1f) == 0xffffffff);
+    myassert(signExt8(0x7f) == 0x7f);
+    myassert(signExt8(0xff) == 0xffffffff);
 
     return 0;
 }

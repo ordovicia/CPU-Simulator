@@ -16,11 +16,12 @@ uint32_t bitset(uint32_t inst, int begin, int end);
 uint32_t bitset64(uint64_t inst, int begin, int end);
 
 /*
- * Sign extention for 5bit
+ * Sign extention.
  * signExt5(01010) -> 0..00001010
  * signExt5(11010) -> 1..11111010
  */
 uint32_t signExt5(uint32_t x);
+uint32_t signExt8(uint32_t x);
 
 /*
  * Compare string.

@@ -48,9 +48,10 @@ private:
 
         uint32_t hi = 0;
         uint32_t lo = 0;
-
-        // TODO Memory
     };
+
+    static constexpr size_t MEMORY_SIZE = 1000000;
+    std::array<uint32_t, MEMORY_SIZE> m_memory = {{0}};
 
     // State history
     static constexpr size_t STATE_HIST_SIZE = 256;
