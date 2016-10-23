@@ -36,6 +36,7 @@ private:
 
     struct State {
         uint32_t pc = 0;
+        bool fpcond = false;
 
         /*
          * General purpose registers

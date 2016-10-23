@@ -50,6 +50,11 @@ insts = {
     46: 'MUL_S',
     47: 'DIV_S',
     50: 'MOV_S',
+    51: 'C_EQ_S',
+    52: 'C_LE_S',
+    53: 'C_LT_S',
+    54: 'BC1T',
+    55: 'BC1F',
     60: 'HALT',
 }
 

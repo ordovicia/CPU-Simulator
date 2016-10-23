@@ -260,8 +260,10 @@ void Simulator::printState() const
 
     m_screen.printBoarder('-');
 
-    printw("hi  = %08x | lo  = %08x | dynamic instruction cnt = %d\n",
-        m_state_iter->hi, m_state_iter->lo, m_dynamic_inst_cnt);
+    printw("hi  = %08x | lo  = %08x | fpcond     = %d | "
+           "dynamic instruction cnt = %d\n",
+        m_state_iter->hi, m_state_iter->lo, m_state_iter->fpcond,
+        m_dynamic_inst_cnt);
 
     m_screen.printBoarder('=', false);
     refresh();
