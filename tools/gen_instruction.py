@@ -43,6 +43,13 @@ insts = {
     39: 'LW',
     40: 'SB',
     41: 'SW',
+    42: 'ABS_S',
+    43: 'NEG_S',
+    44: 'ADD_S',
+    45: 'SUB_S',
+    46: 'MUL_S',
+    47: 'DIV_S',
+    50: 'MOV_S',
     60: 'HALT',
 }
 
