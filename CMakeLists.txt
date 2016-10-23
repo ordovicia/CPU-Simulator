@@ -36,6 +36,7 @@ else()
 endif()
 
 #add_subdirectory(tools)
+add_subdirectory(test)
 
 # Generate instruction file
 add_custom_target(gen_instruction
