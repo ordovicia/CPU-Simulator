@@ -29,6 +29,7 @@ private:
     std::vector<Instruction> m_codes;
 
     int64_t m_dynamic_inst_cnt = 0;
+    std::vector<int32_t> m_pc_called_cnt;
 
     // State
     static constexpr int REG_SIZE = 32;
@@ -110,7 +111,7 @@ private:
     std::unordered_map<OpCode,
         std::function<State(Instruction)>, OpCodeHash> m_inst_funcs;
     // Instruction called counter
-    std::unordered_map<OpCode, int64_t, OpCodeHash> m_inst_cnt;
+    std::unordered_map<OpCode, int32_t, OpCodeHash> m_inst_cnt;
     void initInstruction();
 
     static OpCode decodeOpCode(Instruction);

@@ -12,8 +12,14 @@ Simulator::State Simulator::halt(Instruction /* inst */)
         refresh();
 
         {
-            ofstream ofs{"instruction.log"};
+            ofstream ofs{"call_cnt.log"};
             ofs << m_dynamic_inst_cnt << endl;
+            for (size_t i = 0; i < m_pc_called_cnt.size(); i++)
+                ofs << 4 * i << ' ' << m_pc_called_cnt.at(i) << endl;
+        }
+
+        {
+            ofstream ofs{"instruction.log"};
             for (auto inst : m_inst_cnt)
                 ofs << static_cast<uint32_t>(inst.first) << ' '
                     << inst.second << endl;

@@ -17,11 +17,14 @@ Simulator::Simulator(const std::string& binfile, bool run) : m_run(run)
 
     constexpr size_t CODE_RESERVE_SIZE = 30000;
     m_codes.reserve(CODE_RESERVE_SIZE);
+    int32_t inst_cnt = 0;
     while (not m_binfile.eof()) {
         Instruction r;
         m_binfile.read(reinterpret_cast<char*>(&r), sizeof r);
         m_codes.emplace_back(r);
+        inst_cnt++;
     }
+    m_pc_called_cnt.resize(inst_cnt);
 
     m_state_hist.push(State{});
     m_state_iter = m_state_hist.deque.begin();
@@ -109,12 +112,14 @@ void Simulator::run()
 
         if (not m_halt) {  // next instruction
             try {
-                Instruction inst = m_codes.at(m_state_iter->pc / 4);  // fetch
+                auto pc = m_state_iter->pc / 4;
+                Instruction inst = m_codes.at(pc);  // fetch
                 auto opcode = decodeOpCode(inst);
                 auto new_state = exec(opcode, inst);
 
                 if (m_state_iter == std::prev(m_state_hist.deque.end())) {
                     m_state_iter = m_state_hist.push(new_state);
+                    m_pc_called_cnt.at(pc)++;
                     m_dynamic_inst_cnt++;
                 } else {
                     m_state_iter++;
