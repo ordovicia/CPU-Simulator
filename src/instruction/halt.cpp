@@ -34,7 +34,7 @@ Simulator::State Simulator::halt(Instruction /* inst */)
                 ofs << r << endl;
         }
 
-        {
+        if (m_output_memory) {
             ofstream ofs{"memory.log"};
             ofs << hex;
             for (auto m : m_memory)

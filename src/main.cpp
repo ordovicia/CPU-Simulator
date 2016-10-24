@@ -13,12 +13,16 @@ int main(int argc, char** argv)
         }
 
         int result;
-        bool run = false;
+        bool run = false, output_memory = false;
         std::string binfile;
-        while ((result = getopt(argc, argv, "rf:")) != -1) {
+
+        while ((result = getopt(argc, argv, "rmf:")) != -1) {
             switch (result) {
             case 'r':
                 run = true;
+                break;
+            case 'm':
+                output_memory = true;
                 break;
             case 'f':
                 binfile = optarg;
@@ -42,7 +46,7 @@ int main(int argc, char** argv)
         init_pair(0, COLOR_WHITE, COLOR_BLACK);
         // bkgd(COLOR_PAIR(0));
 
-        Simulator sim{binfile, run};
+        Simulator sim{binfile, run, output_memory};
         sim.run();
 
         endwin();

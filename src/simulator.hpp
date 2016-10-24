@@ -14,12 +14,14 @@
 class Simulator
 {
 public:
-    explicit Simulator(const std::string& binfile, bool run);
+    explicit Simulator(
+        const std::string& binfile, bool run, bool output_memory);
     void run();
 
 private:
     std::ifstream m_binfile;
     const bool m_run;
+    const bool m_output_memory;
 
     bool m_halt = false;
     std::unordered_set<uint32_t> m_breakpoints;
