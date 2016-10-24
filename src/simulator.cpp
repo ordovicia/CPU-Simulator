@@ -28,10 +28,18 @@ Simulator::Simulator(const std::string& binfile, bool run) : m_run(run)
 
 void Simulator::run()
 {
-    bool run = false;
+    bool running = false;
 
     while (true) {
-        if (not m_run and (not run or m_halt)) {
+        if (m_run) {
+            if (m_dynamic_inst_cnt % STATE_HIST_SIZE == 0) {
+                erase();
+                printw("running... "
+                       "PC = %d, Dynamic inst cnt = %d\n",
+                    m_state_iter->pc, m_dynamic_inst_cnt);
+                refresh();
+            }
+        } else if (not running or m_halt) {
             // Console output
             erase();
             m_screen.update();
@@ -46,10 +54,10 @@ void Simulator::run()
             getnstr(input, 16);
 
             if (streq(input, "run") or streq(input, "r")) {
-                run = true;
+                running = true;
             } else if (streq(input, "reset")) {
                 reset();
-                run = false;
+                running = false;
                 continue;
             } else if (streqn(input, "break", 5)) {
                 int b;
@@ -84,7 +92,7 @@ void Simulator::run()
                     m_state_iter--;
                 }
 
-                run = false;
+                running = false;
                 m_halt = false;
                 continue;
             } else if (streq(input, "quit") or streq(input, "q")) {
@@ -112,7 +120,7 @@ void Simulator::run()
                 }
 
                 if (m_breakpoints.find(m_state_iter->pc) != m_breakpoints.end())
-                    run = false;
+                    running = false;
             } catch (std::out_of_range e) {
                 FAIL("Program counter out of range\n" << e.what());
             }

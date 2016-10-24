@@ -1,3 +1,4 @@
+#include <ncurses.h>
 #include "simulator.hpp"
 
 Simulator::State Simulator::halt(Instruction /* inst */)
@@ -6,6 +7,9 @@ Simulator::State Simulator::halt(Instruction /* inst */)
 
     if (m_run) {
         using namespace std;
+
+        addstr("Outputting stat info... ");
+        refresh();
 
         {
             ofstream ofs{"instruction.log"};
@@ -30,6 +34,10 @@ Simulator::State Simulator::halt(Instruction /* inst */)
             for (auto m : m_memory)
                 ofs << m << endl;
         }
+
+        addstr("done!\n");
+        refresh();
+        getch();
     }
 
     return *m_state_iter;
