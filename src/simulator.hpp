@@ -109,10 +109,8 @@ private:
     // Function for each instruction
     std::unordered_map<OpCode,
         std::function<State(Instruction)>, OpCodeHash> m_inst_funcs;
-
     // Instruction called counter
     std::unordered_map<OpCode, int64_t, OpCodeHash> m_inst_cnt;
-
     void initInstruction();
 
     static OpCode decodeOpCode(Instruction);
@@ -121,6 +119,10 @@ private:
     static OperandR decodeR(Instruction);
     static OperandI decodeI(Instruction);
     static OperandJ decodeJ(Instruction);
+
+    static std::unordered_map<OpCode, std::string> m_mnemonic_table;
+    static void initDisassembler();
+    static std::string disasm(Instruction);
 
     static void printBitset(
         uint32_t bits, int begin, int end, bool endl = false);

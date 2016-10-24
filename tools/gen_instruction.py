@@ -1,4 +1,4 @@
-import os, subprocess, shutil
+import re, os, subprocess, shutil
 
 insts = {
     0: 'NOP',
@@ -67,6 +67,7 @@ insts = {
 opcode_name = 'opcode.hpp'
 hpp_name = 'instruction.hpp'
 cpp_name = 'init_inst.cpp'
+disasm_name = 'init_disasm.cpp'
 
 opcode_header = '''#pragma once
 
@@ -91,6 +92,12 @@ void Simulator::initInstruction()
 {
 '''
 
+disasm_header = '''#include "simulator.hpp"
+
+void Simulator::initDisassembler()
+{
+'''
+
 # opcode.hpp
 with open(opcode_name + '.tmp', 'w') as opcode_tmp:
     opcode_tmp.write(opcode_header)
@@ -108,14 +115,30 @@ with open(hpp_name + '.tmp', 'w') as hpp_tmp:
             cpp_tmp.write('    m_inst_cnt.emplace(OpCode::{}, 0);\n'.format(inst))
         cpp_tmp.write('}\n')
 
-# Detect diff
-if (not os.path.exists(opcode_name) or subprocess.call(['diff', opcode_name, opcode_name + '.tmp'])) \
-    or (not os.path.exists(hpp_name) or subprocess.call(['diff', hpp_name, hpp_name + '.tmp'])) \
-    or (not os.path.exists(cpp_name) or subprocess.call(['diff', cpp_name, cpp_name + '.tmp'])):
-    shutil.move(opcode_name + '.tmp', opcode_name)
-    shutil.move(hpp_name + '.tmp', hpp_name)
-    shutil.move(cpp_name + '.tmp', cpp_name)
+# disassembler
+def mneumonic(m):
+    m = m.lower()
+    m = re.sub(r'_$', '', m)
+    m = re.sub(r'_', '.', m)
+    return m
+
+with open(disasm_name + '.tmp', 'w') as disasm_tmp:
+    disasm_tmp.write(disasm_header)
+    for (n, c) in insts.items():
+        disasm_tmp.write('    m_mnemonic_table.emplace(OpCode::{}, "{}");\n'.format(c, mneumonic(c)))
+    disasm_tmp.write('}\n')
+
+# Detect diff and move/remove
+def diff(n):
+    return (not os.path.exists(n) or subprocess.call(['diff', n, n + '.tmp']))
+def mv(n):
+    shutil.move(n + '.tmp', n)
+def rm(n):
+    os.remove(n + '.tmp')
+names = [opcode_name, hpp_name, cpp_name, disasm_name]
+if any(diff(n) for n in names):
+    for n in names:
+        mv(n)
 else:
-    os.remove(opcode_name + '.tmp')
-    os.remove(hpp_name + '.tmp')
-    os.remove(cpp_name + '.tmp')
+    for n in names:
+        rm(n)
