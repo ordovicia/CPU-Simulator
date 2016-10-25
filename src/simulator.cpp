@@ -94,6 +94,10 @@ void Simulator::run()
                     getch();
                     continue;
                 } else {
+                    auto& mp = m_state_iter->memory_patch;
+                    if (mp.valid)
+                        m_memory.at(mp.idx) = mp.pre_val;
+
                     m_state_iter--;
                 }
 

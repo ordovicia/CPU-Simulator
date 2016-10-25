@@ -9,7 +9,9 @@ Simulator::State Simulator::sw(Instruction inst)
                                       + static_cast<int32_t>(op.immediate));
 
     new_state.pc += 4;
+    auto pre_mem = m_memory.at(addr);
     m_memory.at(addr) = op.rs;
+    new_state.memory_patch = {true, addr, pre_mem};
 
     return new_state;
 }

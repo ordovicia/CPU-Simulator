@@ -10,7 +10,9 @@ Simulator::State Simulator::swc1(Instruction inst)
                                       + static_cast<int32_t>(op.immediate));
 
     new_state.pc += 4;
+    auto pre_mem = m_memory.at(addr);
     m_memory.at(addr) = ftob(m_state_iter->freg.at(op.rt));
+    new_state.memory_patch = {true, addr, pre_mem};
 
     return new_state;
 }

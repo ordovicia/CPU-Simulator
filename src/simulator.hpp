@@ -34,6 +34,19 @@ private:
     std::vector<int32_t> m_pc_called_cnt;
 
     // State
+    static constexpr size_t MEMORY_SIZE = 1000000;
+    std::array<uint32_t, MEMORY_SIZE> m_memory = {{}};
+
+    struct MemoryPatch {
+        MemoryPatch() = default;
+        MemoryPatch(bool v, size_t i, uint32_t p)
+            : valid(v), idx(i), pre_val(p) {}
+
+        bool valid = false;
+        size_t idx;
+        uint32_t pre_val;
+    };
+
     static constexpr int REG_SIZE = 32;
     static constexpr int FREG_SIZE = 32;
 
@@ -52,10 +65,9 @@ private:
 
         uint32_t hi = 0;
         uint32_t lo = 0;
-    };
 
-    static constexpr size_t MEMORY_SIZE = 1000000;
-    std::array<uint32_t, MEMORY_SIZE> m_memory = {{}};
+        MemoryPatch memory_patch;
+    };
 
     // State history
     static constexpr size_t STATE_HIST_SIZE = 256;
