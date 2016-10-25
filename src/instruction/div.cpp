@@ -3,6 +3,7 @@
 Simulator::State Simulator::div(Instruction inst)
 {
     auto new_state = *m_state_iter;
+    new_state.memory_patch = MemoryPatch{};
 
     auto op = decodeR(inst);
 

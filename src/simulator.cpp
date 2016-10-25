@@ -85,13 +85,6 @@ void Simulator::run()
                 sscanf(input + 2, "%d", &b);
                 m_breakpoints.erase(b);
                 continue;
-            } else if (streqn(input, "pm", 2)) {
-                size_t idx;
-                sscanf(input + 2, "%lu", &idx);
-                printw("memory[%lu] = %d\n", idx, m_memory.at(idx));
-                refresh();
-                getch();
-                continue;
             } else if (streq(input, "step") or streq(input, "s")) {
                 // break;
             } else if (streq(input, "prev") or streq(input, "p")) {
@@ -101,7 +94,7 @@ void Simulator::run()
                     getch();
                     continue;
                 } else {
-                    auto& mp = m_state_iter->memory_patch;
+                    const auto& mp = m_state_iter->memory_patch;
                     if (mp.valid)
                         m_memory.at(mp.idx) = mp.pre_val;
 
@@ -110,6 +103,13 @@ void Simulator::run()
 
                 running = false;
                 m_halt = false;
+                continue;
+            } else if (streqn(input, "pm", 2)) {
+                size_t idx;
+                sscanf(input + 2, "%lu", &idx);
+                printw("memory[%lu] = %d\n", idx, m_memory.at(idx));
+                refresh();
+                getch();
                 continue;
             } else if (streq(input, "quit") or streq(input, "q")) {
                 return;

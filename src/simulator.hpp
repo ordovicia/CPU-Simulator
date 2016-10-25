@@ -66,7 +66,7 @@ private:
         uint32_t hi = 0;
         uint32_t lo = 0;
 
-        MemoryPatch memory_patch;
+        MemoryPatch memory_patch = {};
     };
 
     // State history

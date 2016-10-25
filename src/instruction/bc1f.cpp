@@ -3,6 +3,7 @@
 Simulator::State Simulator::bc1f(Instruction inst)
 {
     auto new_state = *m_state_iter;
+    new_state.memory_patch = MemoryPatch{};
 
     auto op = decodeJ(inst);
 
