@@ -43,9 +43,8 @@ $ ./simulator -f test.bin
 * (break|b) [int] -- 指定したプログラムカウンタにbreakpointをはります。
 * pb -- breakpointを表示します。
 * db [int] -- 指定したbreakpointを削除します。
+* pm [int] -- 指定したインデックスのメモリの状態を表示します。
 * step|s -- 命令をひとつ実行します。
 * prev|p -- ひとつ前の状態に戻ります。
 * quit|q -- 終了します。
 * help|h -- ヘルプを表示します。
-
-** 現在、メモリの状態には巻き戻しは効きません **
