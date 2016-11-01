@@ -1,4 +1,7 @@
-import re, os, subprocess, shutil
+import re
+import os
+import subprocess
+import shutil
 
 insts = {
     0: 'NOP',
@@ -68,6 +71,7 @@ opcode_name = 'opcode.hpp'
 hpp_name = 'instruction.hpp'
 cpp_name = 'init_inst.cpp'
 disasm_name = 'init_disasm.cpp'
+test_run_name = 'run.sh'
 
 opcode_header = '''#pragma once
 
@@ -98,6 +102,30 @@ void Simulator::initDisassembler()
 {
 '''
 
+test_run_header = '''#!/bin/sh
+
+set -e
+
+testdir=$PWD
+cd ..
+root=$PWD
+
+insts=(
+'''
+
+test_run_footer = '''
+)
+
+for inst in ${insts[@]}; do
+    cd $testdir
+    if [ -e $inst ]; then
+        cd $inst
+        python $root/tools/ascii2bin.py $inst.txt ${inst%.txt}.bin
+        $root/build/simulator -f $inst.bin -r
+    fi
+done
+'''
+
 # opcode.hpp
 with open(opcode_name + '.tmp', 'w') as opcode_tmp:
     opcode_tmp.write(opcode_header)
@@ -110,10 +138,14 @@ with open(hpp_name + '.tmp', 'w') as hpp_tmp:
     with open(cpp_name + '.tmp', 'w') as cpp_tmp:
         cpp_tmp.write(cpp_header)
         for inst in insts.values():
-            hpp_tmp.write('    State {}(Instruction);\n'.format(inst.lower(), ))
-            cpp_tmp.write('    m_inst_funcs.emplace(OpCode::{}, [this](Instruction inst) {{ return {}(inst); }});\n'.format(inst, inst.lower()))
-            cpp_tmp.write('    m_inst_cnt.emplace(OpCode::{}, 0);\n'.format(inst))
+            hpp_tmp.write(
+                '    State {}(Instruction);\n'.format(inst.lower(), ))
+            cpp_tmp.write('    m_inst_funcs.emplace(OpCode::{}, [this](Instruction inst) {{ return {}(inst); }});\n'.format(
+                inst, inst.lower()))
+            cpp_tmp.write(
+                '    m_inst_cnt.emplace(OpCode::{}, 0);\n'.format(inst))
         cpp_tmp.write('}\n')
+
 
 # disassembler
 def mneumonic(m):
@@ -125,16 +157,31 @@ def mneumonic(m):
 with open(disasm_name + '.tmp', 'w') as disasm_tmp:
     disasm_tmp.write(disasm_header)
     for (n, c) in insts.items():
-        disasm_tmp.write('    m_mnemonic_table.emplace(OpCode::{}, "{}");\n'.format(c, mneumonic(c)))
+        disasm_tmp.write(
+            '    m_mnemonic_table.emplace(OpCode::{}, "{}");\n'.format(c, mneumonic(c)))
     disasm_tmp.write('}\n')
+
+# tester
+with open(test_run_name, 'w') as run_tmp:
+    run_tmp.write(test_run_header)
+    for inst in insts.values():
+        run_tmp.write(inst.lower())
+        run_tmp.write(' ')
+    run_tmp.write(test_run_footer)
+
 
 # Detect diff and move/remove
 def diff(n):
     return (not os.path.exists(n) or subprocess.call(['diff', n, n + '.tmp']))
+
+
 def mv(n):
     shutil.move(n + '.tmp', n)
+
+
 def rm(n):
     os.remove(n + '.tmp')
+
 names = [opcode_name, hpp_name, cpp_name, disasm_name]
 if any(diff(n) for n in names):
     for n in names:
@@ -142,3 +189,5 @@ if any(diff(n) for n in names):
 else:
     for n in names:
         rm(n)
+os.chmod(test_run_name, 0o755)
+shutil.move(test_run_name, '../test/' + test_run_name)

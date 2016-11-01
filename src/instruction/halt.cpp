@@ -43,7 +43,7 @@ Simulator::State Simulator::halt(Instruction /* inst */)
 
         addstr("done!\n");
         refresh();
-        getch();
+        // getch();
     }
 
     return *m_state_iter;

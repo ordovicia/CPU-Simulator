@@ -32,3 +32,4 @@
 build/
 generated/*
 !generated/.gitkeep
+test/run.sh
