@@ -23,9 +23,6 @@ int main()
     myassert(bitset(0x00ff00ff, 16, 32) == 0x000000ff);
     myassert(bitset(0x00ff00ff, 24, 32) == 0x000000ff);
 
-    myassert(bitset64(0x00ff00ffff00ff00, 0, 32) == 0x00ff00ff);
-    myassert(bitset64(0x00ff00ffff00ff00, 32, 64) == 0xff00ff00);
-
     myassert(signExt5(0x0f) == 0x0f);
     myassert(signExt5(0x1f) == 0xffffffff);
     myassert(signExt8(0x7f) == 0x7f);

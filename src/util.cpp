@@ -9,14 +9,6 @@ uint32_t bitset(uint32_t inst, int begin, int end)
     return inst;
 }
 
-uint32_t bitset64(uint64_t inst, int begin, int end)
-{
-    int len = end - begin;
-    inst <<= begin;
-    inst >>= (64 - len);
-    return static_cast<uint32_t>(inst);
-}
-
 uint32_t signExt5(uint32_t x)
 {
     if (x & (1 << 4))

@@ -63,9 +63,6 @@ private:
         // Floating point registers
         std::array<float, FREG_SIZE> freg = {{}};
 
-        uint32_t hi = 0;
-        uint32_t lo = 0;
-
         MemoryPatch memory_patch = {};
     };
 
