@@ -1,4 +1,5 @@
 #include "simulator.hpp"
+#include "util.hpp"
 
 Simulator::State Simulator::addi(Instruction inst)
 {
@@ -8,7 +9,8 @@ Simulator::State Simulator::addi(Instruction inst)
     auto op = decodeI(inst);
 
     new_state.pc += 4;
-    new_state.reg.at(op.rt) = m_state_iter->reg.at(op.rs) + op.immediate;
+    new_state.reg.at(op.rt) = m_state_iter->reg.at(op.rs)
+                              + static_cast<int32_t>(signExt(op.immediate, 16));
 
     return new_state;
 }

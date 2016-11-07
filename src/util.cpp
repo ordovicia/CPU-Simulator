@@ -9,18 +9,10 @@ uint32_t bitset(uint32_t inst, int begin, int end)
     return inst;
 }
 
-uint32_t signExt5(uint32_t x)
+uint32_t signExt(uint32_t x, int bits)
 {
-    if (x & (1 << 4))
-        return (0x7ffffffu << 5) | x;
-    else
-        return x;
-}
-
-uint32_t signExt8(uint32_t x)
-{
-    if (x & (1 << 7))
-        return (0xffffffu << 8) | x;
+    if (x & (1 << (bits - 1)))
+        return (~0u << bits) | x;
     else
         return x;
 }

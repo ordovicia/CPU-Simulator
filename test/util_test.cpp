@@ -10,8 +10,6 @@ void myassert_impl(bool b, int l);
 
 int main()
 {
-    cout << hex;
-
     myassert(bitset(0x00ff00ff, 0, 8) == 0x00000000);
     myassert(bitset(0x00ff00ff, 0, 16) == 0x000000ff);
     myassert(bitset(0x00ff00ff, 0, 24) == 0x0000ff00);
@@ -23,10 +21,10 @@ int main()
     myassert(bitset(0x00ff00ff, 16, 32) == 0x000000ff);
     myassert(bitset(0x00ff00ff, 24, 32) == 0x000000ff);
 
-    myassert(signExt5(0x0f) == 0x0f);
-    myassert(signExt5(0x1f) == 0xffffffff);
-    myassert(signExt8(0x7f) == 0x7f);
-    myassert(signExt8(0xff) == 0xffffffff);
+    myassert(signExt(0x0f, 5) == 0x0f);
+    myassert(signExt(0x1f, 5) == 0xffffffff);
+    myassert(signExt(0x7f, 8) == 0x7f);
+    myassert(signExt(0xff, 8) == 0xffffffff);
 
     return 0;
 }

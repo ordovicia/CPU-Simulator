@@ -51,14 +51,14 @@ private:
     static constexpr int FREG_SIZE = 32;
 
     struct State {
-        uint32_t pc = 0;
+        int32_t pc = 0;
         bool fpcond = false;
 
         /*
          * General purpose registers
          * R0 is zero register
          */
-        std::array<uint32_t, REG_SIZE> reg = {{}};
+        std::array<int32_t, REG_SIZE> reg = {{}};
 
         // Floating point registers
         std::array<float, FREG_SIZE> freg = {{}};
