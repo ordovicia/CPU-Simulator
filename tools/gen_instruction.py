@@ -70,12 +70,16 @@ enum class OpCode : uint32_t {
 '''
 opcode_footer = '''};
 
-struct OpCodeHash {
-    size_t operator()(OpCode op) const noexcept
-    {
-        return std::hash<uint32_t>{}(static_cast<uint32_t>(op));
-    }
-};
+namespace std
+{
+    template <>
+    struct hash<OpCode> {
+        size_t operator()(const OpCode& op) const
+        {
+            return hash<uint32_t>{}(static_cast<uint32_t>(op));
+        }
+    };
+}
 '''
 
 cpp_header = '''#include "simulator.hpp"

@@ -119,10 +119,9 @@ private:
     };
 
     // Function for each instruction
-    std::unordered_map<OpCode,
-        std::function<State(Instruction)>, OpCodeHash> m_inst_funcs;
+    std::unordered_map<OpCode, std::function<State(Instruction)>> m_inst_funcs;
     // Instruction called counter
-    std::unordered_map<OpCode, int64_t, OpCodeHash> m_inst_cnt;
+    std::unordered_map<OpCode, int64_t> m_inst_cnt;
     void initInstruction();
 
     static OpCode decodeOpCode(Instruction);
