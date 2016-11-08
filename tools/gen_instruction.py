@@ -4,55 +4,55 @@ import subprocess
 import shutil
 
 insts = {
-    0: 'NOP',
-    1: 'ADD',
-    2: 'ADDI',
-    3: 'SUB',
-    4: 'LUI',
-    5: 'SLL',
-    7: 'SRA',
-    9: 'SRL',
-    11: 'AND_',
-    12: 'ANDI',
-    13: 'OR_',
-    14: 'ORI',
-    15: 'XOR_',
-    16: 'XORI',
-    17: 'NOR',
-    18: 'DIV',
-    20: 'MULT',
-    26: 'BEQ',
-    27: 'BGEZ',
-    28: 'BGTZ',
-    29: 'BLEZ',
-    30: 'BLTZ',
-    31: 'BGEZAL',
-    32: 'BLTZAL',
-    33: 'J',
-    34: 'JAL',
-    35: 'JR',
-    36: 'JALR',
-    39: 'LW',
-    41: 'SW',
-    42: 'ABS_S',
-    43: 'NEG_S',
-    44: 'ADD_S',
-    45: 'SUB_S',
-    46: 'MUL_S',
-    47: 'DIV_S',
-    48: 'CVT_S_W',
-    49: 'CVT_W_S',
-    50: 'MOV_S',
-    51: 'C_EQ_S',
-    52: 'C_LE_S',
-    53: 'C_LT_S',
-    54: 'BC1T',
-    55: 'BC1F',
-    56: 'LWC1',
-    57:	'SWC1',
-    58:	'MTC1',
-    59:	'MFC1',
-    60: 'HALT',
+    0: ('NOP', 'N'),
+    1: ('ADD', 'R'),
+    2: ('ADDI', 'I'),
+    3: ('SUB', 'R'),
+    4: ('LUI', 'I'),
+    5: ('SLL', 'R'),
+    7: ('SRA', 'R'),
+    9: ('SRL', 'R'),
+    11: ('AND_', 'R'),
+    12: ('ANDI', 'I'),
+    13: ('OR_', 'R'),
+    14: ('ORI', 'I'),
+    15: ('XOR_', 'R'),
+    16: ('XORI', 'I'),
+    17: ('NOR', 'R'),
+    18: ('DIV', 'R'),
+    20: ('MULT', 'R'),
+    26: ('BEQ', 'I'),
+    27: ('BGEZ', 'I'),
+    28: ('BGTZ', 'I'),
+    29: ('BLEZ', 'I'),
+    30: ('BLTZ', 'I'),
+    31: ('BGEZAL', 'I'),
+    32: ('BLTZAL', 'I'),
+    33: ('J', 'J'),
+    34: ('JAL', 'J'),
+    35: ('JR', 'R'),
+    36: ('JALR', 'R'),
+    39: ('LW', 'I'),
+    41: ('SW', 'I'),
+    42: ('ABS_S', 'R'),
+    43: ('NEG_S', 'R'),
+    44: ('ADD_S', 'R'),
+    45: ('SUB_S', 'R'),
+    46: ('MUL_S', 'R'),
+    47: ('DIV_S', 'R'),
+    48: ('CVT_S_W', 'R'),
+    49: ('CVT_W_S', 'R'),
+    50: ('MOV_S', 'R'),
+    51: ('C_EQ_S', 'R'),
+    52: ('C_LE_S', 'R'),
+    53: ('C_LT_S', 'R'),
+    54: ('BC1T', 'J'),
+    55: ('BC1F', 'J'),
+    56: ('LWC1', 'I'),
+    57: ('SWC1', 'I'),
+    58: ('MTC1', 'R'),
+    59: ('MFC1', 'R'),
+    60: ('HALT', 'N'),
 }
 
 opcode_name = 'opcode.hpp'
@@ -122,18 +122,19 @@ done
 with open(opcode_name + '.tmp', 'w') as opcode_tmp:
     opcode_tmp.write(opcode_header)
     for (n, c) in insts.items():
-        opcode_tmp.write('    {} = {},\n'.format(c, n))
+        opcode_tmp.write('    {} = {},\n'.format(c[0], n))
     opcode_tmp.write(opcode_footer)
 
 # instruction.hpp and init_inst.cpp
 with open(hpp_name + '.tmp', 'w') as hpp_tmp:
     with open(cpp_name + '.tmp', 'w') as cpp_tmp:
         cpp_tmp.write(cpp_header)
-        for inst in insts.values():
+        for inst_ in insts.values():
+            inst = inst_[0]
             hpp_tmp.write(
                 '    State {}(Instruction);\n'.format(inst.lower(), ))
-            cpp_tmp.write('    m_inst_funcs.emplace(OpCode::{}, [this](Instruction inst) {{ return {}(inst); }});\n'.format(
-                inst, inst.lower()))
+            cpp_tmp.write('    m_inst_funcs.emplace(OpCode::{}, [this](Instruction inst) {{ return {}(inst); }});\n'
+                          .format(inst, inst.lower()))
             cpp_tmp.write(
                 '    m_inst_cnt.emplace(OpCode::{}, 0);\n'.format(inst))
         cpp_tmp.write('}\n')
@@ -150,14 +151,15 @@ with open(disasm_name + '.tmp', 'w') as disasm_tmp:
     disasm_tmp.write(disasm_header)
     for (n, c) in insts.items():
         disasm_tmp.write(
-            '    m_mnemonic_table.emplace(OpCode::{}, "{}");\n'.format(c, mneumonic(c)))
+            '    m_mnemonic_table.emplace(OpCode::{}, std::make_pair("{}", OperandType::{}));\n'
+            .format(c[0], mneumonic(c[0]), c[1]))
     disasm_tmp.write('}\n')
 
 # tester
 with open(test_run_name, 'w') as run_tmp:
     run_tmp.write(test_run_header)
     for inst in insts.values():
-        run_tmp.write(inst.lower())
+        run_tmp.write(inst[0].lower())
         run_tmp.write(' ')
     run_tmp.write(test_run_footer)
 

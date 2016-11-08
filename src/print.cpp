@@ -118,7 +118,7 @@ void Simulator::printCode() const
         printw("%6d | ", c * 4);
         auto code = m_codes.at(c);
         printBitset(code, 0, 32);
-        printw(" | %s\n", disasm(code).c_str());
+        disasm(code);
     }
 
     m_screen.printBoarder('=', false);

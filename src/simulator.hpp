@@ -75,6 +75,13 @@ private:
     void reset();
 
     // Operand
+    enum class OperandType {
+        R,
+        I,
+        J,
+        N,  // do not care
+    };
+
     /*
      * Type R:
      * -----------------------------------------
@@ -131,8 +138,10 @@ private:
     static OperandI decodeI(Instruction);
     static OperandJ decodeJ(Instruction);
 
-    static std::unordered_map<OpCode, std::string> m_mnemonic_table;
+    static std::unordered_map<OpCode,
+        std::pair<std::string, OperandType>> m_mnemonic_table;
     static void initDisassembler();
+
     static std::string disasm(Instruction);
 
     static void printBitset(

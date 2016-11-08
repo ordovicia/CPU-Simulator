@@ -3,7 +3,8 @@
 #include "util.hpp"
 #include "simulator.hpp"
 
-std::unordered_map<OpCode, std::string> Simulator::m_mnemonic_table;
+std::unordered_map<OpCode,
+    std::pair<std::string, Simulator::OperandType>> Simulator::m_mnemonic_table;
 
 Simulator::Simulator(const std::string& binfile, bool run, bool output_memory)
     : m_run(run), m_output_memory(output_memory)
@@ -198,10 +199,4 @@ Simulator::OperandJ Simulator::decodeJ(Instruction inst)
     return OperandJ{
         bitset(inst, 6, 11),
         bitset(inst, 11, 32)};
-}
-
-std::string Simulator::disasm(Simulator::Instruction inst)
-{
-    auto opcode = decodeOpCode(inst);
-    return m_mnemonic_table.at(opcode);
 }
