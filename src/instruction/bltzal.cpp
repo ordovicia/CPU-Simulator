@@ -1,4 +1,5 @@
 #include "simulator.hpp"
+#include "util.hpp"
 
 Simulator::State Simulator::bltzal(Instruction inst)
 {
@@ -9,7 +10,7 @@ Simulator::State Simulator::bltzal(Instruction inst)
 
     if (rs < 0) {
         new_state.reg.at(31) = m_state_iter->pc + 4;
-        new_state.pc += static_cast<int32_t>(op.immediate << 2);
+        new_state.pc += static_cast<int32_t>(signExt(op.immediate, 16)) << 2;
     } else
         new_state.pc += 4;
 

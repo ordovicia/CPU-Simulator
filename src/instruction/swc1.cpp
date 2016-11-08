@@ -7,8 +7,9 @@ Simulator::State Simulator::swc1(Instruction inst)
     new_state.memory_patch = MemoryPatch{};
 
     auto op = decodeI(inst);
-    auto addr = static_cast<uint32_t>(m_state_iter->reg.at(op.rs)
-                                      + static_cast<int32_t>(op.immediate)) / 4;
+    auto addr = static_cast<uint32_t>(
+                    m_state_iter->reg.at(op.rs)
+                    + static_cast<int32_t>(signExt(op.immediate, 16))) / 4;
 
     new_state.pc += 4;
     auto pre_mem = m_memory.at(addr);
