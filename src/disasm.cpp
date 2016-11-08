@@ -1,35 +1,43 @@
-#include <ncurses.h>
+#include <sstream>
+#include <iomanip>
 #include "simulator.hpp"
 #include "util.hpp"
 
 std::string Simulator::disasm(Simulator::Instruction inst)
 {
     auto op = m_mnemonic_table.at(decodeOpCode(inst));
-    auto mnemonic = op.first.c_str();
+
+    std::ostringstream oss;
+    oss << " | " << std::setw(7) << op.first << ' ';
 
     switch (op.second) {
     case OperandType::R: {
         auto opr = decodeR(inst);
-        printw(" | %7s %d %d %d %d\n",
-            mnemonic, opr.rs, opr.rt, opr.rd, opr.shamt);
+        oss << 'r' << std::setw(2) << std::left << opr.rs
+            << " r" << std::setw(2) << std::left << opr.rt
+            << " r" << std::setw(2) << std::left << opr.rd
+            << ' ' << opr.shamt;
         break;
     }
     case OperandType::I: {
         auto opr = decodeI(inst);
-        printw(" | %7s %d %d %d (%d)\n",
-            mnemonic, opr.rs, opr.rt, opr.immediate,
-            static_cast<int32_t>(signExt(opr.immediate, 16)));
+        auto imm = static_cast<int32_t>(signExt(opr.immediate, 16));
+        oss << 'r' << std::setw(2) << std::left << opr.rs
+            << " r" << std::setw(2) << std::left << opr.rt << ' ';
+        if (imm < 0)
+            oss << imm;
+        else
+            oss << opr.immediate;
         break;
     }
     case OperandType::J: {
         auto opr = decodeJ(inst);
-        printw(" | %7s %d\n", mnemonic, opr.addr);
+        oss << opr.addr;
         break;
     }
     default:
-        addstr("\n");
         break;
     }
 
-    return mnemonic;
+    return oss.str();
 }
