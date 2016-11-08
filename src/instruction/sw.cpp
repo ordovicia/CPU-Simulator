@@ -13,7 +13,7 @@ Simulator::State Simulator::sw(Instruction inst)
 
     new_state.pc += 4;
     auto pre_mem = m_memory.at(addr);
-    m_memory.at(addr) = op.rs;
+    m_memory.at(addr) = m_state_iter->reg.at(op.rs);
     new_state.memory_patch = {true, addr, pre_mem};
 
     return new_state;
