@@ -7,8 +7,8 @@ Simulator::State Simulator::lwc1(Instruction inst)
     new_state.memory_patch = MemoryPatch{};
 
     auto op = decodeI(inst);
-    auto addr = m_state_iter->reg.at(op.rs)
-                + static_cast<int32_t>(op.immediate);
+    auto addr = static_cast<uint32_t>(m_state_iter->reg.at(op.rs)
+                                      + static_cast<int32_t>(op.immediate)) / 4;
 
     new_state.pc += 4;
     new_state.freg.at(op.rt) = btof(m_memory.at(addr));

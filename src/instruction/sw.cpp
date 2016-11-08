@@ -1,4 +1,5 @@
 #include "simulator.hpp"
+#include "util.hpp"
 
 Simulator::State Simulator::sw(Instruction inst)
 {
@@ -6,8 +7,9 @@ Simulator::State Simulator::sw(Instruction inst)
     new_state.memory_patch = MemoryPatch{};
 
     auto op = decodeI(inst);
-    auto addr = static_cast<uint32_t>(m_state_iter->reg.at(op.rt)
-                                      + static_cast<int32_t>(op.immediate));
+    auto addr = static_cast<uint32_t>(
+                    m_state_iter->reg.at(op.rt)
+                    + static_cast<int32_t>(signExt(op.immediate, 16))) / 4;
 
     new_state.pc += 4;
     auto pre_mem = m_memory.at(addr);

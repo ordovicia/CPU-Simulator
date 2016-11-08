@@ -147,6 +147,7 @@ void Simulator::printHelp()
     PRINT_CMD_DESC("(break|b) [int]", ": set breakpoint, ");
     PRINT_CMD_DESC("pb", ": show breakpoints, ");
     PRINT_CMD_DESC("db [int]", ": delete breakpoint\n");
+    PRINT_CMD_DESC("pm [int]", ": show memory\n");
     PRINT_CMD_DESC("step|s", ": next instruction, ");
     PRINT_CMD_DESC("prev|p", ": rewind to previous instruction\n");
     PRINT_CMD_DESC("quit|q, help|h\n", "");

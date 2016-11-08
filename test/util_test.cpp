@@ -25,6 +25,7 @@ int main()
     myassert(signExt(0x1f, 5) == 0xffffffff);
     myassert(signExt(0x7f, 8) == 0x7f);
     myassert(signExt(0xff, 8) == 0xffffffff);
+    myassert(signExt(0xfff8, 16) == 0xfffffff8);
 
     return 0;
 }
