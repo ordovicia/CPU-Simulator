@@ -53,6 +53,7 @@ insts = {
     58: ('MTC1', 'R'),
     59: ('MFC1', 'R'),
     60: ('HALT', 'N'),
+    63: ('ASRT', 'I'),
 }
 
 opcode_name = 'opcode.hpp'
