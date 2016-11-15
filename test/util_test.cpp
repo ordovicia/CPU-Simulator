@@ -3,10 +3,11 @@
 
 using namespace std;
 
-void myassert_impl(bool b, int l);
-
-#define myassert(b) \
-    myassert_impl((b), __LINE__)
+#define myassert(b)                                        \
+    if (not(b)) {                                          \
+        cerr << "Assertion failed @ " << __LINE__ << endl; \
+        return 1;                                          \
+    }
 
 int main()
 {
@@ -27,12 +28,7 @@ int main()
     myassert(signExt(0xff, 8) == 0xffffffff);
     myassert(signExt(0xfff8, 16) == 0xfffffff8);
 
-    return 0;
-}
+    cerr << "All test passed 🍣" << endl;
 
-void myassert_impl(bool b, int l)
-{
-    if (b)
-        return;
-    cerr << "Assertion failed @ " << l << endl;
+    return 0;
 }

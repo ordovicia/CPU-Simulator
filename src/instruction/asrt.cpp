@@ -12,9 +12,9 @@ Simulator::State Simulator::asrt(Instruction inst)
 
     if (m_state_iter->reg.at(op.rs) != expected) {
         addstr("Assertion failed.\n");
-        printw("reg[%d] expected ", op.rs);
+        printw("$r%-2d expected ", op.rs);
         printBitset(expected);
-        addstr("\n       actually ");
+        addstr("\n     actually ");
         printBitset(m_state_iter->reg.at(static_cast<uint32_t>(op.rs)));
         refresh();
         getch();
