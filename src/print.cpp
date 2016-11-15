@@ -117,7 +117,7 @@ void Simulator::printCode() const
 
         printw("%6d | ", c * 4);
         auto code = m_codes.at(c);
-        printBitset(code, 0, 32);
+        printBitset(code);
 
         auto asm_ = disasm(code);
         asm_.resize(m_screen.width - 42);

@@ -145,7 +145,7 @@ private:
     static std::string disasm(Instruction);
 
     static void printBitset(
-        uint32_t bits, int begin, int end, bool endl = false);
+        uint32_t bits, int begin = 0, int end = 32, bool endl = false);
 
     struct Screen {
         int width = 0, height = 0;

@@ -9,7 +9,11 @@ Simulator::State Simulator::asrt(Instruction inst)
     auto op = decodeI(inst);
 
     if (m_state_iter->reg.at(op.rs) != static_cast<int32_t>(op.immediate)) {
-        printw("Assertion failed\n");
+        addstr("Assertion failed.\n");
+        printw("reg[%d] expected ", op.rs);
+        printBitset(op.immediate);
+        addstr("\n       actually ");
+        printBitset(m_state_iter->reg.at(static_cast<uint32_t>(op.rs)));
         refresh();
         getch();
 

@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import re
 import os
 import subprocess
@@ -115,6 +118,7 @@ for inst in ${insts[@]}; do
         cd $inst
         python $root/tools/ascii2bin.py $inst.txt ${inst%.txt}.bin
         $root/build/simulator -f $inst.bin -r
+        echo $inst " passed 🍣"
     fi
 done
 '''
