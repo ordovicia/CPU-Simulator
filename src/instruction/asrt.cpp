@@ -1,4 +1,5 @@
 #include "simulator.hpp"
+#include "util.hpp"
 #include <ncurses.h>
 
 Simulator::State Simulator::asrt(Instruction inst)
@@ -7,11 +8,12 @@ Simulator::State Simulator::asrt(Instruction inst)
     new_state.memory_patch = MemoryPatch{};
 
     auto op = decodeI(inst);
+    auto expected = static_cast<int32_t>(signExt(op.immediate, 16));
 
-    if (m_state_iter->reg.at(op.rs) != static_cast<int32_t>(op.immediate)) {
+    if (m_state_iter->reg.at(op.rs) != expected) {
         addstr("Assertion failed.\n");
         printw("reg[%d] expected ", op.rs);
-        printBitset(op.immediate);
+        printBitset(expected);
         addstr("\n       actually ");
         printBitset(m_state_iter->reg.at(static_cast<uint32_t>(op.rs)));
         refresh();

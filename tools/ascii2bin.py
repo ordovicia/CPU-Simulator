@@ -24,18 +24,19 @@ Example input:
     111100 00000 00000 00000 00000 000000   # halt
 """
 
-import sys, struct
+import sys
+import struct
 
 if len(sys.argv) != 3:
-    print('Usage: {} [input ascii file] [output binary file]'.format(sys.argv[0], ))
-    exit(1)
+    sys.exit('Usage: {} [input ascii file] [output binary file]'
+             .format(sys.argv[0], ))
 
 fin = open(sys.argv[1], 'r')
 fout = open(sys.argv[2], 'wb')
 
+
 def invalid_line(i, l):
-    print('Invalid line\n{}: {}'.format(i, l))
-    exit(1)
+    sys.exit('Invalid line\n{}: "{}"'.format(i, l))
 
 for (i, l) in enumerate(fin.readlines()):
     code = 0
@@ -52,9 +53,9 @@ for (i, l) in enumerate(fin.readlines()):
             continue
         else:
             invalid_line(i, l)
-        # print(c, end = "")
         cnt += 1
+    if cnt == 0:
+        continue;
     if cnt != 32:
         invalid_line(i, l)
-    # print("")
     fout.write(struct.pack('I', code))
