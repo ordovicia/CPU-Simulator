@@ -90,7 +90,7 @@ void Simulator::run()
                 // break;
             } else if (streq(input, "prev") or streq(input, "p")) {
                 if (m_state_iter == m_state_hist.deque.begin()) {
-                    addstr("Error: Out of saved history");
+                    addstr("# Error. Out of saved history");
                     refresh();
                     getch();
                     continue;
@@ -141,7 +141,7 @@ void Simulator::run()
                 if (m_breakpoints.find(m_state_iter->pc) != m_breakpoints.end())
                     running = false;
             } catch (std::out_of_range e) {
-                FAIL("Program counter out of range\n" << e.what());
+                FAIL("# Program counter out of range\n" << e.what());
             }
         } else if (m_run)
             return;
@@ -172,7 +172,7 @@ Simulator::State Simulator::exec(OpCode opcode, Instruction inst)
         m_inst_cnt.at(opcode)++;
         return (m_inst_funcs.at(opcode))(inst);
     } catch (std::out_of_range e) {
-        FAIL("Invalid instruction code\n" << e.what());
+        FAIL("# Invalid instruction code\n" << e.what());
     }
 }
 

@@ -117,8 +117,9 @@ for inst in ${insts[@]}; do
     if [ -e $inst ]; then
         cd $inst
         python $root/tools/ascii2bin.py $inst.txt ${inst%.txt}.bin
+        echo "testing" $inst "..."
         $root/build/simulator -f $inst.bin -r
-        echo $inst "passed 🍣"
+        echo "passed 🍣"
     fi
 done
 '''

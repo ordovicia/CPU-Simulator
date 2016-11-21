@@ -4,6 +4,8 @@
 #include "util.hpp"
 #include "simulator.hpp"
 
+void endwin_() { endwin(); }
+
 int main(int argc, char** argv)
 {
     try {
@@ -34,8 +36,7 @@ int main(int argc, char** argv)
         }
 
         if (binfile.empty()) {
-            std::cerr << "No binfile given" << std::endl;
-            return 1;
+            FAIL("# No binfile given");
         }
 
         // ncurses setting
@@ -44,17 +45,18 @@ int main(int argc, char** argv)
         echo();
         start_color();
         init_pair(0, COLOR_WHITE, COLOR_BLACK);
-        // bkgd(COLOR_PAIR(0));
+
+        std::atexit(endwin_);
 
         Simulator sim{binfile, run, output_memory};
         sim.run();
 
-        endwin();
+        return 0;
     } catch (const std::exception& e) {
         FAIL(e.what());
     } catch (...) {
-        FAIL("Unknown exception");
+        FAIL("# Unknown exception");
     }
 
-    return 0;
+    return 1;
 }
