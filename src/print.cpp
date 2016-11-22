@@ -90,7 +90,7 @@ void Simulator::printState() const
 
     m_screen.printBoarder('-');
 
-    printw("fpcond     = %d | dynamic instruction cnt = %d\n",
+    printw("fpcond     = %d | dynamic inst cnt = %d\n",
         m_state_iter->fpcond, m_dynamic_inst_cnt);
 
     m_screen.printBoarder('=', false);
