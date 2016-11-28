@@ -46,11 +46,6 @@ insts = {
     48: ('CVT_S_W', 'R'),
     49: ('CVT_W_S', 'R'),
     50: ('MOV_S', 'R'),
-    51: ('C_EQ_S', 'R'),
-    52: ('C_LE_S', 'R'),
-    53: ('C_LT_S', 'R'),
-    54: ('BC1T', 'J'),
-    55: ('BC1F', 'J'),
     56: ('LWC1', 'I'),
     57: ('SWC1', 'I'),
     58: ('MTC1', 'R'),
@@ -119,7 +114,7 @@ for inst in ${insts[@]}; do
         python $root/tools/ascii2bin.py $inst.txt ${inst%.txt}.bin
         echo "testing" $inst "..."
         $root/build/simulator -f $inst.bin -r
-        echo "passed 🍣"
+        echo "passed"
     fi
 done
 '''
