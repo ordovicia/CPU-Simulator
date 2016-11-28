@@ -35,16 +35,16 @@ private:
 
     // State
     static constexpr size_t MEMORY_SIZE = 1000000;
-    std::array<uint32_t, MEMORY_SIZE> m_memory = {{}};
+    std::array<int32_t, MEMORY_SIZE> m_memory = {{}};
 
     struct MemoryPatch {
         MemoryPatch() = default;
-        MemoryPatch(bool v, size_t i, uint32_t p)
+        MemoryPatch(bool v, size_t i, int32_t p)
             : valid(v), idx(i), pre_val(p) {}
 
         bool valid = false;
         size_t idx;
-        uint32_t pre_val;
+        int32_t pre_val;
     };
 
     static constexpr int REG_SIZE = 32;

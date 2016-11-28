@@ -1,14 +1,13 @@
 #include "simulator.hpp"
 #include "util.hpp"
 
-Simulator::State Simulator::sw(Instruction inst)
+Simulator::State Simulator::swo(Instruction inst)
 {
     auto new_state = *m_state_iter;
     new_state.memory_patch = MemoryPatch{};
 
-    auto op = decodeI(inst);
-    size_t addr = (m_state_iter->reg.at(op.rt)
-                      + static_cast<int32_t>(signExt(op.immediate, 16))) / 4;
+    auto op = decodeR(inst);
+    size_t addr = (op.rt + op.rd) / 4;
 
     new_state.pc += 4;
     auto pre_mem = m_memory.at(addr);
