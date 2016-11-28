@@ -6,13 +6,26 @@
 std::unordered_map<OpCode,
     std::pair<std::string, Simulator::OperandType>> Simulator::m_mnemonic_table;
 
-Simulator::Simulator(const std::string& binfile, bool run, bool output_memory)
+Simulator::Simulator(
+    const std::string& binfile,
+    const std::string& infile,
+    bool run,
+    bool output_memory)
     : m_run(run), m_output_memory(output_memory)
 {
     m_binfile.open(binfile, std::ios::binary);
-    if (m_binfile.fail()) {
+    if (m_binfile.fail())
         throw std::runtime_error{"File " + binfile + " couldn't be opened"};
+
+    if (not infile.empty()) {
+        m_infile.open(infile);
+        if (m_infile.fail())
+            throw std::runtime_error{"File " + infile + " couldn't be opened"};
     }
+
+    m_outfile.open("out.log", std::ios::out);
+    if (m_outfile.fail())
+        throw std::runtime_error{"File out.log couldn't be opened for writing"};
 
     initInstruction();
     initDisassembler();

@@ -17,8 +17,9 @@ int main(int argc, char** argv)
         int result;
         bool run = false, output_memory = false;
         std::string binfile;
+        std::string infile;
 
-        while ((result = getopt(argc, argv, "rmf:")) != -1) {
+        while ((result = getopt(argc, argv, "rmf:i:")) != -1) {
             switch (result) {
             case 'r':
                 run = true;
@@ -29,15 +30,17 @@ int main(int argc, char** argv)
             case 'f':
                 binfile = optarg;
                 break;
+            case 'i':
+                infile = optarg;
+                break;
             case '?':
             default:
                 break;
             }
         }
 
-        if (binfile.empty()) {
+        if (binfile.empty())
             FAIL("# No binfile given");
-        }
 
         // ncurses setting
         initscr();
@@ -48,13 +51,15 @@ int main(int argc, char** argv)
 
         std::atexit(endwin_);
 
-        Simulator sim{binfile, run, output_memory};
+        Simulator sim{binfile, infile, run, output_memory};
         sim.run();
 
         return 0;
     } catch (const std::exception& e) {
+        endwin();
         FAIL(e.what());
     } catch (...) {
+        endwin();
         FAIL("# Unknown exception");
     }
 

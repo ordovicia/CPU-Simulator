@@ -53,6 +53,8 @@ insts = {
     58: ('MTC1', 'R'),
     59: ('MFC1', 'R'),
     60: ('HALT', 'N'),
+    61: ('IN', 'R'),
+    62: ('OUT', 'R'),
     63: ('ASRT', 'I'),
 }
 
@@ -115,7 +117,7 @@ for inst in ${insts[@]}; do
         cd $inst
         python $root/tools/ascii2bin.py $inst.txt ${inst%.txt}.bin
         echo "testing" $inst "..."
-        $root/build/simulator -f $inst.bin -r
+        $root/build/simulator -f $inst.bin -i $testdir/input.txt -r
         echo "passed"
     fi
 done

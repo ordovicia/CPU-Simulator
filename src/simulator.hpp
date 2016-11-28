@@ -15,7 +15,11 @@ class Simulator
 {
 public:
     explicit Simulator(
-        const std::string& binfile, bool run, bool output_memory);
+        const std::string& binfile,
+        const std::string& infile,
+        bool run,
+        bool output_memory);
+
     void run();
 
 private:
@@ -25,6 +29,9 @@ private:
 
     bool m_halt = false;
     std::unordered_set<uint32_t> m_breakpoints;
+
+    std::ifstream m_infile;
+    std::ofstream m_outfile;
 
     // Instruction
     using Instruction = uint32_t;  // 32bit Instruction code

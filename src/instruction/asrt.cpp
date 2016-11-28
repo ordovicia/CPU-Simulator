@@ -19,7 +19,6 @@ Simulator::State Simulator::asrt(Instruction inst)
         refresh();
         getch();
 
-        endwin();
         std::exit(1);
     }
 

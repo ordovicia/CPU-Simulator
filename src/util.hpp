@@ -2,9 +2,11 @@
 
 #include <cstdint>
 
-#define FAIL(msg)                  \
-    std::cerr << msg << std::endl; \
-    std::exit(1);
+#define FAIL(msg)                      \
+    do {                               \
+        std::cerr << msg << std::endl; \
+        std::exit(1);                  \
+    } while (0)
 
 /*
  * Extract bit string.
