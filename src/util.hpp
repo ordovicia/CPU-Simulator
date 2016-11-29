@@ -2,8 +2,12 @@
 
 #include <cstdint>
 
+extern bool g_ncurses;
+
 #define FAIL(msg)                      \
     do {                               \
+        if (g_ncurses)                 \
+            endwin();                  \
         std::cerr << msg << std::endl; \
         std::exit(1);                  \
     } while (0)

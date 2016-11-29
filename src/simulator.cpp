@@ -11,6 +11,9 @@ Simulator::Simulator(
     bool run, bool output_memory)
     : m_binfile_name(binfile), m_run(run), m_output_memory(output_memory)
 {
+    initInstruction();
+    initDisassembler();
+
     m_binfile.open(binfile, std::ios::binary);
     if (m_binfile.fail())
         throw std::runtime_error{"File " + binfile + " couldn't be opened"};
@@ -24,9 +27,6 @@ Simulator::Simulator(
     m_outfile.open("out.log", std::ios::out);
     if (m_outfile.fail())
         throw std::runtime_error{"File out.log couldn't be opened for writing"};
-
-    initInstruction();
-    initDisassembler();
 
     constexpr size_t CODE_RESERVE_SIZE = 30000;
     m_codes.reserve(CODE_RESERVE_SIZE);

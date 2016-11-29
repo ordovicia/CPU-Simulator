@@ -4,6 +4,7 @@
 #include "util.hpp"
 #include "simulator.hpp"
 
+bool g_ncurses = false;
 void endwin_() { endwin(); }
 
 int main(int argc, char** argv)
@@ -48,6 +49,7 @@ int main(int argc, char** argv)
         echo();
         start_color();
         init_pair(0, COLOR_WHITE, COLOR_BLACK);
+        g_ncurses = true;
 
         std::atexit(endwin_);
 
@@ -56,10 +58,8 @@ int main(int argc, char** argv)
 
         return 0;
     } catch (const std::exception& e) {
-        endwin();
         FAIL(e.what());
     } catch (...) {
-        endwin();
         FAIL("# Unknown exception");
     }
 
