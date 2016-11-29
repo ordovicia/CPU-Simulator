@@ -51,9 +51,10 @@ void Simulator::run()
         if (m_run) {
             if (m_dynamic_inst_cnt % STATE_HIST_SIZE == 0) {
                 erase();
-                printw("running... "
-                       "PC = %d, Dynamic inst cnt = %d\n",
-                    m_state_iter->pc, m_dynamic_inst_cnt);
+                printw("running %s\n"
+                       "PC = %d, Static/Dynamic inst cnt = %zu/%d\n",
+                    m_binfile_name.c_str(), m_state_iter->pc,
+                    m_codes.size(), m_dynamic_inst_cnt);
                 refresh();
             }
         } else if (not running or m_halt) {
