@@ -1,0 +1,2 @@
+set xtics rotate by 90
+p "pinst.log" u 0:2:xtic(1) with boxes t "Instruction count"
