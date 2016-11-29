@@ -31,9 +31,8 @@ Simulator::Simulator(
     constexpr size_t CODE_RESERVE_SIZE = 30000;
     m_codes.reserve(CODE_RESERVE_SIZE);
     int32_t inst_cnt = 0;
-    while (not m_binfile.eof()) {
-        Instruction r;
-        m_binfile.read(reinterpret_cast<char*>(&r), sizeof r);
+    Instruction r;
+    while (m_binfile.read(reinterpret_cast<char*>(&r), sizeof r)) {
         m_codes.emplace_back(r);
         inst_cnt++;
     }
