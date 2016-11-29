@@ -23,6 +23,7 @@ public:
     void run();
 
 private:
+    const std::string m_binfile_name;
     std::ifstream m_binfile;
     const bool m_run;
     const bool m_output_memory;
@@ -59,7 +60,6 @@ private:
 
     struct State {
         int32_t pc = 0;
-        bool fpcond = false;
 
         /*
          * General purpose registers

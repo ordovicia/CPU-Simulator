@@ -7,11 +7,9 @@ std::unordered_map<OpCode,
     std::pair<std::string, Simulator::OperandType>> Simulator::m_mnemonic_table;
 
 Simulator::Simulator(
-    const std::string& binfile,
-    const std::string& infile,
-    bool run,
-    bool output_memory)
-    : m_run(run), m_output_memory(output_memory)
+    const std::string& binfile, const std::string& infile,
+    bool run, bool output_memory)
+    : m_binfile_name(binfile), m_run(run), m_output_memory(output_memory)
 {
     m_binfile.open(binfile, std::ios::binary);
     if (m_binfile.fail())

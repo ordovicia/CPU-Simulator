@@ -46,6 +46,9 @@ void Simulator::Screen::printBoarder(char c, bool p) const
 
 void Simulator::printState() const
 {
+    printw("[%s] static/dynamic inst = %d/%d\n",
+        m_binfile_name.c_str(), m_codes.size(), m_dynamic_inst_cnt);
+
     m_screen.printBoarder('=', false);
     auto cn = m_screen.col_num;
 
@@ -87,11 +90,6 @@ void Simulator::printState() const
             addch('\n');
         }
     }
-
-    m_screen.printBoarder('-');
-
-    printw("fpcond     = %d | dynamic inst cnt = %d\n",
-        m_state_iter->fpcond, m_dynamic_inst_cnt);
 
     m_screen.printBoarder('=', false);
     refresh();
