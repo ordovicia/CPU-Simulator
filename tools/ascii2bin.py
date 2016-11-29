@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-"""
-Ascii -> Binary converter
+""" Ascii -> Binary converter
 
 Usage: ascii2bin.py [input ascii file] [output binary file]
 
@@ -26,17 +25,21 @@ Example input:
 
 import sys
 import struct
+import re
 
-if len(sys.argv) != 3:
-    sys.exit('Usage: {} [input ascii file] [output binary file]'
+if len(sys.argv) < 2:
+    sys.exit('Usage: {} [input ascii file] <output binary file>'
              .format(sys.argv[0], ))
 
 fin = open(sys.argv[1], 'r')
-fout = open(sys.argv[2], 'wb')
+fout_n = sys.argv[2] if len(sys.argv) > 2  \
+    else re.sub(r'\.txt', '.bin', sys.argv[1])
+fout = open(fout_n, 'wb')
 
 
 def invalid_line(i, l):
     sys.exit('Invalid line\n{}: "{}"'.format(i, l))
+
 
 for (i, l) in enumerate(fin.readlines()):
     code = 0
@@ -55,7 +58,7 @@ for (i, l) in enumerate(fin.readlines()):
             invalid_line(i, l)
         cnt += 1
     if cnt == 0:
-        continue;
+        continue
     if cnt != 32:
         invalid_line(i, l)
     fout.write(struct.pack('I', code))
