@@ -7,10 +7,16 @@ Simulator::State Simulator::lwo(Instruction inst)
     new_state.memory_patch = MemoryPatch{};
 
     auto op = decodeR(inst);
-    size_t addr = (op.rs + op.rt) / 4;
+    auto addr
+        = static_cast<int32_t>(
+              m_state_iter->reg.at(op.rs) + m_state_iter->reg.at(op.rt)) / 4;
 
     new_state.pc += 4;
-    new_state.reg.at(op.rd) = m_memory.at(addr);
+    try {
+        new_state.reg.at(op.rd) = m_memory.at(addr);
+    } catch (std::out_of_range e) {
+        FAIL("# Memory index out of range\n" << e.what());
+    }
 
     return new_state;
 }

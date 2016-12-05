@@ -47,11 +47,11 @@ private:
 
     struct MemoryPatch {
         MemoryPatch() = default;
-        MemoryPatch(bool v, size_t i, int32_t p)
+        MemoryPatch(bool v, int32_t i, int32_t p)
             : valid(v), idx(i), pre_val(p) {}
 
         bool valid = false;
-        size_t idx;
+        int32_t idx;
         int32_t pre_val;
     };
 
