@@ -27,7 +27,7 @@ Simulator::Simulator(
     if (m_outfile.fail())
         throw std::runtime_error{"File out.log couldn't be opened for writing"};
 
-    constexpr size_t CODE_RESERVE_SIZE = 30000;
+    constexpr size_t CODE_RESERVE_SIZE = 65536;
     m_codes.reserve(CODE_RESERVE_SIZE);
     int32_t inst_cnt = 0;
     Instruction r;

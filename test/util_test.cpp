@@ -28,7 +28,7 @@ int main()
     myassert(signExt(0xff, 8) == 0xffffffff);
     myassert(signExt(0xfff8, 16) == 0xfffffff8);
 
-    cerr << "All test passed 🍣" << endl;
+    cerr << "All test passed" << endl;
 
     return 0;
 }
