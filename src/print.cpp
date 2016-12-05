@@ -104,6 +104,7 @@ void Simulator::printCode() const
 
     for (int c = pc4 - cwl; c < pc4 + cwl; c++) {
         if (c < 0 or c >= max_code_idx) {
+            attrset(COLOR_PAIR(0));
             addstr("       |\n");
             continue;
         }
