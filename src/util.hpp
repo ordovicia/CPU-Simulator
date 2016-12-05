@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <ncurses.h>
 
 extern bool g_ncurses;
 

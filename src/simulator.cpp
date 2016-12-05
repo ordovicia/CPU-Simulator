@@ -1,5 +1,4 @@
 #include <exception>
-#include <ncurses.h>
 #include "util.hpp"
 #include "simulator.hpp"
 

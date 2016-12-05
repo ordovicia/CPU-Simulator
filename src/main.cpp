@@ -1,5 +1,4 @@
 #include <iostream>
-#include <ncurses.h>
 #include <getopt.h>
 #include "util.hpp"
 #include "simulator.hpp"

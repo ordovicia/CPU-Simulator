@@ -1,6 +1,5 @@
 #include "simulator.hpp"
 #include "util.hpp"
-#include <ncurses.h>
 
 Simulator::State Simulator::asrt(Instruction inst)
 {

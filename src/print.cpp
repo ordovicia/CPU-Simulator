@@ -1,6 +1,5 @@
 #include <cmath>
 #include <sstream>
-#include <ncurses.h>
 #include "util.hpp"
 #include "simulator.hpp"
 
