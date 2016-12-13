@@ -118,7 +118,7 @@ void Simulator::run()
             } else if (streqn(input, "pm", 2)) {
                 size_t idx;
                 sscanf(input + 2, "%lu", &idx);
-                printw("memory[%lu] = %d\n", idx, m_memory.at(idx));
+                printw("memory[%lu] = 0x%x\n", idx, m_memory.at(idx));
                 refresh();
                 getch();
                 continue;
