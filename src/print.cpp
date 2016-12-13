@@ -56,7 +56,7 @@ void Simulator::printState() const
 
         int i;
         for (i = 0; i < REG_SIZE; i++) {
-            printw("r%-2d = %08x", i, reg.at(i));
+            printw("r%-2d 0x%08x", i, reg.at(i));
             if (i % cn + 1 == cn)
                 addch('\n');
             else
@@ -77,7 +77,7 @@ void Simulator::printState() const
         int i;
         for (i = 0; i < FREG_SIZE; i++) {
             uint32_t b = ftob(freg.at(i));
-            printw("f%-2d = %08x", i, b);
+            printw("f%-2d 0x%08x", i, b);
             if (i % cn + 1 == cn)
                 addch('\n');
             else
