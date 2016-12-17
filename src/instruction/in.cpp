@@ -1,5 +1,5 @@
-#include <ncurses.h>
 #include "simulator.hpp"
+#include "util.hpp"
 
 Simulator::State Simulator::in(Instruction inst)
 {
@@ -9,12 +9,8 @@ Simulator::State Simulator::in(Instruction inst)
     auto op = decodeR(inst);
 
     char in_;
-    if (not(m_infile >> in_)) {
-        addstr("Input error\n");
-        refresh();
-        getch();
-        std::exit(1);
-    }
+    if (not(m_infile >> in_))
+        FAIL("Input error\n");
 
     new_state.pc += 4;
     new_state.reg.at(op.rd) = static_cast<int32_t>(static_cast<char>(in_));
