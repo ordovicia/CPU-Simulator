@@ -1,4 +1,3 @@
-#include "util.hpp"
 #include "simulator.hpp"
 
 Simulator::State Simulator::mult(Instruction inst)
