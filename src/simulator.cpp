@@ -182,7 +182,8 @@ Simulator::State Simulator::exec(OpCode opcode, Instruction inst)
         m_inst_cnt.at(opcode)++;
         return (m_inst_funcs.at(opcode))(inst);
     } catch (std::out_of_range e) {
-        FAIL("# Invalid instruction code\n" << e.what());
+        FAIL("# Invalid instruction code " << static_cast<uint32_t>(opcode)
+                                           << "\n" << e.what());
     }
 }
 
