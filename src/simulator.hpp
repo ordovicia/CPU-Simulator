@@ -145,11 +145,18 @@ private:
     static OperandI decodeI(Instruction);
     static OperandJ decodeJ(Instruction);
 
-    static std::unordered_map<OpCode,
-        std::pair<std::string, OperandType>> m_mnemonic_table;
-    static void initDisassembler();
+    struct Mnemonic {
+        std::string mnemonic;
+        OperandType type;
+        // clang-format off
+        enum class OperandField { N, R, I, F, };  // clang-format on
+        std::array<OperandField, 4> operand_field;
+    };
 
-    static std::string disasm(Instruction);
+    std::unordered_map<OpCode, Mnemonic> m_mnemonic_table;
+    void initDisassembler();
+
+    std::string disasm(Instruction) const;
 
     static void printBitset(
         uint32_t bits, int begin = 0, int end = 32, bool endl = false);

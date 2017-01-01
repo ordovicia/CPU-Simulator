@@ -7,65 +7,66 @@ import subprocess
 import shutil
 
 insts = {
-    4: ('NOP', 'N'),
-    5: ('HALT', 'N'),
-    6: ('IN', 'R'),
-    7: ('OUT', 'R'),
+    # opcode: (mnemonic, operand type, [used operand field])
+    4: ('NOP', 'N', []),
+    5: ('HALT', 'N', []),
+    6: ('IN', 'R', [None, None, 'R']),
+    7: ('OUT', 'R', ['R']),
 
-    8: ('ADD', 'R'),
-    9: ('ADDI', 'I'),
-    10: ('SUB', 'R'),
-    11: ('LUI', 'I'),
+    8: ('ADD', 'R', ['R', 'R', 'R']),
+    9: ('ADDI', 'I', ['R', 'R', 'I']),
+    10: ('SUB', 'R', ['R', 'R', 'R']),
+    11: ('LUI', 'I', [None, 'R', 'I']),
 
-    12: ('DIV', 'R'),
-    13: ('MULT', 'R'),
+    12: ('DIV', 'R', ['R', 'R', 'R']),
+    13: ('MULT', 'R', ['R', 'R', 'R']),
 
-    16: ('SLL', 'R'),
-    17: ('SRA', 'R'),
-    18: ('SRL', 'R'),
-    20: ('AND_', 'R'),
-    21: ('ANDI', 'I'),
-    22: ('OR_', 'R'),
-    23: ('ORI', 'I'),
-    24: ('XOR_', 'R'),
-    25: ('XORI', 'I'),
-    26: ('NOR', 'R'),
+    16: ('SLL', 'R', ['R', None, 'R', 'I']),
+    17: ('SRA', 'R', ['R', None, 'R', 'I']),
+    18: ('SRL', 'R', ['R', None, 'R', 'I']),
+    20: ('AND_', 'R', ['R', 'R', 'R']),
+    21: ('ANDI', 'I', ['R', 'R', 'I']),
+    22: ('OR_', 'R', ['R', 'R', 'R']),
+    23: ('ORI', 'I', ['R', 'R', 'I']),
+    24: ('XOR_', 'R', ['R', 'R', 'R']),
+    25: ('XORI', 'I', ['R', 'R', 'I']),
+    26: ('NOR', 'R', ['R', 'R', 'R']),
 
-    28: ('LW', 'I'),
-    29: ('LWO', 'R'),
-    30: ('SW', 'I'),
-    31: ('SWO', 'R'),
+    28: ('LW', 'I', ['R', 'R', 'I']),
+    29: ('LWO', 'R', ['R', 'R', 'R']),
+    30: ('SW', 'I', ['R', 'R', 'I']),
+    31: ('SWO', 'R', ['R', 'R', 'R']),
 
-    32: ('BEQ', 'I'),
-    33: ('BGEZ', 'I'),
-    34: ('BGTZ', 'I'),
-    35: ('BLEZ', 'I'),
-    36: ('BLTZ', 'I'),
-    37: ('BGEZAL', 'I'),
-    38: ('BLTZAL', 'I'),
-    39: ('J', 'J'),
-    40: ('JAL', 'J'),
-    41: ('JR', 'I'),
-    42: ('JALR', 'I'),
+    32: ('BEQ', 'I', ['R', 'R', 'I']),
+    33: ('BGEZ', 'I', ['R', None, 'I']),
+    34: ('BGTZ', 'I', ['R', None, 'I']),
+    35: ('BLEZ', 'I', ['R', None, 'I']),
+    36: ('BLTZ', 'I', ['R', None, 'I']),
+    37: ('BGEZAL', 'I', ['R', None, 'I']),
+    38: ('BLTZAL', 'I', ['R', None, 'I']),
+    39: ('J', 'J', ['I']),
+    40: ('JAL', 'J', ['I']),
+    41: ('JR', 'I', ['R']),
+    42: ('JALR', 'I', ['R', 'R']),
 
-    48: ('LWC1', 'I'),
-    49: ('LWOC1', 'R'),
-    50: ('SWC1', 'I'),
-    51: ('SWOC1', 'R'),
-    52: ('MTC1', 'I'),
-    53: ('MFC1', 'I'),
+    48: ('LWC1', 'I', ['R', 'F', 'I']),
+    49: ('LWOC1', 'R', ['R', 'F', 'F']),
+    50: ('SWC1', 'I', ['F', 'R', 'I']),
+    51: ('SWOC1', 'R', ['F', 'R', 'R']),
+    52: ('MTC1', 'I', ['R', 'F']),
+    53: ('MFC1', 'I', ['R', 'F']),
 
-    54: ('ABS_S', 'I'),
-    55: ('NEG_S', 'I'),
-    56: ('ADD_S', 'I'),
-    57: ('SUB_S', 'I'),
-    58: ('MUL_S', 'I'),
-    59: ('DIV_S', 'I'),
-    60: ('CVT_S_W', 'I'),
-    61: ('CVT_W_S', 'I'),
-    62: ('MOV_S', 'I'),
+    54: ('ABS_S', 'I', ['F', 'F']),
+    55: ('NEG_S', 'I', ['F', 'F']),
+    56: ('ADD_S', 'I', ['F', 'F', 'F']),
+    57: ('SUB_S', 'I', ['F', 'F', 'F']),
+    58: ('MUL_S', 'I', ['F', 'F', 'F']),
+    59: ('DIV_S', 'I', ['F', 'F', 'F']),
+    60: ('CVT_S_W', 'I', ['F', 'F']),
+    61: ('CVT_W_S', 'I', ['F', 'F']),
+    62: ('MOV_S', 'I', ['F', 'F']),
 
-    63: ('ASRT', 'I'),
+    63: ('ASRT', 'I', ['R']),
 }
 
 opcode_name = 'opcode.hpp'
@@ -105,6 +106,8 @@ disasm_header = '''#include "simulator.hpp"
 
 void Simulator::initDisassembler()
 {
+    using Field = Mnemonic::OperandField;
+
 '''
 
 test_run_header = '''#!/bin/sh
@@ -158,19 +161,29 @@ def main():
             cpp_tmp.write('}\n')
 
     # disassembler
-    def mneumonic(m):
+    def mnemonic(m):
         m = m.lower()
         m = re.sub(r'_$', '', m)
         m = re.sub(r'_', '.', m)
         return m
+
+    def operand_field(of):
+        r = '{'
+        for i in range(4):
+            r += 'Field::' \
+                + (of[i] if (i < len(of) and of[i] is not None) else 'N') \
+                + (', ' if i != 3 else '')
+        return r + '}'
 
     with open(disasm_name + '.tmp', 'w') as disasm_tmp:
         disasm_tmp.write(disasm_header)
         for (n, c) in insts.items():
             disasm_tmp.write(
                 '''    m_mnemonic_table.emplace(
-        OpCode::{}, std::make_pair("{}", OperandType::{}));\n'''
-                .format(c[0], mneumonic(c[0]), c[1]))
+        OpCode::{},
+        Mnemonic{{"{}", OperandType::{},
+            {}}});\n'''
+                .format(c[0], mnemonic(c[0]), c[1], operand_field(c[2])))
         disasm_tmp.write('}\n')
 
     # tester
@@ -183,7 +196,8 @@ def main():
 
     # Detect diff and move/remove
     def diff(n):
-        return (not os.path.exists(n) or subprocess.call(['diff', n, n + '.tmp']))
+        return (not os.path.exists(n)
+                or subprocess.call(['diff', n, n + '.tmp']))
 
     def mv(n):
         shutil.move(n + '.tmp', n)

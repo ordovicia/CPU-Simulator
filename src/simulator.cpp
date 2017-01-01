@@ -2,9 +2,6 @@
 #include "util.hpp"
 #include "simulator.hpp"
 
-std::unordered_map<OpCode,
-    std::pair<std::string, Simulator::OperandType>> Simulator::m_mnemonic_table;
-
 Simulator::Simulator(
     const std::string& binfile, const std::string& infile,
     bool run, bool output_memory)

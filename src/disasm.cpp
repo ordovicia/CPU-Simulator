@@ -3,36 +3,65 @@
 #include "simulator.hpp"
 #include "util.hpp"
 
-std::string Simulator::disasm(Simulator::Instruction inst)
+std::string Simulator::disasm(Simulator::Instruction inst) const
 {
-    auto op = m_mnemonic_table.at(decodeOpCode(inst));
+    using Field = Mnemonic::OperandField;
+
+    auto mnemo = m_mnemonic_table.at(decodeOpCode(inst));
 
     std::ostringstream oss;
-    oss << " | " << std::setw(7) << op.first << ' ';
+    oss << " | " << std::setw(7) << mnemo.mnemonic;
 
-    switch (op.second) {
+    auto writeR = [&](Field f, const int32_t& r) {
+        switch (f) {
+        case Field::R:
+            oss << " r" << std::setw(2) << std::left << r;
+            return;
+        case Field::F:
+            oss << " f" << std::setw(2) << std::left << r;
+            return;
+        default:
+            oss << "  - ";
+            return;
+        }
+    };
+
+    const auto& of = mnemo.operand_field;
+    switch (mnemo.type) {
     case OperandType::R: {
-        auto opr = decodeR(inst);
-        oss << 'r' << std::setw(2) << std::left << opr.rs
-            << " r" << std::setw(2) << std::left << opr.rt
-            << " r" << std::setw(2) << std::left << opr.rd
-            << ' ' << opr.shamt;
+        auto op = decodeR(inst);
+        writeR(of[0], op.rs);
+        writeR(of[1], op.rt);
+        writeR(of[2], op.rd);
+        if (of[3] == Field::I)
+            oss << ' ' << op.shamt;
+        else
+            oss << "  - ";
         break;
     }
     case OperandType::I: {
-        auto opr = decodeI(inst);
-        auto imm_ext = static_cast<int32_t>(signExt(opr.immediate, 16));
-        oss << 'r' << std::setw(2) << std::left << opr.rs
-            << " r" << std::setw(2) << std::left << opr.rt << ' ';
-        if (imm_ext < 0)
-            oss << imm_ext;
-        else
-            oss << opr.immediate;
+        auto op = decodeI(inst);
+        writeR(of[0], op.rs);
+        writeR(of[1], op.rt);
+
+        if (decodeOpCode(inst) == OpCode::ASRT) {
+            oss << ' '
+                << static_cast<int32_t>(signExt(bitset(inst, 11, 32), 21));
+        } else if (of[2] == Field::I) {
+            auto imm_ext = static_cast<int32_t>(signExt(op.immediate, 16));
+            oss << ' ';
+            if (imm_ext < 0)
+                oss << imm_ext;
+            else
+                oss << op.immediate;
+        } else {
+            oss << "  - ";
+        }
         break;
     }
     case OperandType::J: {
-        auto opr = decodeJ(inst);
-        oss << opr.addr;
+        auto op = decodeJ(inst);
+        oss << op.addr;
         break;
     }
     default:
