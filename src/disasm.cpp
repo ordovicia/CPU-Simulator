@@ -21,11 +21,11 @@ std::string Simulator::disasm(Simulator::Instruction inst)
     }
     case OperandType::I: {
         auto opr = decodeI(inst);
-        auto imm = static_cast<int32_t>(signExt(opr.immediate, 16));
+        auto imm_ext = static_cast<int32_t>(signExt(opr.immediate, 16));
         oss << 'r' << std::setw(2) << std::left << opr.rs
             << " r" << std::setw(2) << std::left << opr.rt << ' ';
-        if (imm < 0)
-            oss << imm;
+        if (imm_ext < 0)
+            oss << imm_ext;
         else
             oss << opr.immediate;
         break;
