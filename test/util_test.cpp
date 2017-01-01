@@ -22,11 +22,12 @@ int main()
     myassert(bitset(0x00ff00ff, 16, 32) == 0x000000ff);
     myassert(bitset(0x00ff00ff, 24, 32) == 0x000000ff);
 
-    myassert(signExt(0x0f, 5) == 0x0f);
-    myassert(signExt(0x1f, 5) == 0xffffffff);
-    myassert(signExt(0x7f, 8) == 0x7f);
-    myassert(signExt(0xff, 8) == 0xffffffff);
-    myassert(signExt(0xfff8, 16) == 0xfffffff8);
+    myassert(signExt(0x01, 5) == 0x01);
+    myassert(signExt(0x12, 5) == 0xfffffff2);
+    myassert(signExt(0x73, 8) == 0x73);
+    myassert(signExt(0xf4, 8) == 0xfffffff4);
+    myassert(signExt(0x7765, 16) == 0x7765);
+    myassert(signExt(0xfa98, 16) == 0xfffffa98);
 
     cerr << "All test passed" << endl;
 
