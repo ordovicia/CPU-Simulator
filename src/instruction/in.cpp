@@ -8,12 +8,12 @@ Simulator::State Simulator::in(Instruction inst)
 
     auto op = decodeR(inst);
 
-    char in_;
-    if (not(m_infile >> in_))
+    auto in_ = m_infile.get();
+    if (m_infile.eof())
         FAIL("Input error\n");
 
     new_state.pc += 4;
-    new_state.reg.at(op.rd) = static_cast<int32_t>(static_cast<char>(in_));
+    new_state.reg.at(op.rd) = static_cast<int32_t>(in_);
 
     return new_state;
 }
