@@ -10,7 +10,7 @@ int main(int argc, char** argv)
 {
     try {
         if (argc < 2) {
-            std::cerr << "Usage: " << argv[0] << " [bin file]" << std::endl;
+            std::cerr << "Invalid usage. Read 'README.md'" << std::endl;
             return 1;
         }
 
