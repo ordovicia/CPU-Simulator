@@ -4,7 +4,11 @@
 #include "simulator.hpp"
 
 bool g_ncurses = false;
-void endwin_() { endwin(); }
+void endwin_()
+{
+    if (g_ncurses)
+        endwin();
+}
 
 int main(int argc, char** argv)
 {
