@@ -104,7 +104,7 @@ void Simulator::printCode() const
     for (int c = pc4 - cwl; c < pc4 + cwl; c++) {
         if (c < 0 or c >= max_code_idx) {
             attrset(COLOR_PAIR(0));
-            addstr("       |\n");
+            addstr("             |\n");
             continue;
         }
 
@@ -113,7 +113,8 @@ void Simulator::printCode() const
         else
             attrset(COLOR_PAIR(0));
 
-        printw("%6d | ", c * 4);
+        printw("%c %10d | ",
+            (m_breakpoints.count(c * 4) != 0 ? 'b' : ' '), c * 4);
         auto code = m_codes.at(c);
         printBitset(code);
 
