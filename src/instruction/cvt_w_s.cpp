@@ -8,8 +8,8 @@ Simulator::State Simulator::cvt_w_s(Instruction inst)
     auto op = decodeI(inst);
 
     new_state.pc += 4;
-    new_state.reg.at(op.rt)
-        = static_cast<int32_t>(m_state_iter->freg.at(op.rs));
+    new_state.freg.at(op.rt)
+        = static_cast<float>(static_cast<int32_t>(m_state_iter->freg.at(op.rs)));
 
     return new_state;
 }
