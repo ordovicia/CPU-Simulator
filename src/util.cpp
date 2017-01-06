@@ -23,9 +23,7 @@ bool streqn(const char* s1, const char* s2, int n)
     for (int i = 0; i < n; i++) {
         auto c1 = s1[i];
         auto c2 = s2[i];
-        if (c1 == '\0' or c2 == '\0')
-            return true;
-        else if (c1 != c2)
+        if (c1 != c2 || c1 == '\0' || c2 == '\0')
             return false;
     }
 

@@ -36,7 +36,9 @@ bool streq(const char* s1, const char* s2);
 
 /*
  * Compare first n chars.
+ * streqn("hoge", "hoge2", 4) == true
  * streqn("hoge1", "hoge2", 4) == true
+ * streqn("hoge", "hog", 4) == false
  */
 bool streqn(const char* s1, const char* s2, int n);
 

@@ -75,29 +75,43 @@ void Simulator::run()
                 reset();
                 run = false;
                 continue;
-            } else if (streqn(input, "break", 5)) {
+            } else if (streqn(input, "break", 5)) {  // set breakpoint
                 int b;
                 sscanf(input + 5, "%d", &b);
-                m_breakpoints.insert(b);
+                if (b == 0) {
+                    addstr("# Error. Invalid breakpoint format");
+                    refresh();
+                    getch();
+                } else
+                    m_breakpoints.insert(b);
 
                 continue;
-            } else if (streqn(input, "b", 1)) {
+            } else if (streqn(input, "b", 1)) {  // set breakpoint
                 int b;
                 sscanf(input + 1, "%d", &b);
-                m_breakpoints.insert(b);
-
+                if (b == 0) {
+                    addstr("# Error. Invalid breakpoint format");
+                    refresh();
+                    getch();
+                } else
+                    m_breakpoints.insert(b);
                 continue;
-            } else if (streq(input, "pb")) {
+            } else if (streq(input, "pb")) {  // print breakpoint
                 printBreakPoints();
                 getch();
                 continue;
-            } else if (streqn(input, "db", 2)) {
+            } else if (streqn(input, "db", 2)) {  // delete breakpoint
                 int b;
                 sscanf(input + 2, "%d", &b);
-                m_breakpoints.erase(b);
+                if (b == 0) {
+                    addstr("# Error. Invalid breakpoint format");
+                    refresh();
+                    getch();
+                } else
+                    m_breakpoints.erase(b);
                 continue;
             } else if (streq(input, "step") or streq(input, "s")) {
-                // break;
+                // Nothing
             } else if (streq(input, "prev") or streq(input, "p")) {
                 if (m_state_iter == m_state_hist.deque.begin()) {
                     addstr("# Error. Out of saved history");
@@ -112,13 +126,16 @@ void Simulator::run()
                     m_state_iter--;
                 }
 
-                running = false;
+                run = false;
                 m_halt = false;
                 continue;
             } else if (streqn(input, "pm", 2)) {
                 size_t idx;
-                sscanf(input + 2, "%lu", &idx);
-                printw("memory[%lu] = 0x%x\n", idx, m_memory.at(idx));
+                sscanf(input + 2, "%zu", &idx);
+                if (idx == 0)
+                    addstr("# Error. Invalid memory index format");
+                else
+                    printw("memory[%zu] = 0x%x\n", idx, m_memory.at(idx));
                 refresh();
                 getch();
                 continue;
@@ -151,7 +168,7 @@ void Simulator::run()
                 if (m_breakpoints.find(m_state_iter->pc) != m_breakpoints.end())
                     run = false;
             } catch (std::out_of_range e) {
-                FAIL("# Program counter out of range\n" << e.what());
+                FAIL("# Error. Program counter out of range\n" << e.what());
             }
         }
     }
