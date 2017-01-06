@@ -4,8 +4,10 @@
 
 Simulator::Simulator(
     const std::string& binfile, const std::string& infile,
-    bool run, bool output_memory)
-    : m_binfile_name(binfile), m_run(run), m_output_memory(output_memory)
+    bool interactive, bool output_memory)
+    : m_binfile_name(binfile),
+      m_interactive(interactive),
+      m_output_memory(output_memory)
 {
     initInstruction();
     initDisassembler();
@@ -40,19 +42,20 @@ Simulator::Simulator(
 
 void Simulator::run()
 {
-    bool running = false;
+    bool run = false;
 
     while (true) {
-        if (m_run) {
+        if (not m_interactive) {
+            if (m_halt)
+                return;
             if (m_dynamic_inst_cnt % STATE_HIST_SIZE == 0) {
                 erase();
-                printw("running %s\n"
-                       "PC = %d, Static/Dynamic inst cnt = %zu/%d\n",
+                printw("[%s] PC = %d, Static/Dynamic inst cnt = %zu/%d\n",
                     m_binfile_name.c_str(), m_state_iter->pc,
                     m_codes.size(), m_dynamic_inst_cnt);
                 refresh();
             }
-        } else if (not running or m_halt) {
+        } else if (!run || m_halt) {
             // Console output
             erase();
             m_screen.update();
@@ -67,10 +70,10 @@ void Simulator::run()
             getnstr(input, 16);
 
             if (streq(input, "run") or streq(input, "r")) {
-                running = true;
+                run = true;
             } else if (streq(input, "reset")) {
                 reset();
-                running = false;
+                run = false;
                 continue;
             } else if (streqn(input, "break", 5)) {
                 int b;
@@ -146,12 +149,11 @@ void Simulator::run()
                 }
 
                 if (m_breakpoints.find(m_state_iter->pc) != m_breakpoints.end())
-                    running = false;
+                    run = false;
             } catch (std::out_of_range e) {
                 FAIL("# Program counter out of range\n" << e.what());
             }
-        } else if (m_run)
-            return;
+        }
     }
 }
 

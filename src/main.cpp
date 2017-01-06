@@ -15,14 +15,14 @@ int main(int argc, char** argv)
         }
 
         int result;
-        bool run = false, output_memory = false;
+        bool interactive = true, output_memory = false;
         std::string binfile;
         std::string infile;
 
         while ((result = getopt(argc, argv, "rmf:i:")) != -1) {
             switch (result) {
             case 'r':
-                run = true;
+                interactive = false;
                 break;
             case 'm':
                 output_memory = true;
@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 
         std::atexit(endwin_);
 
-        Simulator sim{binfile, infile, run, output_memory};
+        Simulator sim{binfile, infile, interactive, output_memory};
         sim.run();
 
         return 0;

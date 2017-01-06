@@ -17,7 +17,7 @@ public:
     explicit Simulator(
         const std::string& binfile,
         const std::string& infile,
-        bool run,
+        bool interactive,
         bool output_memory);
 
     void run();
@@ -25,7 +25,7 @@ public:
 private:
     const std::string m_binfile_name;
     std::ifstream m_binfile;
-    const bool m_run;
+    const bool m_interactive;
     const bool m_output_memory;
 
     bool m_halt = false;

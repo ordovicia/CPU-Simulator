@@ -5,7 +5,7 @@ Simulator::State Simulator::halt(Instruction /* inst */)
 {
     m_halt = true;
 
-    if (m_run) {
+    if (not m_interactive) {
         using namespace std;
 
         addstr("Outputting stat info... ");
