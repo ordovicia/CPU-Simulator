@@ -1,4 +1,5 @@
 #include "simulator.hpp"
+#include "util.hpp"
 
 Simulator::State Simulator::cvt_w_s(Instruction inst)
 {
@@ -9,7 +10,7 @@ Simulator::State Simulator::cvt_w_s(Instruction inst)
 
     new_state.pc += 4;
     new_state.freg.at(op.rt)
-        = static_cast<float>(static_cast<int32_t>(m_state_iter->freg.at(op.rs)));
+        = btof(static_cast<int32_t>(m_state_iter->freg.at(op.rs)));
 
     return new_state;
 }
