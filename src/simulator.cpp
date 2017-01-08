@@ -77,24 +77,25 @@ void Simulator::run()
                 continue;
             } else if (streqn(input, "break", 5)) {  // set breakpoint
                 int b;
-                sscanf(input + 5, "%d", &b);
-                if (b == 0) {
+                if (sscanf(input + 5, "%d", &b) == 0) {
                     addstr("# Error. Invalid breakpoint format");
                     refresh();
                     getch();
-                } else
+                } else {
                     m_breakpoints.insert(b);
+                }
 
                 continue;
             } else if (streqn(input, "b", 1)) {  // set breakpoint
                 int b;
-                sscanf(input + 1, "%d", &b);
-                if (b == 0) {
+                if (sscanf(input + 1, "%d", &b) == 0) {
                     addstr("# Error. Invalid breakpoint format");
                     refresh();
                     getch();
-                } else
+                } else {
                     m_breakpoints.insert(b);
+                }
+
                 continue;
             } else if (streq(input, "pb")) {  // print breakpoint
                 printBreakPoints();
@@ -102,13 +103,14 @@ void Simulator::run()
                 continue;
             } else if (streqn(input, "db", 2)) {  // delete breakpoint
                 int b;
-                sscanf(input + 2, "%d", &b);
-                if (b == 0) {
+                if (sscanf(input + 2, "%d", &b) == 0) {
                     addstr("# Error. Invalid breakpoint format");
                     refresh();
                     getch();
-                } else
+                } else {
                     m_breakpoints.erase(b);
+                }
+
                 continue;
             } else if (streq(input, "step") or streq(input, "s")) {
                 // Nothing
@@ -131,8 +133,7 @@ void Simulator::run()
                 continue;
             } else if (streqn(input, "pm", 2)) {
                 size_t idx;
-                sscanf(input + 2, "%zu", &idx);
-                if (idx == 0)
+                if (sscanf(input + 2, "%zu", &idx) == 0)
                     addstr("# Error. Invalid memory index format");
                 else
                     printw("memory[%zu] = 0x%x\n", idx, m_memory.at(idx));
