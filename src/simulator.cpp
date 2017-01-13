@@ -43,6 +43,7 @@ Simulator::Simulator(
 void Simulator::run()
 {
     bool run = false;
+    int step_cnt = 0;
 
     while (true) {
         if (not m_interactive) {
@@ -55,6 +56,8 @@ void Simulator::run()
                     m_codes.size(), m_dynamic_inst_cnt);
                 refresh();
             }
+        } else if (step_cnt > 0) {
+            step_cnt--;
         } else if (!run || m_halt) {
             // Console output
             erase();
@@ -66,8 +69,11 @@ void Simulator::run()
             addstr(">> ");
             refresh();
 
-            char input[16];
-            getnstr(input, 16);
+            char input[32];
+            getnstr(input, 32);
+
+#define PRINT_ERROR(msg) \
+    do { addstr(#msg); refresh(); getch(); } while (0)
 
             if (streq(input, "run") or streq(input, "r")) {
                 run = true;
@@ -77,10 +83,8 @@ void Simulator::run()
                 continue;
             } else if (streqn(input, "break", 5)) {  // set breakpoint
                 int b;
-                if (sscanf(input + 5, "%d", &b) == 0) {
-                    addstr("# Error. Invalid breakpoint format");
-                    refresh();
-                    getch();
+                if (sscanf(input + 5, "%d", &b) != 1) {
+                    PRINT_ERROR("# Error. Invalid breakpoint format");
                 } else {
                     m_breakpoints.insert(b);
                 }
@@ -88,10 +92,8 @@ void Simulator::run()
                 continue;
             } else if (streqn(input, "b", 1)) {  // set breakpoint
                 int b;
-                if (sscanf(input + 1, "%d", &b) == 0) {
-                    addstr("# Error. Invalid breakpoint format");
-                    refresh();
-                    getch();
+                if (sscanf(input + 1, "%d", &b) != 1) {
+                    PRINT_ERROR("# Error. Invalid breakpoint format");
                 } else {
                     m_breakpoints.insert(b);
                 }
@@ -103,22 +105,24 @@ void Simulator::run()
                 continue;
             } else if (streqn(input, "db", 2)) {  // delete breakpoint
                 int b;
-                if (sscanf(input + 2, "%d", &b) == 0) {
-                    addstr("# Error. Invalid breakpoint format");
-                    refresh();
-                    getch();
+                if (sscanf(input + 2, "%d", &b) != 1) {
+                    PRINT_ERROR("# Error. Invalid breakpoint format");
                 } else {
                     m_breakpoints.erase(b);
                 }
 
                 continue;
-            } else if (streq(input, "step") or streq(input, "s")) {
-                // Nothing
+            } else if (streqn(input, "step", 4)) {
+                int s = 0;
+                if (sscanf(input + 4, "%d", &s) == 1)
+                    step_cnt = s - 1;
+            } else if (streqn(input, "s", 1)) {
+                int s = 0;
+                if (sscanf(input + 1, "%d", &s) == 1)
+                    step_cnt = s - 1;
             } else if (streq(input, "prev") or streq(input, "p")) {
                 if (m_state_iter == m_state_hist.deque.begin()) {
-                    addstr("# Error. Out of saved history");
-                    refresh();
-                    getch();
+                    PRINT_ERROR("# Error. Out of saved history");
                     continue;
                 } else {
                     const auto& mp = m_state_iter->memory_patch;

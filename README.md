@@ -53,7 +53,7 @@ $ ./simulator -f test.bin
 * pb -- breakpointを表示します。
 * db [int] -- 指定したbreakpointを削除します。
 * pm [int] -- 指定したインデックスのメモリの状態を表示します。
-* step|s -- 命令をひとつ実行します。
+* (step|s) <int> -- 命令をひとつ実行します。自然数を指定すると、その命令数だけ実行します。
 * prev|p -- ひとつ前の状態に戻ります。
 * quit|q -- 終了します。
 * help|h -- ヘルプを表示します。
