@@ -7,6 +7,7 @@ Simulator::State Simulator::out(Instruction inst)
 
     auto op = decodeR(inst);
     m_outfile << static_cast<char>(m_state_iter->reg.at(op.rs));
+    m_outfile << std::flush;
 
     new_state.pc += 4;
     return new_state;
