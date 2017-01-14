@@ -72,8 +72,8 @@ insts = {
 }
 
 opcode_name = 'opcode.hpp'
-inst_hpp_name = 'instruction.hpp'
-inst_cpp_name = 'init_inst.cpp'
+inst_hpp_name = 'instructions.hpp'
+inst_cpp_name = 'exec_inst.cpp'
 disasm_name = 'init_disasm.cpp'
 test_run_name = 'run.sh'
 
@@ -98,7 +98,7 @@ namespace std
 }
 '''
 
-cpp_header = '''#include "simulator.hpp"
+inst_cpp_header = '''#include "simulator.hpp"
 
 void Simulator::initInstruction()
 {
@@ -140,20 +140,20 @@ done
 
 
 def main():
-    # opcode.hpp
+    # opcode
     with open(opcode_name + '.tmp', 'w') as opcode_tmp:
         opcode_tmp.write(opcode_header)
         for (n, c) in insts.items():
             opcode_tmp.write('    {} = {},\n'.format(c[0], n))
         opcode_tmp.write(opcode_footer)
 
-    # instruction.hpp and init_inst.cpp
-    with open(inst_hpp_name + '.tmp', 'w') as hpp_tmp:
-        with open(inst_cpp_name + '.tmp', 'w') as cpp_tmp:
-            cpp_tmp.write(cpp_header)
+    # instructions
+    with open(inst_hpp_name + '.tmp', 'w') as inst_hpp_tmp:
+        with open(inst_cpp_name + '.tmp', 'w') as inst_cpp_tmp:
+            inst_cpp_tmp.write(inst_cpp_header)
             for inst_ in insts.values():
                 inst = inst_[0]
-                hpp_tmp.write(
+                inst_hpp_tmp.write(
                     '    State {}(Instruction);\n'.format(inst.lower(), ))
                 cpp_tmp.write('''    m_inst_funcs.emplace(
         OpCode::{}, [this](Instruction inst) {{ return {}(inst); }});\n'''
@@ -208,7 +208,7 @@ def main():
         os.remove(n + '.tmp')
 
     names = [opcode_name, inst_hpp_name, inst_cpp_name, disasm_name]
-    if any(diff(n) for n in names):
+    if any([diff(n) for n in names]):
         for n in names:
             mv(n)
     else:
