@@ -139,7 +139,7 @@ void Simulator::printBreakPoints() const
     refresh();
 }
 
-void Simulator::printHelp()
+void Simulator::printHelp() const
 {
 #define PRINT_CMD_DESC(cmd, desc)    \
     attrset(COLOR_PAIR(0) | A_BOLD); \
@@ -153,8 +153,9 @@ void Simulator::printHelp()
     PRINT_CMD_DESC("pb", ": show breakpoints, ");
     PRINT_CMD_DESC("db [int]", ": delete breakpoint\n");
     PRINT_CMD_DESC("pm [int]", ": show memory\n");
-    PRINT_CMD_DESC("step|s", ": next instruction, ");
+    PRINT_CMD_DESC("(step|s) <int>", ": next instruction, ");
     PRINT_CMD_DESC("prev|p", ": rewind to previous instruction\n");
+    PRINT_CMD_DESC("log|l", ": dump statistics log, ");
     PRINT_CMD_DESC("quit|q, help|h\n", "");
 
     refresh();

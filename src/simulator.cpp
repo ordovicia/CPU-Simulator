@@ -149,6 +149,9 @@ void Simulator::run()
                 refresh();
                 getch();
                 continue;
+            } else if (streq(input, "log") or streq(input, "l")) {
+                dumpLog();
+                continue;
             } else if (streq(input, "quit") or streq(input, "q")) {
                 return;
             } else if (streq(input, "help") or streq(input, "h")) {
@@ -246,4 +249,48 @@ Simulator::OperandJ Simulator::decodeJ(Instruction inst)
     return OperandJ{
         bitset(inst, 6, 11),
         bitset(inst, 11, 32)};
+}
+
+void Simulator::dumpLog() const
+{
+    using namespace std;
+
+    addstr("Outputting stat info... ");
+    refresh();
+
+    {
+        ofstream ofs{"call_cnt.log"};
+        ofs << "dynamic inst cnt = " << m_dynamic_inst_cnt << endl;
+        ofs << "# PC : called cnt" << endl;
+        for (size_t i = 0; i < m_pc_called_cnt.size(); i++)
+            ofs << 4 * i << ' ' << m_pc_called_cnt.at(i) << endl;
+    }
+
+    {
+        ofstream ofs{"instruction.log"};
+        ofs << "# inst number : called cnt" << endl;
+        for (auto inst : m_inst_cnt)
+            ofs << static_cast<uint32_t>(inst.first) << ' '
+                << inst.second << endl;
+    }
+
+    {
+        ofstream ofs{"register.log"};
+        ofs << hex;
+        for (auto r : m_state_iter->reg)
+            ofs << r << endl;
+        for (auto r : m_state_iter->freg)
+            ofs << r << endl;
+    }
+
+    if (m_output_memory) {
+        ofstream ofs{"memory.log"};
+        ofs << hex;
+        for (auto m : m_memory)
+            ofs << m << endl;
+    }
+
+    addstr("done!\n");
+    refresh();
+    getch();
 }

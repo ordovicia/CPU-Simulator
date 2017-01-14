@@ -176,7 +176,9 @@ private:
     void printCode() const;
     void printBreakPoints() const;
 
-    static void printHelp();
+    void dumpLog() const;
+
+    void printHelp() const;
 
 #include "instruction.hpp"
 };
