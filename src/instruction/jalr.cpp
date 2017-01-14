@@ -7,7 +7,7 @@ Simulator::State Simulator::jalr(Instruction inst)
 
     auto op = decodeI(inst);
 
-    new_state.reg.at(op.rt) = m_state_iter->pc + 4;
+    new_state.reg.at(op.rt) = static_cast<int32_t>(m_state_iter->pc + 4);
     new_state.pc = m_state_iter->reg.at(op.rs);
 
     return new_state;
