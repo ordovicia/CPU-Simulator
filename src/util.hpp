@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstring>
 #include <ncurses.h>
 
 extern bool g_ncurses;
@@ -19,7 +20,6 @@ extern bool g_ncurses;
  * bitset(10110111000..., 0, 8) = 0..010110111
  */
 uint32_t bitset(uint32_t inst, int begin, int end);
-uint32_t bitset64(uint64_t inst, int begin, int end);
 
 /*
  * Sign extention.
@@ -32,7 +32,7 @@ uint32_t signExt(uint32_t x, int bits);
  * Compare string.
  * streq("hoge", "hoge") == true
  */
-bool streq(const char* s1, const char* s2);
+inline bool streq(const char* s1, const char* s2) { return strcmp(s1, s2) == 0; }
 
 /*
  * Compare first n chars.
@@ -47,5 +47,15 @@ union FloatBit {
     uint32_t b;
 };
 
-uint32_t ftob(float f);
-float btof(uint32_t b);
+inline uint32_t ftob(float f)
+{
+    FloatBit fb{f};
+    return fb.b;
+}
+
+inline float btof(uint32_t b)
+{
+    FloatBit fb;
+    fb.b = b;
+    return fb.f;
+}
