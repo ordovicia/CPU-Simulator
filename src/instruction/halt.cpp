@@ -13,13 +13,15 @@ Simulator::State Simulator::halt(Instruction /* inst */)
 
         {
             ofstream ofs{"call_cnt.log"};
-            ofs << m_dynamic_inst_cnt << endl;
+            ofs << "dynamic inst cnt = " << m_dynamic_inst_cnt << endl;
+            ofs << "# PC : called cnt" << endl;
             for (size_t i = 0; i < m_pc_called_cnt.size(); i++)
                 ofs << 4 * i << ' ' << m_pc_called_cnt.at(i) << endl;
         }
 
         {
             ofstream ofs{"instruction.log"};
+            ofs << "# inst number : called cnt" << endl;
             for (auto inst : m_inst_cnt)
                 ofs << static_cast<uint32_t>(inst.first) << ' '
                     << inst.second << endl;
