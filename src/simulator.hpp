@@ -29,7 +29,7 @@ private:
     const bool m_output_memory;
 
     bool m_halt = false;
-    std::unordered_set<uint32_t> m_breakpoints;
+    std::unordered_set<int64_t> m_breakpoints;
 
     std::ifstream m_infile;
     std::ofstream m_outfile;
@@ -39,7 +39,7 @@ private:
     std::vector<Instruction> m_codes;
 
     int64_t m_dynamic_inst_cnt = 0;
-    std::vector<int32_t> m_pc_called_cnt;
+    std::vector<int64_t> m_pc_called_cnt;
 
     // State
     static constexpr size_t MEMORY_SIZE = 1000000;
@@ -59,7 +59,7 @@ private:
     static constexpr int FREG_SIZE = 32;
 
     struct State {
-        int32_t pc = 0;
+        int64_t pc = 0;
 
         /*
          * General purpose registers

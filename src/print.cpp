@@ -98,10 +98,11 @@ void Simulator::printCode() const
 {
     auto cwl = m_screen.code_window_len;
 
-    int pc4 = m_state_iter->pc / 4;
-    int max_code_idx = std::min(pc4 + cwl, static_cast<int>(m_codes.size()));
+    int64_t pc4 = m_state_iter->pc / 4;
+    int64_t max_code_idx
+        = std::min(pc4 + cwl, static_cast<int64_t>(m_codes.size()));
 
-    for (int c = pc4 - cwl; c < pc4 + cwl; c++) {
+    for (int64_t c = pc4 - cwl; c < pc4 + cwl; c++) {
         if (c < 0 or c >= max_code_idx) {
             attrset(COLOR_PAIR(0));
             addstr("             |\n");
