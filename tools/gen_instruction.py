@@ -99,9 +99,17 @@ namespace std
 '''
 
 inst_cpp_header = '''#include "simulator.hpp"
+#include "util.hpp"
 
-void Simulator::initInstruction()
+Simulator::State Simulator::execInst(OpCode opcode, Instruction inst)
 {
+    switch (opcode) {
+'''
+
+inst_cpp_footer = '''    default:
+        FAIL("# Error. No such instruction");
+    }
+}
 '''
 
 disasm_header = '''#include "simulator.hpp"
@@ -155,12 +163,9 @@ def main():
                 inst = inst_[0]
                 inst_hpp_tmp.write(
                     '    State {}(Instruction);\n'.format(inst.lower(), ))
-                cpp_tmp.write('''    m_inst_funcs.emplace(
-        OpCode::{}, [this](Instruction inst) {{ return {}(inst); }});\n'''
-                              .format(inst, inst.lower()))
-                cpp_tmp.write(
-                    '    m_inst_cnt.emplace(OpCode::{}, 0);\n'.format(inst))
-            cpp_tmp.write('}\n')
+                inst_cpp_tmp.write('''    case OpCode::{}:
+        return {}(inst);\n'''.format(inst, inst.lower()))
+            inst_cpp_tmp.write(inst_cpp_footer)
 
     # disassembler
     def mnemonic(m):

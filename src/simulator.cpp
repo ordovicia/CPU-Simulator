@@ -9,7 +9,6 @@ Simulator::Simulator(
       m_interactive(interactive),
       m_output_memory(output_memory)
 {
-    initInstruction();
     initDisassembler();
 
     m_binfile.open(binfile, std::ios::binary);
@@ -241,8 +240,8 @@ OpCode Simulator::decodeOpCode(Instruction inst)
 Simulator::State Simulator::exec(OpCode opcode, Instruction inst)
 {
     try {
-        m_inst_cnt.at(opcode)++;
-        return (m_inst_funcs.at(opcode))(inst);
+        m_inst_cnt[opcode]++;
+        return execInst(opcode, inst);
     } catch (std::out_of_range e) {
         FAIL("# Invalid instruction code " << static_cast<uint32_t>(opcode)
                                            << "\n" << e.what());

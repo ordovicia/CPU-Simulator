@@ -136,14 +136,13 @@ private:
         uint32_t addr;
     };
 
-    // Function for each instruction
-    std::unordered_map<OpCode, std::function<State(Instruction)>> m_inst_funcs;
     // Instruction called counter
     std::unordered_map<OpCode, int64_t> m_inst_cnt;
-    void initInstruction();
 
     static OpCode decodeOpCode(Instruction);
+
     State exec(OpCode, Instruction);
+    State execInst(OpCode, Instruction);
 
     static OperandR decodeR(Instruction);
     static OperandI decodeI(Instruction);
