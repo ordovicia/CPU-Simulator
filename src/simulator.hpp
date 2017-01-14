@@ -21,6 +21,7 @@ public:
         bool output_memory);
 
     void run();
+    void disasm();
 
 private:
     const std::string m_binfile_name;

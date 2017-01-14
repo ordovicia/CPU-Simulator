@@ -19,17 +19,20 @@ int main(int argc, char** argv)
         }
 
         int result;
-        bool interactive = true, output_memory = false;
+        bool interactive = true, output_memory = false, disasm = false;
         std::string binfile;
         std::string infile;
 
-        while ((result = getopt(argc, argv, "rmf:i:")) != -1) {
+        while ((result = getopt(argc, argv, "rmdf:i:")) != -1) {
             switch (result) {
             case 'r':
                 interactive = false;
                 break;
             case 'm':
                 output_memory = true;
+                break;
+            case 'd':
+                disasm = true;
                 break;
             case 'f':
                 binfile = optarg;
@@ -46,18 +49,22 @@ int main(int argc, char** argv)
         if (binfile.empty())
             FAIL("# No binfile given");
 
-        // ncurses setting
-        initscr();
-        nocbreak();
-        echo();
-        start_color();
-        init_pair(0, COLOR_WHITE, COLOR_BLACK);
-        g_ncurses = true;
-
-        std::atexit(endwin_);
+        if (not disasm) {
+            // ncurses setting
+            initscr();
+            nocbreak();
+            echo();
+            start_color();
+            init_pair(0, COLOR_WHITE, COLOR_BLACK);
+            g_ncurses = true;
+            std::atexit(endwin_);
+        }
 
         Simulator sim{binfile, infile, interactive, output_memory};
-        sim.run();
+        if (disasm)
+            sim.disasm();
+        else
+            sim.run();
 
         return 0;
     } catch (const std::exception& e) {

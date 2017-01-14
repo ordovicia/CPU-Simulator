@@ -73,7 +73,11 @@ void Simulator::run()
             getnstr(input, 32);
 
 #define PRINT_ERROR(msg) \
-    do { addstr(#msg); refresh(); getch(); } while (0)
+    do {                 \
+        addstr(#msg);    \
+        refresh();       \
+        getch();         \
+    } while (0)
 
             if (streq(input, "run") or streq(input, "r")) {
                 run = true;
@@ -176,6 +180,15 @@ void Simulator::run()
                 FAIL("# Error. Program counter out of range\n" << e.what());
             }
         }
+    }
+}
+
+void Simulator::disasm()
+{
+    int64_t c = 0;
+    for (const auto& inst : m_codes) {
+        printf("%10lld | %s\n", c, disasm(inst).c_str());
+        c += 4;
     }
 }
 

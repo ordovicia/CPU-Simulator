@@ -114,13 +114,14 @@ void Simulator::printCode() const
         else
             attrset(COLOR_PAIR(0));
 
-        printw("%c %10d | ",
+        printw("%c %10lld | ",
             (m_breakpoints.count(c * 4) != 0 ? 'b' : ' '), c * 4);
         auto code = m_codes.at(c);
         printBitset(code);
+        addstr(" | ");
 
         auto asm_ = disasm(code);
-        asm_.resize(m_screen.width - 42);
+        asm_.resize(m_screen.width - 52);
         addstr(asm_.c_str());
         addch('\n');
     }
@@ -134,7 +135,7 @@ void Simulator::printBreakPoints() const
     if (m_breakpoints.size() == 0)
         addstr("No breakpoint");
     for (auto b : m_breakpoints)
-        printw("%d, ", b);
+        printw("%lld, ", b);
     refresh();
 }
 

@@ -10,7 +10,7 @@ std::string Simulator::disasm(Simulator::Instruction inst) const
     auto mnemo = m_mnemonic_table.at(decodeOpCode(inst));
 
     std::ostringstream oss;
-    oss << " | " << std::setw(7) << mnemo.mnemonic;
+    oss << std::setw(7) << mnemo.mnemonic;
 
     auto writeR = [&](Field f, const int32_t& r) {
         switch (f) {
