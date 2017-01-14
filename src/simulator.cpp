@@ -108,12 +108,22 @@ void Simulator::run()
                 continue;
             } else if (streqn(input, "step", 4) && not m_halt) {
                 int s = 0;
-                if (sscanf(input + 4, "%d", &s) == 1)
-                    step_cnt = s - 1;
+                if (sscanf(input + 4, "%d", &s) == 1) {
+                    if (s <= 0) {
+                        PRINT_ERROR("# Error. Invalid step format");
+                    } else {
+                        step_cnt = s - 1;
+                    }
+                }
             } else if (streqn(input, "s", 1) && not m_halt) {
                 int s = 0;
-                if (sscanf(input + 1, "%d", &s) == 1)
-                    step_cnt = s - 1;
+                if (sscanf(input + 1, "%d", &s) == 1) {
+                    if (s <= 0) {
+                        PRINT_ERROR("# Error. Invalid step format");
+                    } else {
+                        step_cnt = s - 1;
+                    }
+                }
             } else if (streq(input, "prev") or streq(input, "p")) {
                 if (m_state_iter == m_state_hist.deque.begin()) {
                     PRINT_ERROR("# Error. Out of saved history");
