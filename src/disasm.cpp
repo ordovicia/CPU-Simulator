@@ -61,7 +61,7 @@ std::string Simulator::disasm(Simulator::Instruction inst) const
     }
     case OperandType::J: {
         auto op = decodeJ(inst);
-        oss << op.addr;
+        oss << ' ' << op.addr;
         break;
     }
     default:

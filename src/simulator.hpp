@@ -30,6 +30,7 @@ private:
     const bool m_output_memory;
 
     bool m_halt = false;
+    bool m_running = false;
     std::unordered_set<int64_t> m_breakpoints;
 
     std::ifstream m_infile;

@@ -42,29 +42,32 @@ Simulator::Simulator(
 
 void Simulator::run()
 {
-    bool run = false;
     int step_cnt = 0;
+
+    auto printConsole = [this] {
+        erase();
+        m_screen.update();
+        printState();
+        printCode();
+    };
 
     while (true) {
         if (not m_interactive) {
             if (m_halt)
                 return;
-            if (m_dynamic_inst_cnt % STATE_HIST_SIZE == 0) {
-                erase();
-                printw("[%s] PC = %lld, Static/Dynamic inst cnt = %zu/%lld\n",
-                    m_binfile_name.c_str(), m_state_iter->pc,
-                    m_codes.size(), m_dynamic_inst_cnt);
+            if (m_dynamic_inst_cnt % (1 << 16) == 0) {
+                printConsole();
                 refresh();
             }
         } else if (step_cnt > 0) {
             step_cnt--;
-        } else if (!run || m_halt) {
-            // Console output
-            erase();
-            m_screen.update();
-            printState();
-            printCode();
-
+        } else if (m_running) {
+            if (m_dynamic_inst_cnt % (1 << 16) == 0) {
+                printConsole();
+                refresh();
+            }
+        } else {
+            printConsole();
             // Input command
             addstr(">> ");
             refresh();
@@ -79,11 +82,10 @@ void Simulator::run()
         getch();         \
     } while (0)
 
-            if (streq(input, "run") or streq(input, "r")) {
-                run = true;
+            if ((streq(input, "run") or streq(input, "r")) && not m_halt) {
+                m_running = true;
             } else if (streq(input, "reset")) {
                 reset();
-                run = false;
                 continue;
             } else if (streqn(input, "break", 5)) {  // set breakpoint
                 int b;
@@ -116,11 +118,11 @@ void Simulator::run()
                 }
 
                 continue;
-            } else if (streqn(input, "step", 4)) {
+            } else if (streqn(input, "step", 4) && not m_halt) {
                 int s = 0;
                 if (sscanf(input + 4, "%d", &s) == 1)
                     step_cnt = s - 1;
-            } else if (streqn(input, "s", 1)) {
+            } else if (streqn(input, "s", 1) && not m_halt) {
                 int s = 0;
                 if (sscanf(input + 1, "%d", &s) == 1)
                     step_cnt = s - 1;
@@ -136,7 +138,6 @@ void Simulator::run()
                     m_state_iter--;
                 }
 
-                run = false;
                 m_halt = false;
                 continue;
             } else if (streqn(input, "pm", 2)) {
@@ -175,7 +176,7 @@ void Simulator::run()
                 }
 
                 if (m_breakpoints.find(m_state_iter->pc) != m_breakpoints.end())
-                    run = false;
+                    m_running = false;
             } catch (std::out_of_range e) {
                 FAIL("# Error. Program counter out of range\n" << e.what());
             }
@@ -195,6 +196,7 @@ void Simulator::disasm()
 void Simulator::reset()
 {
     m_halt = false;
+    m_running = false;
     m_dynamic_inst_cnt = 0;
     m_breakpoints.clear();
     m_state_hist.deque.clear();
