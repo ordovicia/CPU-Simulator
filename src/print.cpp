@@ -45,7 +45,7 @@ void Simulator::Screen::printBoarder(char c, bool p) const
 
 void Simulator::printState() const
 {
-    printw("[%s] Static/Dynamic inst cnt = %zu/%d\n",
+    printw("[%s] Static/Dynamic inst cnt = %10zu/%12lld\n",
         m_binfile_name.c_str(), m_codes.size(), m_dynamic_inst_cnt);
 
     m_screen.printBoarder('=', false);

@@ -51,7 +51,7 @@ void Simulator::run()
                 return;
             if (m_dynamic_inst_cnt % STATE_HIST_SIZE == 0) {
                 erase();
-                printw("[%s] PC = %d, Static/Dynamic inst cnt = %zu/%d\n",
+                printw("[%s] PC = %lld, Static/Dynamic inst cnt = %zu/%lld\n",
                     m_binfile_name.c_str(), m_state_iter->pc,
                     m_codes.size(), m_dynamic_inst_cnt);
                 refresh();
