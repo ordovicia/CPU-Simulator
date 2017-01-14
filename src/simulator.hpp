@@ -4,7 +4,6 @@
 #include <fstream>
 #include <array>
 #include <vector>
-#include <unordered_set>
 #include <unordered_map>
 #include <functional>
 #include <string>
@@ -31,7 +30,10 @@ private:
 
     bool m_halt = false;
     bool m_running = false;
-    std::unordered_set<int64_t> m_breakpoints;
+
+    // breakpointの、PCとdelay（N回通ったらbreak）のマップ
+    std::unordered_map<int64_t, int64_t> m_breakpoints;
+    void inputBreakpoint(char* input);
 
     std::ifstream m_infile;
     std::ofstream m_outfile;

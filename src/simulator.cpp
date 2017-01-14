@@ -88,22 +88,10 @@ void Simulator::run()
                 reset();
                 continue;
             } else if (streqn(input, "break", 5)) {  // set breakpoint
-                int b;
-                if (sscanf(input + 5, "%d", &b) != 1) {
-                    PRINT_ERROR("# Error. Invalid breakpoint format");
-                } else {
-                    m_breakpoints.insert(b);
-                }
-
+                inputBreakpoint(input + 5);
                 continue;
             } else if (streqn(input, "b", 1)) {  // set breakpoint
-                int b;
-                if (sscanf(input + 1, "%d", &b) != 1) {
-                    PRINT_ERROR("# Error. Invalid breakpoint format");
-                } else {
-                    m_breakpoints.insert(b);
-                }
-
+                inputBreakpoint(input + 1);
                 continue;
             } else if (streq(input, "pb")) {  // print breakpoint
                 printBreakPoints();
@@ -178,8 +166,14 @@ void Simulator::run()
                     m_state_iter++;
                 }
 
-                if (m_breakpoints.find(m_state_iter->pc) != m_breakpoints.end())
-                    m_running = false;
+                auto bp = m_breakpoints.find(m_state_iter->pc);
+                if (bp != m_breakpoints.end()) {
+                    if (bp->second == 0) {
+                        m_running = false;
+                    } else {
+                        bp->second--;
+                    }
+                }
             } catch (std::out_of_range e) {
                 FAIL("# Error. Program counter out of range\n" << e.what());
             }
@@ -193,6 +187,25 @@ void Simulator::disasm()
     for (const auto& inst : m_codes) {
         printf("%10lld | %s\n", c, disasm(inst).c_str());
         c += 4;
+    }
+}
+
+void Simulator::inputBreakpoint(char* input)
+{
+    int b, c;
+    switch (sscanf(input, "%d %d", &b, &c)) {
+    case 1:
+        m_breakpoints[b] = 0;
+        break;
+    case 2:
+        if (c <= 0) {
+            PRINT_ERROR("# Error. Invalid breakpoint format");
+        } else {
+            m_breakpoints[b] = c;
+        }
+        break;
+    default:
+        PRINT_ERROR("# Error. Invalid breakpoint format");
     }
 }
 

@@ -50,7 +50,7 @@ $ ./simulator -f test.bin
 
 * run|r -- halt命令まで進めます。
 * reset -- 初期状態にリセットします。
-* (break|b) [int] -- 指定したプログラムカウンタにbreakpointをはります。
+* (break|b) [int] <int> -- 指定したプログラムカウンタにbreakpointをはります。自然数を指定すると、その回数だけ命令を実行した後breakします。
 * pb -- breakpointを表示します。
 * db [int] -- 指定したbreakpointを削除します。
 * pm [int] -- 指定したインデックスのメモリの状態を表示します。
