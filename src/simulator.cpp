@@ -54,14 +54,14 @@ void Simulator::run()
         if (not m_interactive) {
             if (m_halt)
                 return;
-            if (m_dynamic_inst_cnt % (1 << 16) == 0) {
+            if (m_dynamic_inst_cnt % (1 << 20) == 0) {
                 printConsole();
                 refresh();
             }
         } else if (step_cnt > 0) {
             step_cnt--;
         } else if (m_running) {
-            if (m_dynamic_inst_cnt % (1 << 16) == 0) {
+            if (m_dynamic_inst_cnt % (1 << 20) == 0) {
                 printConsole();
                 refresh();
             }
@@ -195,7 +195,7 @@ void Simulator::disasm()
 {
     int64_t c = 0;
     for (const auto& inst : m_codes) {
-        printf("%10lld | %s\n", c, disasm(inst).c_str());
+        printf("%7lld | %s\n", c, disasm(inst).c_str());
         c += 4;
     }
 }
