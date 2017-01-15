@@ -65,7 +65,6 @@ std::string Simulator::disasm(Simulator::Instruction inst) const
         break;
     }
     default:
-        FAIL("# Error. Invalid OperandType");
         break;
     }
 

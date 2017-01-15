@@ -148,6 +148,7 @@ void Simulator::run()
                 continue;
             } else if (streq(input, "log") or streq(input, "l")) {
                 dumpLog();
+                getch();
                 continue;
             } else if (streq(input, "quit") or streq(input, "q")) {
                 return;
@@ -284,5 +285,4 @@ void Simulator::dumpLog() const
 
     addstr("done!\n");
     refresh();
-    getch();
 }
