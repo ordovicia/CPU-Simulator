@@ -7,7 +7,11 @@ std::string Simulator::disasm(Simulator::Instruction inst) const
 {
     using Field = Mnemonic::OperandField;
 
-    auto mnemo = m_mnemonic_table.at(decodeOpCode(inst));
+    auto opcode = decodeOpCode(inst);
+    if (m_mnemonic_table.count(opcode) == 0)
+        return "";
+
+    auto mnemo = m_mnemonic_table.at(opcode);
 
     std::ostringstream oss;
     oss << std::setw(7) << mnemo.mnemonic;

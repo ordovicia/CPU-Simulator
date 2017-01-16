@@ -8,6 +8,9 @@ import shutil
 
 insts = {
     # opcode: (mnemonic, operand type, [used operand field])
+    0: ('ASRT', 'I', ['R']),
+    1: ('ASRT_S', 'I', ['R']),
+
     4: ('NOP', 'N', []),
     5: ('HALT', 'N', []),
     6: ('IN', 'R', [None, None, 'R']),
@@ -67,8 +70,6 @@ insts = {
     60: ('CVT_S_W', 'I', ['F', 'F']),
     61: ('CVT_W_S', 'I', ['F', 'F']),
     62: ('MOV_S', 'I', ['F', 'F']),
-
-    63: ('ASRT', 'I', ['R']),
 }
 
 opcode_name = 'opcode.hpp'
