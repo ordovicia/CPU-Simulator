@@ -12,8 +12,7 @@ Simulator::State Simulator::lwc1(Instruction inst)
 
     new_state.pc += 4;
     try {
-        new_state.freg.at(op.rt)
-            = btof(static_cast<uint32_t>(m_memory.at(addr)));
+        new_state.freg.at(op.rt) = btof(m_memory.at(addr));
     } catch (std::out_of_range e) {
         FAIL("# Memory index out of range\n" << e.what());
     }

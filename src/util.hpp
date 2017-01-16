@@ -44,18 +44,29 @@ bool streqn(const char* s1, const char* s2, int n);
 
 union FloatBit {
     float f;
-    uint32_t b;
+    int32_t b;
 };
 
-inline uint32_t ftob(float f)
+inline int32_t ftob(float f)
 {
     FloatBit fb{f};
     return fb.b;
 }
 
-inline float btof(uint32_t b)
+inline float btof(int32_t b)
 {
     FloatBit fb;
     fb.b = b;
     return fb.f;
+}
+
+union FloatUBit {
+    float f;
+    uint32_t u;
+};
+
+inline uint32_t ftou(float f)
+{
+    FloatUBit fu{f};
+    return fu.u;
 }

@@ -76,7 +76,7 @@ void Simulator::printState() const
 
         int i;
         for (i = 0; i < FREG_SIZE; i++) {
-            uint32_t b = ftob(freg.at(i));
+            uint32_t b = ftou(freg.at(i));
             printw("f%-2d 0x%08x", i, b);
             if (i % cn + 1 == cn)
                 addch('\n');
