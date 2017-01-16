@@ -76,7 +76,7 @@ void Simulator::run()
 
 #define PRINT_ERROR(msg) \
     do {                 \
-        addstr(#msg);    \
+        addstr(msg);     \
         refresh();       \
         getch();         \
     } while (0)
