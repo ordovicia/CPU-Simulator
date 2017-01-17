@@ -41,7 +41,7 @@ Simulator::Simulator(
 
 void Simulator::run()
 {
-    int step_cnt = 0;
+    int64_t step_cnt = 0;
 
     auto printConsole = [this] {
         erase();
@@ -106,8 +106,8 @@ void Simulator::run()
 
                 continue;
             } else if (streqn(input, "step", 4) && not m_halt) {
-                int s = 0;
-                if (sscanf(input + 4, "%d", &s) == 1) {
+                int64_t s = 0;
+                if (sscanf(input + 4, "%lld", &s) == 1) {
                     if (s <= 0) {
                         PRINT_ERROR("# Error. Invalid step format");
                     } else {
@@ -115,8 +115,8 @@ void Simulator::run()
                     }
                 }
             } else if (streqn(input, "s", 1) && not m_halt) {
-                int s = 0;
-                if (sscanf(input + 1, "%d", &s) == 1) {
+                int64_t s = 0;
+                if (sscanf(input + 1, "%lld", &s) == 1) {
                     if (s <= 0) {
                         PRINT_ERROR("# Error. Invalid step format");
                     } else {

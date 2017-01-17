@@ -23,8 +23,8 @@ uint32_t bitset(uint32_t inst, int begin, int end);
 
 /*
  * Sign extention.
- * signExt(01010, 5) -> 0..00001010
- * signExt(11010, 5) -> 1..11111010
+ * signExt(01010, 5) -> 00..00001010
+ * signExt(11010, 5) -> 11..11111010
  */
 uint32_t signExt(uint32_t x, int bits);
 
