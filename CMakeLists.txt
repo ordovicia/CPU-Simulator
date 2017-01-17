@@ -43,9 +43,11 @@ add_custom_target(gen_instruction
     COMMAND python ${CMAKE_CURRENT_LIST_DIR}/tools/gen_instruction.py
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/generated)
 
+add_executable(dec2bin tools/dec2bin.cpp)
+
 # Build executable
 add_executable(simulator ${SOURCES})
-add_dependencies(simulator gen_instruction)
+add_dependencies(simulator gen_instruction dec2bin)
 target_link_libraries(simulator ncurses)
 
 # Clean
