@@ -5,6 +5,7 @@ import re
 import os
 import subprocess
 import shutil
+from header_footer import *
 
 insts = {
     # opcode: (mnemonic, operand type, [used operand field])
@@ -77,75 +78,6 @@ inst_hpp_name = 'instructions.hpp'
 inst_cpp_name = 'exec_inst.cpp'
 disasm_name = 'init_disasm.cpp'
 test_run_name = 'run.sh'
-
-opcode_header = '''#pragma once
-
-#include <cstdint>
-#include <functional>
-
-enum class OpCode : uint32_t {
-'''
-opcode_footer = '''};
-
-namespace std
-{
-    template <>
-    struct hash<OpCode> {
-        size_t operator()(const OpCode& op) const
-        {
-            return hash<uint32_t>{}(static_cast<uint32_t>(op));
-        }
-    };
-}
-'''
-
-inst_cpp_header = '''#include "simulator.hpp"
-#include "util.hpp"
-
-Simulator::State Simulator::execInst(OpCode opcode, Instruction inst)
-{
-    switch (opcode) {
-'''
-
-inst_cpp_footer = '''    default:
-        FAIL("# Error. No such instruction");
-    }
-}
-'''
-
-disasm_header = '''#include "simulator.hpp"
-
-void Simulator::initDisassembler()
-{
-    using Field = Mnemonic::OperandField;
-
-'''
-
-test_run_header = '''#!/bin/sh
-
-set -e
-
-testdir=$PWD
-cd ..
-root=$PWD
-
-insts=(
-'''
-
-test_run_footer = '''
-)
-
-for inst in ${insts[@]}; do
-    cd $testdir
-    if [ -e $inst ]; then
-        cd $inst
-        python $root/tools/ascii2bin.py $inst.txt ${inst%.txt}.bin
-        echo "testing" $inst "..."
-        $root/build/simulator -f $inst.bin -i $testdir/input.txt -r
-        echo "passed"
-    fi
-done
-'''
 
 
 def main():
