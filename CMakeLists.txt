@@ -4,8 +4,8 @@ project(cpu-simulator CXX)
 
 # Version
 set(VERSION_MAJOR 0)
-set(VERSION_MINOR 0)
-set(VERSION_PATCH 1-alpha)
+set(VERSION_MINOR 1)
+set(VERSION_PATCH 0)
 
 # Compiler
 message("Compiler:\n\t${CMAKE_CXX_COMPILER}")
@@ -47,7 +47,7 @@ add_executable(dec2bin tools/dec2bin.cpp)
 
 # Build executable
 add_executable(simulator ${SOURCES})
-add_dependencies(simulator gen_instruction dec2bin)
+add_dependencies(simulator gen_instruction)
 target_link_libraries(simulator ncurses)
 
 # Clean
