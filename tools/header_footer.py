@@ -71,10 +71,12 @@ function do_test() {
 }
 
 if [ $# -ge 1 ]; then
-    do_test $*
+    inst_list=$*
 else
-    for inst in ${insts[@]}; do
-        do_test $inst
-    done
+    inst_list=${insts[@]}
 fi
+
+for inst in $inst_list; do
+    do_test $inst
+done
 '''

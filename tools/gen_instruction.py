@@ -111,7 +111,7 @@ def main():
         r = '{'
         for i in range(4):
             r += 'Field::' \
-                + (of[i] if (i < len(of) and of[i] is not None) else 'N') \
+                + (of[i] if (i < len(of) and (of[i] is not None)) else 'N') \
                 + (', ' if i != 3 else '')
         return r + '}'
 

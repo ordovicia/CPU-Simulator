@@ -48,10 +48,7 @@ std::string Simulator::disasm(Simulator::Instruction inst) const
         writeR(of[0], op.rs);
         writeR(of[1], op.rt);
 
-        if (decodeOpCode(inst) == OpCode::ASRT) {
-            oss << ' '
-                << static_cast<int32_t>(signExt(bitset(inst, 11, 32), 21));
-        } else if (of[2] == Field::I) {
+        if (of[2] == Field::I) {
             auto imm_ext = static_cast<int32_t>(signExt(op.immediate, 16));
             oss << ' ';
             if (imm_ext < 0)
