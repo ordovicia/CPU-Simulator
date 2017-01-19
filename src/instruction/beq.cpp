@@ -1,17 +1,16 @@
 #include "simulator.hpp"
 #include "util.hpp"
 
-Simulator::State Simulator::beq(Instruction inst)
+Simulator::PreState Simulator::beq(Instruction inst)
 {
-    auto new_state = *m_state_iter;
-    new_state.memory_patch = MemoryPatch{};
-
     auto op = decodeI(inst);
 
-    if (m_state_iter->reg.at(op.rs) == m_state_iter->reg.at(op.rt))
-        new_state.pc += static_cast<int32_t>(signExt(op.immediate, 16)) << 2;
-    else
-        new_state.pc += 4;
+    auto pre_state = makePrePCState(m_pc);
 
-    return new_state;
+    if (m_reg.at(op.rs) == m_reg.at(op.rt))
+        m_pc += static_cast<int32_t>(signExt(op.immediate, 16)) << 2;
+    else
+        m_pc += 4;
+
+    return pre_state;
 }

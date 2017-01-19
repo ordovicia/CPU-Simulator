@@ -1,14 +1,15 @@
 #include "simulator.hpp"
 
-Simulator::State Simulator::out(Instruction inst)
+Simulator::PreState Simulator::out(Instruction inst)
 {
-    auto new_state = *m_state_iter;
-    new_state.memory_patch = MemoryPatch{};
-
     auto op = decodeR(inst);
-    m_outfile << static_cast<char>(m_state_iter->reg.at(op.rs));
+
+    auto pre_state = makePrePCState(m_pc);
+
+    m_outfile << static_cast<char>(m_reg.at(op.rs));
     m_outfile << std::flush;
 
-    new_state.pc += 4;
-    return new_state;
+    m_pc += 4;
+
+    return pre_state;
 }

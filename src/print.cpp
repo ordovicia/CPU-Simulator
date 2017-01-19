@@ -50,11 +50,9 @@ void Simulator::printState() const
     auto cn = m_screen.col_num;
 
     {  // Register
-        auto reg = m_state_iter->reg;
-
         int i;
         for (i = 0; i < REG_NUM; i++) {
-            printw("r%-2d 0x%08x", i, reg.at(i));
+            printw("r%-2d 0x%08x", i, m_reg.at(i));
             if (i % cn + 1 == cn)
                 addch('\n');
             else
@@ -70,11 +68,9 @@ void Simulator::printState() const
     m_screen.printBoarder('-');
 
     {  // Floating point register
-        auto freg = m_state_iter->freg;
-
         int i;
         for (i = 0; i < FREG_NUM; i++) {
-            uint32_t b = ftou(freg.at(i));
+            uint32_t b = ftou(m_freg.at(i));
             printw("f%-2d 0x%08x", i, b);
             if (i % cn + 1 == cn)
                 addch('\n');
@@ -96,17 +92,17 @@ void Simulator::printCode() const
 {
     auto cwl = m_screen.code_window_len;
 
-    int64_t pc4 = m_state_iter->pc / 4;
+    int64_t pc_idx = m_pc / 4;
     int64_t max_code_idx
-        = std::min(pc4 + cwl, static_cast<int64_t>(m_codes.size()));
+        = std::min(pc_idx + cwl, static_cast<int64_t>(m_codes.size()));
 
-    for (int64_t c = pc4 - cwl; c < pc4 + cwl; c++) {
+    for (int64_t c = pc_idx - cwl; c < pc_idx + cwl; c++) {
         if (c < 0 or c >= max_code_idx) {
             addstr("          |\n");
             continue;
         }
 
-        if (c == pc4)
+        if (c == pc_idx)
             attrset(COLOR_PAIR(0) | A_REVERSE);
 
         printw("%c %7lld | ",
@@ -120,7 +116,7 @@ void Simulator::printCode() const
         addstr(asm_.c_str());
         addch('\n');
 
-        if (c == pc4)
+        if (c == pc_idx)
             attrset(COLOR_PAIR(0));
     }
 

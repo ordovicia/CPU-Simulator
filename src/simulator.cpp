@@ -27,16 +27,14 @@ Simulator::Simulator(
 
     constexpr size_t CODE_RESERVE_SIZE = 1 << 12;
     m_codes.reserve(CODE_RESERVE_SIZE);
-    uint64_t static_inst_cnt = 0;
     Instruction r;
     while (m_binfile.read(reinterpret_cast<char*>(&r), sizeof r)) {
         m_codes.emplace_back(r);
-        static_inst_cnt++;
     }
-    m_pc_called_cnt.resize(static_inst_cnt);
+    m_pc_called_cnt.resize(m_codes.size());
 
-    m_state_hist.push(State{});
-    m_state_iter = m_state_hist.deque.begin();
+    m_state_hist.push(PreState{});
+    m_state_hist_iter = m_state_hist.deque.begin();
 }
 
 void Simulator::run()
@@ -71,8 +69,8 @@ void Simulator::run()
             addstr(">> ");
             refresh();
 
-            char input[32];
-            getnstr(input, 32);
+            char input[64];
+            getnstr(input, 64);
 
 #define PRINT_ERROR(msg) \
     do {                 \
@@ -81,22 +79,22 @@ void Simulator::run()
         getch();         \
     } while (0)
 
-            if ((streq(input, "run") or streq(input, "r")) && not m_halt) {
+            if ((streq(input, "run") || streq(input, "r")) && not m_halt) {
                 m_running = true;
             } else if (streq(input, "reset")) {
                 reset();
                 continue;
-            } else if (streqn(input, "break", 5)) {  // set breakpoint
+            } else if (streqn(input, "break", 5)) {
                 inputBreakpoint(input + 5);
                 continue;
-            } else if (streqn(input, "b", 1)) {  // set breakpoint
+            } else if (streqn(input, "b", 1)) {
                 inputBreakpoint(input + 1);
                 continue;
-            } else if (streq(input, "pb")) {  // print breakpoint
+            } else if (streq(input, "pb")) {
                 printBreakPoints();
                 getch();
                 continue;
-            } else if (streqn(input, "db", 2)) {  // delete breakpoint
+            } else if (streqn(input, "db", 2)) {
                 int b;
                 if (sscanf(input + 2, "%d", &b) != 1) {
                     PRINT_ERROR("# Error: Invalid breakpoint format");
@@ -123,16 +121,28 @@ void Simulator::run()
                         step_cnt = s - 1;
                     }
                 }
-            } else if (streq(input, "prev") or streq(input, "p")) {
-                if (m_state_iter == m_state_hist.deque.begin()) {
+            } else if (streq(input, "prev") || streq(input, "p")) {
+                if (m_state_hist_iter == m_state_hist.deque.begin()) {
                     PRINT_ERROR("# Error: Out of saved history");
                     continue;
                 } else {
-                    const auto& mp = m_state_iter->memory_patch;
-                    if (mp.valid)
-                        m_memory.at(mp.idx) = mp.pre_val;
+                    const auto& pc = m_state_hist_iter->pc;
+                    if (pc.changed)
+                        m_pc = pc.preval;
 
-                    m_state_iter--;
+                    const auto& gpreg = m_state_hist_iter->gpreg;
+                    if (gpreg.changed)
+                        m_reg.at(gpreg.idx) = gpreg.preval;
+
+                    const auto& freg = m_state_hist_iter->freg;
+                    if (freg.changed)
+                        m_freg.at(freg.idx) = freg.preval;
+
+                    const auto& mem = m_state_hist_iter->mem;
+                    if (mem.changed)
+                        m_memory.at(mem.idx) = mem.preval;
+
+                    m_state_hist_iter--;
                 }
 
                 m_halt = false;
@@ -162,30 +172,27 @@ void Simulator::run()
         }
 
         if (not m_halt) {  // next instruction
-            try {
-                auto pc = m_state_iter->pc / 4;
-                Instruction inst = m_codes.at(pc);  // fetch
-                auto opcode = decodeOpCode(inst);
-                auto new_state = exec(opcode, inst);
+            auto pc_idx = m_pc / 4;
+            if (pc_idx < 0 || static_cast<int64_t>(m_codes.size()) <= pc_idx)
+                FAIL("# Error: Program counter out of range");
+            Instruction inst = m_codes[pc_idx];  // fetch
+            auto opcode = decodeOpCode(inst);
+            auto pre_state = exec(opcode, inst);
 
-                if (m_state_iter == std::prev(m_state_hist.deque.end())) {
-                    m_state_iter = m_state_hist.push(new_state);
-                    m_pc_called_cnt.at(pc)++;
-                    m_dynamic_inst_cnt++;
-                } else {
-                    m_state_iter++;
-                }
+            if (m_state_hist_iter == std::prev(m_state_hist.deque.end())) {
+                m_state_hist_iter = m_state_hist.push(pre_state);
+                m_pc_called_cnt.at(pc_idx)++;
+                m_dynamic_inst_cnt++;
+            } else {
+                m_state_hist_iter++;
+            }
 
-                auto bp = m_breakpoints.find(m_state_iter->pc);
-                if (bp != m_breakpoints.end()) {
-                    if (bp->second == 0) {
-                        m_running = false;
-                    } else {
-                        bp->second--;
-                    }
-                }
-            } catch (std::out_of_range e) {
-                FAIL("# Error: Program counter out of range\n" << e.what());
+            auto bp = m_breakpoints.find(m_pc);
+            if (bp != m_breakpoints.end()) {
+                if (bp->second == 0)  // break
+                    m_running = false;
+                else
+                    bp->second--;
             }
         }
     }
@@ -223,16 +230,19 @@ void Simulator::reset()
 {
     m_halt = false;
     m_running = false;
+
     m_dynamic_inst_cnt = 0;
     for (auto& p : m_inst_cnt)
         p.second = 0;
+
     m_breakpoints.clear();
+
     m_state_hist.deque.clear();
-    m_state_hist.push(State{});
-    m_state_iter = m_state_hist.deque.begin();
+    m_state_hist.push(PreState{});
+    m_state_hist_iter = m_state_hist.deque.begin();
 }
 
-Simulator::State Simulator::exec(OpCode opcode, Instruction inst)
+Simulator::PreState Simulator::exec(OpCode opcode, Instruction inst)
 {
     m_inst_cnt[opcode]++;
     return execInst(opcode, inst);
@@ -265,11 +275,11 @@ void Simulator::dumpLog() const
         ofstream ofs{"register.log"};
         ofs << hex;
         ofs << "# General purpose registers" << endl;
-        for (auto r : m_state_iter->reg)
-            ofs << r << endl;
+        for (auto r : m_reg)
+            ofs << "0x" << static_cast<uint32_t>(r) << endl;
         ofs << "# Floating point registers" << endl;
-        for (auto f : m_state_iter->freg)
-            ofs << f << endl;
+        for (auto f : m_freg)
+            ofs << "0x" << ftou(f) << endl;
     }
 
     if (m_output_memory) {
@@ -280,6 +290,5 @@ void Simulator::dumpLog() const
     }
 
     addstr("done!\n");
-    getch();
     refresh();
 }

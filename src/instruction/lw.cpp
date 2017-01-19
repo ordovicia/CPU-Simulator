@@ -1,21 +1,19 @@
 #include "simulator.hpp"
 #include "util.hpp"
 
-Simulator::State Simulator::lw(Instruction inst)
+Simulator::PreState Simulator::lw(Instruction inst)
 {
-    auto new_state = *m_state_iter;
-    new_state.memory_patch = MemoryPatch{};
-
     auto op = decodeI(inst);
-    auto addr = (m_state_iter->reg.at(op.rs)
+
+    auto pre_state = makePreGPRegState(op.rt);
+
+    auto addr = (m_reg.at(op.rs)
                     + static_cast<int32_t>(signExt(op.immediate, 16))) / 4;
+    if (addr < 0 || addr >= static_cast<int32_t>(MEMORY_NUM))
+        FAIL("# Error: Memory index out of range");
 
-    new_state.pc += 4;
-    try {
-        new_state.reg.at(op.rt) = m_memory.at(addr);
-    } catch (std::out_of_range e) {
-        FAIL("# Memory index out of range\n" << e.what());
-    }
+    m_reg.at(op.rt) = m_memory[addr];
+    m_pc += 4;
 
-    return new_state;
+    return pre_state;
 }

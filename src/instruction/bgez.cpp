@@ -1,18 +1,16 @@
 #include "simulator.hpp"
 #include "util.hpp"
 
-Simulator::State Simulator::bgez(Instruction inst)
+Simulator::PreState Simulator::bgez(Instruction inst)
 {
-    auto new_state = *m_state_iter;
-    new_state.memory_patch = MemoryPatch{};
-
     auto op = decodeI(inst);
-    auto rs = static_cast<int32_t>(m_state_iter->reg.at(op.rs));
 
-    if (rs >= 0)
-        new_state.pc += static_cast<int64_t>(signExt(op.immediate, 16)) << 2;
+    auto pre_state = makePrePCState(m_pc);
+
+    if (m_reg.at(op.rs) >= 0)
+        m_pc += static_cast<int64_t>(signExt(op.immediate, 16)) << 2;
     else
-        new_state.pc += 4;
+        m_pc += 4;
 
-    return new_state;
+    return pre_state;
 }

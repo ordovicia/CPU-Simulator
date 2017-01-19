@@ -1,19 +1,21 @@
 #include "simulator.hpp"
 #include "util.hpp"
 
-Simulator::State Simulator::bgezal(Instruction inst)
+Simulator::PreState Simulator::bgezal(Instruction inst)
 {
-    auto new_state = *m_state_iter;
-    new_state.memory_patch = MemoryPatch{};
-
     auto op = decodeI(inst);
-    auto rs = static_cast<int32_t>(m_state_iter->reg.at(op.rs));
 
-    if (rs >= 0) {
-        new_state.reg.at(31) = static_cast<int32_t>(m_state_iter->pc + 4);
-        new_state.pc += static_cast<int64_t>(signExt(op.immediate, 16)) << 2;
+    auto pre_state = makePrePCState(m_pc);
+
+    if (m_reg.at(op.rs) >= 0) {
+        pre_state.gpreg.changed = true;
+        pre_state.gpreg.idx = 31;
+        pre_state.gpreg.preval = m_reg.at(31);
+
+        m_reg.at(31) = static_cast<int32_t>(m_pc + 4);
+        m_pc += static_cast<int64_t>(signExt(op.immediate, 16)) << 2;
     } else
-        new_state.pc += 4;
+        m_pc += 4;
 
-    return new_state;
+    return pre_state;
 }

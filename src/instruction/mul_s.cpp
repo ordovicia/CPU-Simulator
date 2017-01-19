@@ -1,15 +1,13 @@
 #include "simulator.hpp"
 
-Simulator::State Simulator::mul_s(Instruction inst)
+Simulator::PreState Simulator::mul_s(Instruction inst)
 {
-    auto new_state = *m_state_iter;
-    new_state.memory_patch = MemoryPatch{};
-
     auto op = decodeR(inst);
 
-    new_state.pc += 4;
-    new_state.freg.at(op.rd)
-        = m_state_iter->freg.at(op.rs) * m_state_iter->freg.at(op.rt);
+    auto pre_state = makePreFRegState(op.rd);
 
-    return new_state;
+    m_freg.at(op.rd) = m_freg.at(op.rs) * m_freg.at(op.rt);
+    m_pc += 4;
+
+    return pre_state;
 }

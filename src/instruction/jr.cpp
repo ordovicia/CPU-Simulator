@@ -1,13 +1,12 @@
 #include "simulator.hpp"
 
-Simulator::State Simulator::jr(Instruction inst)
+Simulator::PreState Simulator::jr(Instruction inst)
 {
-    auto new_state = *m_state_iter;
-    new_state.memory_patch = MemoryPatch{};
-
     auto op = decodeI(inst);
 
-    new_state.pc = m_state_iter->reg.at(op.rs);
+    auto pre_state = makePrePCState(m_pc);
 
-    return new_state;
+    m_pc = m_reg.at(op.rs);
+
+    return pre_state;
 }

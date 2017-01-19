@@ -43,45 +43,101 @@ private:
     std::vector<Instruction> m_codes;
 
     int64_t m_dynamic_inst_cnt = 0;
-    std::vector<int64_t> m_pc_called_cnt;
+    std::vector<int64_t> m_pc_called_cnt;  // PCごとの実行回数
 
     // State
+    int64_t m_pc = 0;
+
+    /*
+     * General purpose registers.
+     * R0 is zero register
+     */
+    static constexpr int REG_NUM = 32;
+    std::array<int32_t, REG_NUM> m_reg = {{}};
+
+    // Floating point registers
+    static constexpr int FREG_NUM = 32;
+    std::array<float, FREG_NUM> m_freg = {{}};
+
     static constexpr size_t MEMORY_NUM = 1000000;
     std::array<int32_t, MEMORY_NUM> m_memory = {{}};
 
-    struct MemoryPatch {
-        MemoryPatch() = default;
-        MemoryPatch(bool v, int32_t i, int32_t p)
-            : valid(v), idx(i), pre_val(p) {}
-
-        bool valid = false;
-        int32_t idx;
-        int32_t pre_val;
-    };
-
-    static constexpr int REG_NUM = 32;
-    static constexpr int FREG_NUM = 32;
-
-    struct State {
-        int64_t pc = 0;
-
-        /*
-         * General purpose registers
-         * R0 is zero register
-         */
-        std::array<int32_t, REG_NUM> reg = {{}};
-
-        // Floating point registers
-        std::array<float, FREG_NUM> freg = {{}};
-
-        MemoryPatch memory_patch = {};
-    };
-
     // State history
-    static constexpr size_t STATE_HIST_SIZE = 256;
-    SizedDeque<State, STATE_HIST_SIZE> m_state_hist;
-    using StateIter = typename decltype(m_state_hist)::Iterator;
-    StateIter m_state_iter;
+    struct PreState {
+        struct PCReg {
+            bool changed = false;
+            int64_t preval;
+        } pc;
+
+        struct GPReg {
+            bool changed = false;
+            size_t idx;
+            int32_t preval;
+        } gpreg;
+
+        struct FReg {
+            bool changed = false;
+            size_t idx;
+            float preval;
+        } freg;
+
+        struct Mem {
+            bool changed = false;
+            size_t idx;
+            int32_t preval;
+        } mem;
+    };
+
+    PreState makePrePCState(int64_t pc) const
+    {
+        PreState pre_state;
+        pre_state.pc.changed = true;
+        pre_state.pc.preval = pc;
+        return pre_state;
+    }
+
+    PreState makePreGPRegState(size_t idx) const
+    {
+        PreState pre_state;
+
+        pre_state.pc.changed = true;
+        pre_state.pc.preval = m_pc;
+
+        pre_state.gpreg.changed = true;
+        pre_state.gpreg.idx = idx;
+        pre_state.gpreg.preval = m_reg.at(idx);
+        return pre_state;
+    }
+
+    PreState makePreFRegState(size_t idx) const
+    {
+        PreState pre_state;
+
+        pre_state.pc.changed = true;
+        pre_state.pc.preval = m_pc;
+
+        pre_state.freg.changed = true;
+        pre_state.freg.idx = idx;
+        pre_state.freg.preval = m_freg.at(idx);
+        return pre_state;
+    }
+
+    PreState makeMemPreState(size_t idx) const
+    {
+        PreState pre_state;
+
+        pre_state.pc.changed = true;
+        pre_state.pc.preval = m_pc;
+
+        pre_state.mem.changed = true;
+        pre_state.mem.idx = idx;
+        pre_state.mem.preval = m_memory.at(idx);
+        return pre_state;
+    }
+
+    static constexpr size_t STATE_HIST_NUM = 256;
+    SizedDeque<PreState, STATE_HIST_NUM> m_state_hist;
+    decltype(m_state_hist)::Iterator m_state_hist_iter;
 
     void reset();
 
@@ -140,8 +196,8 @@ private:
 
     static OpCode decodeOpCode(Instruction);
 
-    State exec(OpCode, Instruction);
-    State execInst(OpCode, Instruction);
+    PreState exec(OpCode, Instruction);
+    PreState execInst(OpCode, Instruction);
 
     static OperandR decodeR(Instruction);
     static OperandI decodeI(Instruction);

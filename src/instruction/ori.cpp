@@ -1,14 +1,13 @@
 #include "simulator.hpp"
 
-Simulator::State Simulator::ori(Instruction inst)
+Simulator::PreState Simulator::ori(Instruction inst)
 {
-    auto new_state = *m_state_iter;
-    new_state.memory_patch = MemoryPatch{};
-
     auto op = decodeI(inst);
 
-    new_state.pc += 4;
-    new_state.reg.at(op.rt) = m_state_iter->reg.at(op.rs) | op.immediate;
+    auto pre_state = makePreGPRegState(op.rt);
 
-    return new_state;
+    m_reg.at(op.rt) = m_reg.at(op.rs) | op.immediate;
+    m_pc += 4;
+
+    return pre_state;
 }

@@ -1,11 +1,9 @@
 #include "simulator.hpp"
 
-Simulator::State Simulator::nop(Instruction /* inst */)
+Simulator::PreState Simulator::nop(Instruction /* inst */)
 {
-    auto new_state = *m_state_iter;
-    new_state.memory_patch = MemoryPatch{};
+    auto pre_state = makePrePCState(m_pc);
+    m_pc += 4;
 
-    new_state.pc += 4;
-
-    return new_state;
+    return pre_state;
 }

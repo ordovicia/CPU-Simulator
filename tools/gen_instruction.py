@@ -95,7 +95,7 @@ def main():
             for inst_ in insts.values():
                 inst = inst_[0]
                 inst_hpp_tmp.write(
-                    '    State {}(Instruction);\n'.format(inst.lower(), ))
+                    '    PreState {}(Instruction);\n'.format(inst.lower(), ))
                 inst_cpp_tmp.write('''    case OpCode::{}:
         return {}(inst);\n'''.format(inst, inst.lower()))
             inst_cpp_tmp.write(inst_cpp_footer)

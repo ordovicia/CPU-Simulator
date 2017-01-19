@@ -1,14 +1,13 @@
 #include "simulator.hpp"
 
-Simulator::State Simulator::jal(Instruction inst)
+Simulator::PreState Simulator::jal(Instruction inst)
 {
-    auto new_state = *m_state_iter;
-    new_state.memory_patch = MemoryPatch{};
-
     auto op = decodeJ(inst);
 
-    new_state.reg.at(31) = static_cast<int32_t>(m_state_iter->pc + 4);
-    new_state.pc = op.addr << 2;
+    auto pre_state = makePreGPRegState(31);
 
-    return new_state;
+    m_reg.at(31) = static_cast<int32_t>(m_pc + 4);
+    m_pc = op.addr << 2;
+
+    return pre_state;
 }

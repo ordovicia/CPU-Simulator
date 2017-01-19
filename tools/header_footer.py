@@ -27,7 +27,7 @@ struct hash<OpCode> {
 inst_cpp_header = '''#include "simulator.hpp"
 #include "util.hpp"
 
-Simulator::State Simulator::execInst(OpCode opcode, Instruction inst)
+Simulator::PreState Simulator::execInst(OpCode opcode, Instruction inst)
 {
     switch (opcode) {
 '''
