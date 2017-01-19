@@ -12,14 +12,16 @@ opcode_footer = '''};
 
 namespace std
 {
-    template <>
-    struct hash<OpCode> {
-        size_t operator()(const OpCode& op) const
-        {
-            return hash<uint32_t>{}(static_cast<uint32_t>(op));
-        }
-    };
-}
+
+template <>
+struct hash<OpCode> {
+    size_t operator()(const OpCode& op) const
+    {
+        return hash<uint32_t>{}(static_cast<uint32_t>(op));
+    }
+};
+
+}  // namespace std
 '''
 
 inst_cpp_header = '''#include "simulator.hpp"
@@ -31,7 +33,7 @@ Simulator::State Simulator::execInst(OpCode opcode, Instruction inst)
 '''
 
 inst_cpp_footer = '''    default:
-        FAIL("# Error. No such instruction");
+        FAIL("# Error: No such instruction");
     }
 }
 '''

@@ -8,7 +8,7 @@ struct SizedDeque {
 
     using Iterator = typename std::deque<Type>::const_iterator;
 
-    Iterator push(Type v)
+    decltype(std::prev(deque.end())) push(Type v)
     {
         if (deque.size() >= Size)
             deque.pop_front();

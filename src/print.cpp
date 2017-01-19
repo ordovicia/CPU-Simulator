@@ -20,26 +20,24 @@ void Simulator::Screen::update()
     col_num = (width + 2) / 17;
     code_window_len
         = (height
-              - REG_SIZE / col_num - (REG_SIZE % col_num == 0 ? 0 : 1)
-              - FREG_SIZE / col_num - (FREG_SIZE % col_num == 0 ? 0 : 1)
+              - REG_NUM / col_num - (REG_NUM % col_num == 0 ? 0 : 1)
+              - FREG_NUM / col_num - (FREG_NUM % col_num == 0 ? 0 : 1)
               - 12) / 2;
 }
 
 void Simulator::Screen::printBoarder(char c, bool p) const
 {
-    std::ostringstream iss;
-    for (int i = 0; i < 14; i++)
-        iss << c;
-
     for (int i = 0; i < col_num; i++) {
-        addstr(iss.str().c_str());
+        printw("%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
+            c, c, c, c, c, c, c, c, c, c, c, c, c, c);
         if (i != col_num - 1) {
             if (p)
                 addstr(" + ");
             else
                 printw("%c%c%c", c, c, c);
-        } else
+        } else {
             addch('\n');
+        }
     }
 }
 
@@ -55,7 +53,7 @@ void Simulator::printState() const
         auto reg = m_state_iter->reg;
 
         int i;
-        for (i = 0; i < REG_SIZE; i++) {
+        for (i = 0; i < REG_NUM; i++) {
             printw("r%-2d 0x%08x", i, reg.at(i));
             if (i % cn + 1 == cn)
                 addch('\n');
@@ -75,7 +73,7 @@ void Simulator::printState() const
         auto freg = m_state_iter->freg;
 
         int i;
-        for (i = 0; i < FREG_SIZE; i++) {
+        for (i = 0; i < FREG_NUM; i++) {
             uint32_t b = ftou(freg.at(i));
             printw("f%-2d 0x%08x", i, b);
             if (i % cn + 1 == cn)
@@ -104,15 +102,12 @@ void Simulator::printCode() const
 
     for (int64_t c = pc4 - cwl; c < pc4 + cwl; c++) {
         if (c < 0 or c >= max_code_idx) {
-            attrset(COLOR_PAIR(0));
             addstr("          |\n");
             continue;
         }
 
         if (c == pc4)
             attrset(COLOR_PAIR(0) | A_REVERSE);
-        else
-            attrset(COLOR_PAIR(0));
 
         printw("%c %7lld | ",
             (m_breakpoints.count(c * 4) != 0 ? 'b' : ' '), c * 4);
@@ -124,9 +119,11 @@ void Simulator::printCode() const
         asm_.resize(m_screen.width - 49);
         addstr(asm_.c_str());
         addch('\n');
+
+        if (c == pc4)
+            attrset(COLOR_PAIR(0));
     }
 
-    attrset(COLOR_PAIR(0));
     m_screen.printBoarder('=', false);
     refresh();
 }

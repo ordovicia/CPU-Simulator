@@ -70,7 +70,7 @@ int main(int argc, char** argv)
     } catch (const std::exception& e) {
         FAIL(e.what());
     } catch (...) {
-        FAIL("# Error. Unknown exception");
+        FAIL("# Error: Unknown exception");
     }
 
     return 1;

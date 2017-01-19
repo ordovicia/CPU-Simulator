@@ -13,27 +13,27 @@ Simulator::Simulator(
 
     m_binfile.open(binfile, std::ios::binary);
     if (m_binfile.fail())
-        throw std::runtime_error{"File " + binfile + " couldn't be opened"};
+        FAIL("File " << binfile << " couldn't be opened");
 
     if (not infile.empty()) {
         m_infile.open(infile);
         if (m_infile.fail())
-            throw std::runtime_error{"File " + infile + " couldn't be opened"};
+            FAIL("File " << infile << " couldn't be opened");
     }
 
-    m_outfile.open("out.log", std::ios::out);
+    m_outfile.open("out.log");
     if (m_outfile.fail())
-        throw std::runtime_error{"File out.log couldn't be opened for writing"};
+        FAIL("File out.log couldn't be opened for writing");
 
-    constexpr size_t CODE_RESERVE_SIZE = 1 << 16;
+    constexpr size_t CODE_RESERVE_SIZE = 1 << 12;
     m_codes.reserve(CODE_RESERVE_SIZE);
-    uint64_t inst_cnt = 0;
+    uint64_t static_inst_cnt = 0;
     Instruction r;
     while (m_binfile.read(reinterpret_cast<char*>(&r), sizeof r)) {
         m_codes.emplace_back(r);
-        inst_cnt++;
+        static_inst_cnt++;
     }
-    m_pc_called_cnt.resize(inst_cnt);
+    m_pc_called_cnt.resize(static_inst_cnt);
 
     m_state_hist.push(State{});
     m_state_iter = m_state_hist.deque.begin();
@@ -99,7 +99,7 @@ void Simulator::run()
             } else if (streqn(input, "db", 2)) {  // delete breakpoint
                 int b;
                 if (sscanf(input + 2, "%d", &b) != 1) {
-                    PRINT_ERROR("# Error. Invalid breakpoint format");
+                    PRINT_ERROR("# Error: Invalid breakpoint format");
                 } else {
                     m_breakpoints.erase(b);
                 }
@@ -109,7 +109,7 @@ void Simulator::run()
                 int64_t s = 0;
                 if (sscanf(input + 4, "%lld", &s) == 1) {
                     if (s <= 0) {
-                        PRINT_ERROR("# Error. Invalid step format");
+                        PRINT_ERROR("# Error: Invalid step format");
                     } else {
                         step_cnt = s - 1;
                     }
@@ -118,14 +118,14 @@ void Simulator::run()
                 int64_t s = 0;
                 if (sscanf(input + 1, "%lld", &s) == 1) {
                     if (s <= 0) {
-                        PRINT_ERROR("# Error. Invalid step format");
+                        PRINT_ERROR("# Error: Invalid step format");
                     } else {
                         step_cnt = s - 1;
                     }
                 }
             } else if (streq(input, "prev") or streq(input, "p")) {
                 if (m_state_iter == m_state_hist.deque.begin()) {
-                    PRINT_ERROR("# Error. Out of saved history");
+                    PRINT_ERROR("# Error: Out of saved history");
                     continue;
                 } else {
                     const auto& mp = m_state_iter->memory_patch;
@@ -140,7 +140,7 @@ void Simulator::run()
             } else if (streqn(input, "pm", 2)) {
                 size_t idx;
                 if (sscanf(input + 2, "%zu", &idx) == 0)
-                    addstr("# Error. Invalid memory index format");
+                    addstr("# Error: Invalid memory index format");
                 else
                     printw("memory[%zu] = 0x%x\n", idx, m_memory.at(idx));
                 refresh();
@@ -185,7 +185,7 @@ void Simulator::run()
                     }
                 }
             } catch (std::out_of_range e) {
-                FAIL("# Error. Program counter out of range\n" << e.what());
+                FAIL("# Error: Program counter out of range\n" << e.what());
             }
         }
     }
@@ -209,13 +209,13 @@ void Simulator::inputBreakpoint(char* input)
         break;
     case 2:
         if (c <= 0) {
-            PRINT_ERROR("# Error. Invalid breakpoint format");
+            PRINT_ERROR("# Error: Invalid breakpoint format");
         } else {
             m_breakpoints[b] = c;
         }
         break;
     default:
-        PRINT_ERROR("# Error. Invalid breakpoint format");
+        PRINT_ERROR("# Error: Invalid breakpoint format");
     }
 }
 
@@ -224,24 +224,18 @@ void Simulator::reset()
     m_halt = false;
     m_running = false;
     m_dynamic_inst_cnt = 0;
+    for (auto& p : m_inst_cnt)
+        p.second = 0;
     m_breakpoints.clear();
     m_state_hist.deque.clear();
     m_state_hist.push(State{});
     m_state_iter = m_state_hist.deque.begin();
-
-    for (auto& p : m_inst_cnt)
-        p.second = 0;
 }
 
 Simulator::State Simulator::exec(OpCode opcode, Instruction inst)
 {
-    try {
-        m_inst_cnt[opcode]++;
-        return execInst(opcode, inst);
-    } catch (std::out_of_range e) {
-        FAIL("# Invalid instruction code " << static_cast<uint32_t>(opcode)
-                                           << "\n" << e.what());
-    }
+    m_inst_cnt[opcode]++;
+    return execInst(opcode, inst);
 }
 
 void Simulator::dumpLog() const
@@ -286,5 +280,6 @@ void Simulator::dumpLog() const
     }
 
     addstr("done!\n");
+    getch();
     refresh();
 }

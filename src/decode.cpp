@@ -3,6 +3,7 @@
 
 OpCode Simulator::decodeOpCode(Instruction inst)
 {
+    // TODO: 存在しないOpCodeのチェック
     return static_cast<OpCode>(bitset(inst, 0, 6));
 }
 

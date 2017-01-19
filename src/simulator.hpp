@@ -28,15 +28,15 @@ private:
     const bool m_interactive;
     const bool m_output_memory;
 
+    std::ifstream m_infile;
+    std::ofstream m_outfile;
+
     bool m_halt = false;
     bool m_running = false;
 
     // breakpointの、PCとdelay（N回通ったらbreak）のマップ
     std::unordered_map<int64_t, int64_t> m_breakpoints;
     void inputBreakpoint(char* input);
-
-    std::ifstream m_infile;
-    std::ofstream m_outfile;
 
     // Instruction
     using Instruction = uint32_t;  // 32bit Instruction code
@@ -46,8 +46,8 @@ private:
     std::vector<int64_t> m_pc_called_cnt;
 
     // State
-    static constexpr size_t MEMORY_SIZE = 1000000;
-    std::array<int32_t, MEMORY_SIZE> m_memory = {{}};
+    static constexpr size_t MEMORY_NUM = 1000000;
+    std::array<int32_t, MEMORY_NUM> m_memory = {{}};
 
     struct MemoryPatch {
         MemoryPatch() = default;
@@ -59,8 +59,8 @@ private:
         int32_t pre_val;
     };
 
-    static constexpr int REG_SIZE = 32;
-    static constexpr int FREG_SIZE = 32;
+    static constexpr int REG_NUM = 32;
+    static constexpr int FREG_NUM = 32;
 
     struct State {
         int64_t pc = 0;
@@ -69,10 +69,10 @@ private:
          * General purpose registers
          * R0 is zero register
          */
-        std::array<int32_t, REG_SIZE> reg = {{}};
+        std::array<int32_t, REG_NUM> reg = {{}};
 
         // Floating point registers
-        std::array<float, FREG_SIZE> freg = {{}};
+        std::array<float, FREG_NUM> freg = {{}};
 
         MemoryPatch memory_patch = {};
     };
@@ -147,6 +147,7 @@ private:
     static OperandI decodeI(Instruction);
     static OperandJ decodeJ(Instruction);
 
+    // disasm
     struct Mnemonic {
         std::string mnemonic;
         OperandType type;
@@ -160,6 +161,10 @@ private:
 
     std::string disasm(Instruction) const;
 
+    void dumpLog() const;
+
+
+    // print
     static void printBitset(
         uint32_t bits, int begin = 0, int end = 32, bool endl = false);
 
@@ -175,8 +180,6 @@ private:
     void printState() const;
     void printCode() const;
     void printBreakPoints() const;
-
-    void dumpLog() const;
 
     void printHelp() const;
 
