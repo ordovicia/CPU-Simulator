@@ -41,7 +41,7 @@ $ ./simulator -f test.bin
 逆アセンブル結果の形式は、
 
 * Type R -- mnemonic, rs, rt, rd, shamt
-* Type I -- mnemonic, rs, rt, (immediateが負なら符号拡張したものを符号付き、正なら符号なし)
+* Type I -- mnemonic, rs, rt, immediate（負なら符号拡張したものを符号付き、正なら符号なし）
 * Type J -- mnemonic, addr
 
 となっています。
