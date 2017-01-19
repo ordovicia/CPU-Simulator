@@ -53,14 +53,14 @@ void Simulator::run()
         if (not m_interactive) {
             if (m_halt)
                 return;
-            if (m_dynamic_inst_cnt % (1 << 20) == 0) {
+            if (m_dynamic_inst_cnt % (1 << 24) == 0) {
                 printConsole();
                 refresh();
             }
         } else if (step_cnt > 0) {
             step_cnt--;
         } else if (m_running) {
-            if (m_dynamic_inst_cnt % (1 << 20) == 0) {
+            if (m_dynamic_inst_cnt % (1 << 24) == 0) {
                 printConsole();
                 refresh();
             }
@@ -189,6 +189,9 @@ void Simulator::run()
                 } else {
                     m_state_hist_iter++;
                 }
+            } else {
+                m_pc_called_cnt.at(pc_idx)++;
+                m_dynamic_inst_cnt++;
             }
 
             auto bp = m_breakpoints.find(m_pc);
