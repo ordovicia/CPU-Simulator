@@ -96,9 +96,9 @@ private:
     /*
      * Type R:
      * -----------------------------------------
-     * | opcode | rs | rt | rd | shamt |(fanct)|
+     * | opcode | rs | rt | rd | shamt |       |
      * -----------------------------------------
-     * | 6      | 5  | 5  | 5  | 5     |(6    )|
+     * | 6      | 5  | 5  | 5  | 5     |       |
      * -----------------------------------------
      */
     struct OperandR {
@@ -106,7 +106,6 @@ private:
         uint32_t rt;
         uint32_t rd;
         uint32_t shamt;
-        uint32_t fanct;
     };
 
     /*
