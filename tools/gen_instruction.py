@@ -10,7 +10,7 @@ from header_footer import *
 insts = {
     # opcode: (mnemonic, operand type, [used operand field])
     0: ('ASRT', 'I', ['R']),
-    1: ('ASRT_S', 'I', ['R']),
+    1: ('ASRT_S', 'I', ['F']),
 
     4: ('NOP', 'N', []),
     5: ('HALT', 'N', []),
