@@ -4,10 +4,11 @@
 
 Simulator::Simulator(
     const std::string& binfile, const std::string& infile,
-    bool interactive, bool output_memory)
+    bool interactive, bool output_memory, bool prev_enable)
     : m_binfile_name(binfile),
       m_interactive(interactive),
-      m_output_memory(output_memory)
+      m_output_memory(output_memory),
+      m_prev_enable(prev_enable)
 {
     initDisassembler();
 
@@ -121,7 +122,8 @@ void Simulator::run()
                         step_cnt = s - 1;
                     }
                 }
-            } else if (streq(input, "prev") || streq(input, "p")) {
+            } else if (m_prev_enable
+                       && (streq(input, "prev") || streq(input, "p"))) {
                 if (m_state_hist_iter == m_state_hist.deque.begin()) {
                     PRINT_ERROR("# Error: Out of saved history");
                     continue;
@@ -179,12 +181,14 @@ void Simulator::run()
             auto opcode = decodeOpCode(inst);
             auto pre_state = exec(opcode, inst);
 
-            if (m_state_hist_iter == std::prev(m_state_hist.deque.end())) {
-                m_state_hist_iter = m_state_hist.push(pre_state);
-                m_pc_called_cnt.at(pc_idx)++;
-                m_dynamic_inst_cnt++;
-            } else {
-                m_state_hist_iter++;
+            if (m_prev_enable) {
+                if (m_state_hist_iter == std::prev(m_state_hist.deque.end())) {
+                    m_state_hist_iter = m_state_hist.push(pre_state);
+                    m_pc_called_cnt.at(pc_idx)++;
+                    m_dynamic_inst_cnt++;
+                } else {
+                    m_state_hist_iter++;
+                }
             }
 
             auto bp = m_breakpoints.find(m_pc);

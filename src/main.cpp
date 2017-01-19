@@ -19,17 +19,21 @@ int main(int argc, char** argv)
         }
 
         int result;
-        bool interactive = true, output_memory = false, disasm = false;
+        bool interactive = true, output_memory = false,
+             prev_enable = true, disasm = false;
         std::string binfile;
         std::string infile;
 
-        while ((result = getopt(argc, argv, "rmdf:i:")) != -1) {
+        while ((result = getopt(argc, argv, "rmndf:i:")) != -1) {
             switch (result) {
             case 'r':
                 interactive = false;
                 break;
             case 'm':
                 output_memory = true;
+                break;
+            case 'n':
+                prev_enable = false;
                 break;
             case 'd':
                 disasm = true;
@@ -60,7 +64,7 @@ int main(int argc, char** argv)
             std::atexit(endwin_);
         }
 
-        Simulator sim{binfile, infile, interactive, output_memory};
+        Simulator sim{binfile, infile, interactive, output_memory, prev_enable};
         if (disasm)
             sim.disasm();
         else
