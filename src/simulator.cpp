@@ -270,10 +270,12 @@ void Simulator::dumpLog() const
     {
         ofstream ofs{"register.log"};
         ofs << hex;
+        ofs << "# General purpose registers" << endl;
         for (auto r : m_state_iter->reg)
             ofs << r << endl;
-        for (auto r : m_state_iter->freg)
-            ofs << r << endl;
+        ofs << "# Floating point registers" << endl;
+        for (auto f : m_state_iter->freg)
+            ofs << f << endl;
     }
 
     if (m_output_memory) {

@@ -126,6 +126,7 @@ void Simulator::printCode() const
         addch('\n');
     }
 
+    attrset(COLOR_PAIR(0));
     m_screen.printBoarder('=', false);
     refresh();
 }
