@@ -8,7 +8,7 @@ Simulator::Simulator(
     : m_binfile_name(binfile),
       m_interactive(interactive),
       m_output_memory(output_memory),
-      m_prev_enable(prev_enable)
+      m_prev_enable((not interactive) || prev_enable)
 {
     initDisassembler();
 
