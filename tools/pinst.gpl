@@ -1,2 +1,9 @@
-set xtics rotate by 90
+set style histogram clustered
+set style fill solid border lc rgb "black"
+set xtics rotate by -90 offset first 0.1,0
+
 p "pinst.log" u 0:2:xtic(1) with boxes t "Instruction count"
+
+set term png size 1280,960
+set output "instruction.png"
+rep
