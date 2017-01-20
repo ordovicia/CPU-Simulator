@@ -1,6 +1,6 @@
 #include <exception>
-#include "util.hpp"
 #include "simulator.hpp"
+#include "memory_num.hpp"
 
 Simulator::Simulator(
     const std::string& binfile, const std::string& infile,
@@ -14,17 +14,21 @@ Simulator::Simulator(
 
     m_binfile.open(binfile, std::ios::binary);
     if (m_binfile.fail())
-        FAIL("File " << binfile << " couldn't be opened");
+        FAIL("# Error: File " << binfile << " couldn't be opened");
 
     if (not infile.empty()) {
         m_infile.open(infile);
         if (m_infile.fail())
-            FAIL("File " << infile << " couldn't be opened");
+            FAIL("# Error: File " << infile << " couldn't be opened");
     }
 
     m_outfile.open("out.log");
     if (m_outfile.fail())
-        FAIL("File out.log couldn't be opened for writing");
+        FAIL("# Error: File out.log couldn't be opened for writing");
+
+    m_memory = static_cast<int32_t*>(std::malloc(sizeof(int32_t) * MEMORY_NUM));
+    if (m_memory == NULL)
+        FAIL("# Error: Memory couldn't malloc'ed");
 
     constexpr size_t CODE_RESERVE_SIZE = 1 << 12;
     m_codes.reserve(CODE_RESERVE_SIZE);
@@ -36,6 +40,11 @@ Simulator::Simulator(
 
     m_state_hist.push(PreState{});
     m_state_hist_iter = m_state_hist.deque.begin();
+}
+
+Simulator::~Simulator()
+{
+    std::free(m_memory);
 }
 
 void Simulator::run()
@@ -142,7 +151,7 @@ void Simulator::run()
 
                     const auto& mem = m_state_hist_iter->mem;
                     if (mem.changed)
-                        m_memory.at(mem.idx) = mem.preval;
+                        m_memory[mem.idx] = mem.preval;
 
                     m_state_hist_iter--;
                 }
@@ -153,8 +162,10 @@ void Simulator::run()
                 size_t idx;
                 if (sscanf(input + 2, "%zu", &idx) == 0)
                     addstr("# Error: Invalid memory index format");
+                else if (idx >= MEMORY_NUM)
+                    addstr("# Error: Memory index out of range");
                 else
-                    printw("memory[%zu] = 0x%x\n", idx, m_memory.at(idx));
+                    printw("memory[%zu] = 0x%x\n", idx, m_memory[idx]);
                 refresh();
                 getch();
                 continue;
@@ -292,8 +303,8 @@ void Simulator::dumpLog() const
     if (m_output_memory) {
         ofstream ofs{"memory.log"};
         ofs << hex;
-        for (auto m : m_memory)
-            ofs << m << endl;
+        for (size_t i = 0; i < MEMORY_NUM; i++)
+            ofs << m_memory[i] << endl;
     }
 
     addstr("done!\n");

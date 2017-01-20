@@ -23,7 +23,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
 
 # Sources and headers
 file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_LIST_DIR} src/*.cpp generated/*.cpp)
-include_directories(${CMAKE_CURRENT_LIST_DIR}/src ${CMAKE_CURRENT_LIST_DIR}/generated)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/src ${CMAKE_CURRENT_LIST_DIR}/generated ${CMAKE_CURRENT_LIST_DIR}/config)
 
 # Echo compile flags
 message("Build type:\n\t${CMAKE_BUILD_TYPE}")

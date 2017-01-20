@@ -23,6 +23,8 @@ public:
     void run();
     void disasm();
 
+    ~Simulator();
+
 private:
     const std::string m_binfile_name;
     std::ifstream m_binfile;
@@ -61,8 +63,8 @@ private:
     static constexpr int FREG_NUM = 32;
     std::array<float, FREG_NUM> m_freg = {{}};
 
-    static constexpr size_t MEMORY_NUM = 1000000;
-    std::array<int32_t, MEMORY_NUM> m_memory = {{}};
+    int32_t* m_memory;
+    // std::array<int32_t, MEMORY_NUM> m_memory = {{}};
 
     // State history
     struct PreState {
@@ -133,7 +135,7 @@ private:
 
         pre_state.mem.changed = true;
         pre_state.mem.idx = idx;
-        pre_state.mem.preval = m_memory.at(idx);
+        pre_state.mem.preval = m_memory[idx];
         return pre_state;
     }
 
