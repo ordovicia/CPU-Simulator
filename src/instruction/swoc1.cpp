@@ -1,5 +1,5 @@
 #include "simulator.hpp"
-#include "memory_num.hpp"
+#include "util.hpp"
 
 Simulator::PreState Simulator::swoc1(Instruction inst)
 {

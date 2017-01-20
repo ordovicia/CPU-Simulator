@@ -16,6 +16,7 @@ public:
     explicit Simulator(
         const std::string& binfile,
         const std::string& infile,
+        size_t memory_num,
         bool interactive,
         bool output_memory,
         bool prev_enable);
@@ -28,6 +29,9 @@ public:
 private:
     const std::string m_binfile_name;
     std::ifstream m_binfile;
+
+    const size_t m_memory_num;
+
     const bool m_interactive;
     const bool m_output_memory;
     const bool m_prev_enable;
@@ -63,8 +67,9 @@ private:
     static constexpr int FREG_NUM = 32;
     std::array<float, FREG_NUM> m_freg = {{}};
 
+    // Memory
     int32_t* m_memory;
-    // std::array<int32_t, MEMORY_NUM> m_memory = {{}};
+    void checkMemoryIndex(int32_t idx);
 
     // State history
     struct PreState {

@@ -1,11 +1,12 @@
 #include <exception>
+#include "util.hpp"
 #include "simulator.hpp"
-#include "memory_num.hpp"
 
 Simulator::Simulator(
     const std::string& binfile, const std::string& infile,
-    bool interactive, bool output_memory, bool prev_enable)
+    size_t memory_num, bool interactive, bool output_memory, bool prev_enable)
     : m_binfile_name(binfile),
+      m_memory_num(memory_num),
       m_interactive(interactive),
       m_output_memory(output_memory),
       m_prev_enable((not interactive) || prev_enable)
@@ -26,7 +27,8 @@ Simulator::Simulator(
     if (m_outfile.fail())
         FAIL("# Error: File out.log couldn't be opened for writing");
 
-    m_memory = static_cast<int32_t*>(std::malloc(sizeof(int32_t) * MEMORY_NUM));
+    m_memory = static_cast<int32_t*>(
+        std::malloc(sizeof(int32_t) * m_memory_num));
     if (m_memory == NULL)
         FAIL("# Error: Memory couldn't malloc'ed");
 
@@ -159,13 +161,13 @@ void Simulator::run()
                 m_halt = false;
                 continue;
             } else if (streqn(input, "pm", 2)) {
-                size_t idx;
-                if (sscanf(input + 2, "%zu", &idx) == 0)
+                int32_t idx;
+                if (sscanf(input + 2, "%d", &idx) == 0) {
                     addstr("# Error: Invalid memory index format");
-                else if (idx >= MEMORY_NUM)
-                    addstr("# Error: Memory index out of range");
-                else
-                    printw("memory[%zu] = 0x%x\n", idx, m_memory[idx]);
+                } else {
+                    checkMemoryIndex(idx);
+                    printw("memory[%d] = 0x%x\n", idx, m_memory[idx]);
+                }
                 refresh();
                 getch();
                 continue;
@@ -223,6 +225,12 @@ void Simulator::disasm()
         printf("%7lld | %s\n", c, disasm(inst).c_str());
         c += 4;
     }
+}
+
+void Simulator::checkMemoryIndex(int32_t idx)
+{
+    if (idx < 0 || idx >= static_cast<int32_t>(m_memory_num))
+        FAIL("# Error: Memory index out of range");
 }
 
 void Simulator::inputBreakpoint(char* input)
@@ -303,7 +311,7 @@ void Simulator::dumpLog() const
     if (m_output_memory) {
         ofstream ofs{"memory.log"};
         ofs << hex;
-        for (size_t i = 0; i < MEMORY_NUM; i++)
+        for (size_t i = 0; i < m_memory_num; i++)
             ofs << m_memory[i] << endl;
     }
 

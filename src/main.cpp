@@ -14,17 +14,18 @@ int main(int argc, char** argv)
 {
     try {
         if (argc < 2) {
-            std::cerr << "Invalid usage. Read 'README.md'" << std::endl;
+            std::cerr << "# Error: Invalid usage. Read 'README.md'" << std::endl;
             return 1;
         }
 
         int result;
         bool interactive = true, output_memory = false,
              prev_enable = true, disasm = false;
+        int32_t memory_num = 1000000;
         std::string binfile;
         std::string infile;
 
-        while ((result = getopt(argc, argv, "rmndf:i:")) != -1) {
+        while ((result = getopt(argc, argv, "rmnds:f:i:")) != -1) {
             switch (result) {
             case 'r':
                 interactive = false;
@@ -37,6 +38,13 @@ int main(int argc, char** argv)
                 break;
             case 'd':
                 disasm = true;
+                break;
+            case 's':
+                memory_num = std::atoi(optarg);
+                if (memory_num < 0) {
+                    std::cerr << "# Error: Invalid memory size" << std::endl;
+                    return 1;
+                }
                 break;
             case 'f':
                 binfile = optarg;
@@ -51,7 +59,7 @@ int main(int argc, char** argv)
         }
 
         if (binfile.empty())
-            FAIL("# No binfile given");
+            FAIL("# Error: No binfile given");
 
         if (not disasm) {
             // ncurses setting
@@ -64,7 +72,8 @@ int main(int argc, char** argv)
             std::atexit(endwin_);
         }
 
-        Simulator sim{binfile, infile, interactive, output_memory, prev_enable};
+        Simulator sim{binfile, infile, static_cast<size_t>(memory_num),
+            interactive, output_memory, prev_enable};
         if (disasm)
             sim.disasm();
         else
