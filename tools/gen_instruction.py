@@ -80,6 +80,13 @@ disasm_name = 'init_disasm.cpp'
 test_run_name = 'run.sh'
 
 
+def mnemonic(m):
+    m = m.lower()
+    m = re.sub(r'_$', '', m)
+    m = re.sub(r'_', '.', m)
+    return m
+
+
 def main():
     # opcode
     with open(opcode_name + '.tmp', 'w') as opcode_tmp:
@@ -101,12 +108,6 @@ def main():
             inst_cpp_tmp.write(inst_cpp_footer)
 
     # disassembler
-    def mnemonic(m):
-        m = m.lower()
-        m = re.sub(r'_$', '', m)
-        m = re.sub(r'_', '.', m)
-        return m
-
     def operand_field(of):
         r = '{'
         for i in range(4):

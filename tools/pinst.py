@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from gen_instruction import insts
+from gen_instruction import insts, mnemonic
 
 fn = sys.argv[1] if len(sys.argv) > 1 else 'instruction.log'
 
@@ -15,6 +15,6 @@ with open(fn) as f:
 
 for inst in range(64):
     if inst in insts:
-        name = insts[inst][0]
+        name = mnemonic(insts[inst][0])
         cnt = counts.get(inst, 0)
         print(name, cnt)
