@@ -4,12 +4,12 @@
 
 Simulator::Simulator(
     const std::string& binfile, const std::string& infile,
-    size_t memory_num, bool interactive, bool output_memory, bool prev_enable)
+    size_t memory_num, bool interactive, bool output_memory, bool prev_disable)
     : m_binfile_name(binfile),
       m_memory_num(memory_num),
       m_interactive(interactive),
       m_output_memory(output_memory),
-      m_prev_enable((not interactive) || prev_enable)
+      m_prev_disable(prev_disable || (not interactive))
 {
     initDisassembler();
 
@@ -133,7 +133,7 @@ void Simulator::run()
                         step_cnt = s - 1;
                     }
                 }
-            } else if (m_prev_enable
+            } else if (not m_prev_disable
                        && (streq(input, "prev") || streq(input, "p"))) {
                 if (m_state_hist_iter == m_state_hist.deque.begin()) {
                     PRINT_ERROR("# Error: Out of saved history");
@@ -194,7 +194,7 @@ void Simulator::run()
             auto opcode = decodeOpCode(inst);
             auto pre_state = exec(opcode, inst);
 
-            if (m_prev_enable) {
+            if (not m_prev_disable) {
                 if (m_state_hist_iter == std::prev(m_state_hist.deque.end())) {
                     m_state_hist_iter = m_state_hist.push(pre_state);
                     m_pc_called_cnt.at(pc_idx)++;

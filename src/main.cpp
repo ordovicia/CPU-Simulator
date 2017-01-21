@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 
         int result;
         bool interactive = true, output_memory = false,
-             prev_enable = true, disasm = false;
+             prev_disable = false, disasm = false;
         int32_t memory_num = 1000000;
         std::string binfile;
         std::string infile;
@@ -34,7 +34,7 @@ int main(int argc, char** argv)
                 output_memory = true;
                 break;
             case 'n':
-                prev_enable = false;
+                prev_disable = true;
                 break;
             case 'd':
                 disasm = true;
@@ -73,7 +73,7 @@ int main(int argc, char** argv)
         }
 
         Simulator sim{binfile, infile, static_cast<size_t>(memory_num),
-            interactive, output_memory, prev_enable};
+            interactive, output_memory, prev_disable};
         if (disasm)
             sim.disasm();
         else
