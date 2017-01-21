@@ -18,7 +18,7 @@ public:
         const std::string& infile,
         bool interactive,
         bool output_memory,
-        bool prev_enable);
+        bool prev_disable);
 
     void run();
     void disasm();
@@ -28,7 +28,7 @@ private:
     std::ifstream m_binfile;
     const bool m_interactive;
     const bool m_output_memory;
-    const bool m_prev_enable;
+    const bool m_prev_disable;
 
     std::ifstream m_infile;
     std::ofstream m_outfile;
