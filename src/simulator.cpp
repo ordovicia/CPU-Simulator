@@ -53,13 +53,6 @@ void Simulator::run()
 {
     int64_t step_cnt = 0;
 
-    auto printConsole = [this] {
-        erase();
-        m_screen.update();
-        printState();
-        printCode();
-    };
-
     m_start_time = std::chrono::high_resolution_clock::now();
 
     while (true) {
@@ -279,6 +272,14 @@ Simulator::PreState Simulator::exec(OpCode opcode, Instruction inst)
 {
     m_inst_cnt[opcode]++;
     return execInst(opcode, inst);
+}
+
+void Simulator::printConsole()
+{
+    erase();
+    m_screen.update();
+    printState();
+    printCode();
 }
 
 void Simulator::dumpLog() const

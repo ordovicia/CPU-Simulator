@@ -245,6 +245,8 @@ private:
         void printBoarder(char c, bool p = true) const;
     } m_screen;
 
+    void printConsole();
+
     void printState() const;
     void printCode() const;
     void printBreakPoints() const;

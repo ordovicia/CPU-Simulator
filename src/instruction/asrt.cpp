@@ -8,6 +8,8 @@ Simulator::PreState Simulator::asrt(Instruction inst)
     auto expected = m_codes.at(m_pc / 4 + 1);
 
     if (reg != expected) {
+        printConsole();
+
         addstr("Assertion failed.\n");
         printw("$r%-2d expected ", rs);
         printBitset(expected);
