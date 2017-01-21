@@ -1,4 +1,5 @@
 #include <cmath>
+#include <iomanip>
 #include <sstream>
 #include "util.hpp"
 #include "simulator.hpp"
@@ -43,8 +44,44 @@ void Simulator::Screen::printBoarder(char c, bool p) const
 
 void Simulator::printState() const
 {
-    printw("[%s] Static/Dynamic inst cnt = %7zu/%12lld\n",
-        m_binfile_name.c_str(), m_codes.size(), m_dynamic_inst_cnt);
+    {  // status
+        std::ostringstream oss;
+        oss << '[' << m_binfile_name << "] Static/Dynamic inst cnt = "
+            << std::setw(7) << m_codes.size() << '/'
+            << std::setw(12) << m_dynamic_inst_cnt << ' ';
+
+        auto len = oss.str().size();
+
+        namespace SC = std::chrono;
+        auto end = SC::high_resolution_clock::now();
+        auto sec = SC::duration_cast<SC::seconds>(end - m_start_time).count();
+        auto min = sec / 60;
+        sec -= min * 60;
+
+        auto digits = [](decltype(min) x) {
+            if (x <= 0)
+                return 1;
+            int digits = 0;
+            while (x) {
+                x /= 10;
+                digits++;
+            }
+            return digits;
+        };
+
+        auto min_digits = digits(min);
+
+        int padding = m_screen.width - static_cast<int>(len + min_digits + 4);
+        if (padding >= 0) {
+            oss << std::string(padding, ' ')
+                << min << ':' << std::setw(2) << std::setfill('0') << sec;
+        }
+
+        auto str = oss.str();
+        str.resize(m_screen.width - 1);
+        addstr(str.c_str());
+        addch('\n');
+    }
 
     m_screen.printBoarder('=', false);
     auto cn = m_screen.col_num;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <chrono>
 #include <fstream>
 #include <array>
 #include <vector>
@@ -38,6 +39,8 @@ private:
 
     std::ifstream m_infile;
     std::ofstream m_outfile;
+
+    decltype(std::chrono::high_resolution_clock::now()) m_start_time;
 
     bool m_halt = false;
     bool m_running = false;

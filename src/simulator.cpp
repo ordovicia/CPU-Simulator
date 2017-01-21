@@ -60,10 +60,17 @@ void Simulator::run()
         printCode();
     };
 
+    m_start_time = std::chrono::high_resolution_clock::now();
+
     while (true) {
         if (not m_interactive) {
-            if (m_halt)
+            if (m_halt) {
+                printConsole();
+                addstr("finished\n");
+                refresh();
+                getch();
                 return;
+            }
             if (m_dynamic_inst_cnt % (1 << 24) == 0) {
                 printConsole();
                 refresh();
