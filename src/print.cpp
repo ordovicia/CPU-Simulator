@@ -133,6 +133,7 @@ void Simulator::printCode() const
     int64_t max_code_idx
         = std::min(pc_idx + cwl, static_cast<int64_t>(m_codes.size()));
 
+    bool asserting = false;
     for (int64_t c = pc_idx - cwl; c < pc_idx + cwl; c++) {
         if (c < 0 or c >= max_code_idx) {
             addstr("          |\n");
@@ -148,10 +149,20 @@ void Simulator::printCode() const
         printBitset(code);
         addstr(" | ");
 
-        auto asm_ = disasm(code);
-        asm_.resize(m_screen.width - 49);
-        addstr(asm_.c_str());
+        if (not asserting) {
+            auto asm_ = disasm(code);
+            asm_.resize(m_screen.width - 49);
+            addstr(asm_.c_str());
+        }
         addch('\n');
+
+        if (asserting) {
+            asserting = false;
+        } else {
+            auto op = decodeOpCode(code);
+            if (op == OpCode::ASRT || op == OpCode::ASRT_S)
+                asserting = true;
+        }
 
         if (c == pc_idx)
             attrset(COLOR_PAIR(0));
