@@ -71,8 +71,9 @@ void Simulator::run()
                 while (!m_quit_run) {
                     int key = getch();
                     if (key == 'q')
-                        return;
+                        break;
                 }
+                return;
             }
             if (m_dynamic_inst_cnt % (1 << 24) == 0) {
                 printConsole();
