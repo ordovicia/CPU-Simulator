@@ -20,12 +20,13 @@ int main(int argc, char** argv)
 
         int result;
         bool interactive = true, output_memory = false,
-             prev_disable = false, disasm = false;
+             prev_disable = false, disasm = false, quit_run = false;
         int32_t memory_num = 1000000;
         std::string binfile;
         std::string infile;
+        std::string outfile = "out.log";
 
-        while ((result = getopt(argc, argv, "rmnds:f:i:")) != -1) {
+        while ((result = getopt(argc, argv, "rmndqs:f:i:o:")) != -1) {
             switch (result) {
             case 'r':
                 interactive = false;
@@ -39,6 +40,9 @@ int main(int argc, char** argv)
             case 'd':
                 disasm = true;
                 break;
+            case 'q':
+                quit_run = true;
+                break;
             case 's':
                 memory_num = std::atoi(optarg);
                 if (memory_num < 0) {
@@ -51,6 +55,9 @@ int main(int argc, char** argv)
                 break;
             case 'i':
                 infile = optarg;
+                break;
+            case 'o':
+                outfile = optarg;
                 break;
             case '?':
             default:
@@ -72,8 +79,9 @@ int main(int argc, char** argv)
             std::atexit(endwin_);
         }
 
-        Simulator sim{binfile, infile, static_cast<size_t>(memory_num),
-            interactive, output_memory, prev_disable};
+        Simulator sim{binfile, infile, outfile,
+            static_cast<size_t>(memory_num),
+            interactive, output_memory, prev_disable, quit_run};
         if (disasm)
             sim.disasm();
         else

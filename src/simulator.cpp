@@ -3,13 +3,20 @@
 #include "simulator.hpp"
 
 Simulator::Simulator(
-    const std::string& binfile, const std::string& infile,
-    size_t memory_num, bool interactive, bool output_memory, bool prev_disable)
+    const std::string& binfile,
+    const std::string& infile,
+    const std::string& outfile,
+    size_t memory_num,
+    bool interactive,
+    bool output_memory,
+    bool prev_disable,
+    bool quit_run)
     : m_binfile_name(binfile),
       m_memory_num(memory_num),
       m_interactive(interactive),
       m_output_memory(output_memory),
-      m_prev_disable(prev_disable || (not interactive))
+      m_prev_disable(prev_disable || (not interactive)),
+      m_quit_run(quit_run)
 {
     initDisassembler();
 
@@ -23,9 +30,9 @@ Simulator::Simulator(
             FAIL("# Error: File " << infile << " couldn't be opened");
     }
 
-    m_outfile.open("out.log");
+    m_outfile.open(outfile);
     if (m_outfile.fail())
-        FAIL("# Error: File out.log couldn't be opened for writing");
+        FAIL("# Error: File " << outfile << " couldn't be opened for writing");
 
     m_memory = static_cast<int32_t*>(
         std::malloc(sizeof(int32_t) * m_memory_num));
@@ -61,8 +68,11 @@ void Simulator::run()
                 printConsole();
                 addstr("finished\n");
                 refresh();
-                getch();
-                return;
+                while (!m_quit_run) {
+                    int key = getch();
+                    if (key == 'q')
+                        return;
+                }
             }
             if (m_dynamic_inst_cnt % (1 << 24) == 0) {
                 printConsole();

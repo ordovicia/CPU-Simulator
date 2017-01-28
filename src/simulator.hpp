@@ -17,10 +17,12 @@ public:
     explicit Simulator(
         const std::string& binfile,
         const std::string& infile,
+        const std::string& outfile,
         size_t memory_num,
         bool interactive,
         bool output_memory,
-        bool prev_disable);
+        bool prev_disable,
+        bool quit_run);
 
     void run();
     void disasm();
@@ -36,6 +38,7 @@ private:
     const bool m_interactive;
     const bool m_output_memory;
     const bool m_prev_disable;
+    const bool m_quit_run;
 
     std::ifstream m_infile;
     std::ofstream m_outfile;
