@@ -67,7 +67,7 @@ function do_test() {
         cd $inst
         python $root/tools/ascii2bin.py $inst.txt
         echo "testing" $inst "..."
-        $root/build/simulator -f $inst.bin -i $testdir/input.txt -r
+        $root/build/simulator -f $inst.bin -i $testdir/input.txt -rq
         echo "passed"
     fi
 }
