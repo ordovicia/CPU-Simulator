@@ -242,7 +242,7 @@ void Simulator::disasm()
 void Simulator::checkMemoryIndex(int32_t idx)
 {
     if (idx < 0 || idx >= static_cast<int32_t>(m_memory_num))
-        FAIL("# Error: Memory index out of range");
+        FAIL("# Error: Memory index out of range: " << idx);
 }
 
 void Simulator::inputBreakpoint(char* input)
