@@ -32,6 +32,9 @@ public:
 private:
     const std::string m_binfile_name;
     std::ifstream m_binfile;
+    const std::string m_infile_name;
+    std::ifstream m_infile;
+    std::ofstream m_outfile;
 
     const size_t m_memory_num;
 
@@ -39,9 +42,6 @@ private:
     const bool m_output_memory;
     const bool m_prev_disable;
     const bool m_quit_run;
-
-    std::ifstream m_infile;
-    std::ofstream m_outfile;
 
     decltype(std::chrono::high_resolution_clock::now()) m_start_time;
 

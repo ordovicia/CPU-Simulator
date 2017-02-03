@@ -12,6 +12,7 @@ Simulator::Simulator(
     bool prev_disable,
     bool quit_run)
     : m_binfile_name(binfile),
+      m_infile_name(infile),
       m_memory_num(memory_num),
       m_interactive(interactive),
       m_output_memory(output_memory),

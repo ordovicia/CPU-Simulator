@@ -46,7 +46,10 @@ void Simulator::printState() const
 {
     {  // status
         std::ostringstream oss;
-        oss << '[' << m_binfile_name << "] Static/Dynamic inst cnt = "
+        oss << '[' << m_binfile_name;
+        if (m_infile.is_open())
+            oss << " < " << m_infile_name;
+        oss << "] Static/Dynamic inst cnt = "
             << std::setw(7) << m_codes.size() << '/'
             << std::setw(12) << m_dynamic_inst_cnt << ' ';
 
