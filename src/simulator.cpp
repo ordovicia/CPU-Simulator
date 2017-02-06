@@ -219,12 +219,14 @@ void Simulator::run()
                 m_dynamic_inst_cnt++;
             }
 
-            auto bp = m_breakpoints.find(m_pc);
-            if (bp != m_breakpoints.end()) {
-                if (bp->second == 0)  // break
-                    m_running = false;
-                else
-                    bp->second--;
+            if (m_interactive) {  // breakpoint
+                auto bp = m_breakpoints.find(m_pc);
+                if (bp != m_breakpoints.end()) {
+                    if (bp->second == 0)  // break
+                        m_running = false;
+                    else
+                        bp->second--;
+                }
             }
         }
     }
