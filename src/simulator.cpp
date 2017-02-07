@@ -2,6 +2,10 @@
 #include "util.hpp"
 #include "simulator.hpp"
 
+#ifdef FELIS_SIM_NO_ASSERT
+#warning FELIS_SIM_NO_ASSERT is set
+#endif
+
 Simulator::Simulator(
     const std::string& binfile,
     const std::string& infile,
@@ -200,8 +204,10 @@ void Simulator::run()
 
         if (not m_halt) {  // next instruction
             auto pc_idx = m_pc / 4;
+#ifndef FELIS_SIM_NO_ASSERT
             if (pc_idx < 0 || static_cast<int64_t>(m_codes.size()) <= pc_idx)
                 FAIL("# Error: Program counter out of range");
+#endif
             Instruction inst = m_codes[pc_idx];  // fetch
             auto opcode = decodeOpCode(inst);
             auto pre_state = exec(opcode, inst);
@@ -243,8 +249,12 @@ void Simulator::disasm()
 
 void Simulator::checkMemoryIndex(int32_t idx)
 {
+#ifndef FELIS_SIM_NO_ASSERT
     if (idx < 0 || idx >= static_cast<int32_t>(m_memory_num))
         FAIL("# Error: Memory index out of range: " << idx);
+#else
+    (void)idx;
+#endif
 }
 
 void Simulator::inputBreakpoint(char* input)
