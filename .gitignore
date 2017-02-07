@@ -89,6 +89,7 @@ target/
 *.bin
 *.log
 build/
+log/
 generated/*
 !generated/.gitkeep
 test/run.sh
