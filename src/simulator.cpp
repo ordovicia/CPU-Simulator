@@ -23,6 +23,8 @@ Simulator::Simulator(
       m_prev_disable(prev_disable || (not interactive)),
       m_quit_run(quit_run)
 {
+    m_muldivop_file.open("mul_div_operand.log");
+
     initDisassembler();
 
     m_binfile.open(binfile, std::ios::binary);
@@ -78,6 +80,7 @@ void Simulator::run()
                     if (key == 'q')
                         break;
                 }
+                m_muldivop_file << std::flush;
                 return;
             }
             if (m_dynamic_inst_cnt % (1 << 24) == 0) {

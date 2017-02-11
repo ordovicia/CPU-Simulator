@@ -36,6 +36,8 @@ private:
     std::ifstream m_infile;
     std::ofstream m_outfile;
 
+    std::ofstream m_muldivop_file;
+
     const size_t m_memory_num;
 
     const bool m_interactive;

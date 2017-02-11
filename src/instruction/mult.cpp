@@ -6,6 +6,10 @@ Simulator::PreState Simulator::mult(Instruction inst)
 
     auto pre_state = makePreGPRegState(op.rd);
 
+    m_muldivop_file << m_reg.at(op.rs) << ' '
+                    << m_reg.at(op.rt)
+                    << " #mult\n";
+
     m_reg.at(op.rd) = m_reg.at(op.rs) * m_reg.at(op.rt);
     m_pc += 4;
 

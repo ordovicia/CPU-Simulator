@@ -7,6 +7,10 @@ Simulator::PreState Simulator::divi(Instruction inst)
 
     auto pre_state = makePreGPRegState(op.rt);
 
+    m_muldivop_file << m_reg.at(op.rs) << ' '
+                    << static_cast<int32_t>(signExt(op.immediate, 16))
+                    << " #divi\n";
+
     m_reg.at(op.rt) = m_reg.at(op.rs)
                       / static_cast<int32_t>(signExt(op.immediate, 16));
     m_pc += 4;
