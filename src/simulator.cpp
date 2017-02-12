@@ -65,6 +65,7 @@ void Simulator::run()
 {
     int64_t step_cnt = 0;
 
+    constexpr int64_t REFRESH_INST_CNT = 1 << 25;
     m_start_time = std::chrono::high_resolution_clock::now();
 
     while (true) {
@@ -80,14 +81,14 @@ void Simulator::run()
                 }
                 return;
             }
-            if (m_dynamic_inst_cnt % (1 << 24) == 0) {
+            if (m_dynamic_inst_cnt % REFRESH_INST_CNT == 0) {
                 printConsole();
                 refresh();
             }
         } else if (step_cnt > 0) {
             step_cnt--;
         } else if (m_running) {
-            if (m_dynamic_inst_cnt % (1 << 24) == 0) {
+            if (m_dynamic_inst_cnt % REFRESH_INST_CNT == 0) {
                 printConsole();
                 refresh();
             }
