@@ -71,6 +71,7 @@ insts = {
     60: ('CVT_S_W', 'I', ['F', 'F']),
     61: ('CVT_W_S', 'I', ['F', 'F']),
     62: ('MOV_S', 'I', ['F', 'F']),
+    63: ('SQRT_S', 'I', ['F', 'F']),
 }
 
 opcode_name = 'opcode.hpp'
