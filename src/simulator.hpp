@@ -37,6 +37,7 @@ private:
     std::ofstream m_outfile;
 
     const size_t m_memory_num;
+    int32_t m_memory_idx_max = 0;
 
     const bool m_interactive;
     const bool m_output_memory;

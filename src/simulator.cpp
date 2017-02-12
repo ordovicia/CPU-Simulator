@@ -253,9 +253,9 @@ void Simulator::checkMemoryIndex(int32_t idx)
 #ifndef FELIS_SIM_NO_ASSERT
     if (idx < 0 || idx >= static_cast<int32_t>(m_memory_num))
         FAIL("# Error: Memory index out of range: " << idx);
-#else
-    (void)idx;
 #endif
+    if (m_memory_idx_max < idx)
+        m_memory_idx_max = idx;
 }
 
 void Simulator::inputBreakpoint(char* input)
@@ -316,7 +316,7 @@ void Simulator::dumpLog() const
 
     {
         ofstream ofs{"call_cnt.log"};
-        ofs << "dynamic inst cnt = " << m_dynamic_inst_cnt << endl;
+        ofs << "# dynamic inst cnt = " << m_dynamic_inst_cnt << endl;
         ofs << "# PC : called cnt" << endl;
         for (size_t i = 0; i < m_pc_called_cnt.size(); i++)
             ofs << 4 * i << ' ' << m_pc_called_cnt.at(i) << endl;
@@ -343,6 +343,7 @@ void Simulator::dumpLog() const
 
     if (m_output_memory) {
         ofstream ofs{"memory.log"};
+        ofs << "# Max idx = " << m_memory_idx_max << endl;
         ofs << hex;
         for (size_t i = 0; i < m_memory_num; i++)
             ofs << m_memory[i] << endl;
