@@ -39,6 +39,8 @@ private:
     const size_t m_memory_num;
     int32_t m_memory_idx_max = 0;
 
+    std::unordered_map<uint32_t, uint32_t> m_memory_access_cnt;
+
     const bool m_interactive;
     const bool m_output_memory;
     const bool m_prev_disable;
