@@ -2,10 +2,6 @@
 #include "util.hpp"
 #include "simulator.hpp"
 
-#ifdef FELIS_SIM_NO_ASSERT
-#warning FELIS_SIM_NO_ASSERT is set
-#endif
-
 Simulator::Simulator(
     const std::string& binfile,
     const std::string& infile,

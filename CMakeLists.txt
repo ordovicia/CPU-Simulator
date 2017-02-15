@@ -18,6 +18,9 @@ endif()
 option(NO_ASSERT "Skip assertion" OFF)
 if(NO_ASSERT)
     add_definitions(-DFELIS_SIM_NO_ASSERT)
+    message("NO_ASSERT:\n\tOn")
+else()
+    message("NO_ASSERT:\n\tOff")
 endif()
 
 # Set compile flags
