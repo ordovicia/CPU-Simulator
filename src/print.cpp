@@ -49,9 +49,10 @@ void Simulator::printState() const
         oss << '[' << m_binfile_name;
         if (m_infile.is_open())
             oss << " < " << m_infile_name;
-        oss << "] Static/Dynamic inst cnt = "
-            << std::setw(7) << m_codes.size() << '/'
-            << std::setw(12) << m_dynamic_inst_cnt << ' ';
+        oss << "] ["
+            << std::setw(6) << m_codes.size() << '/'
+            << std::setw(11) << m_dynamic_inst_cnt
+            << " instr] ";
 
         auto len = oss.str().size();
 
@@ -154,7 +155,7 @@ void Simulator::printCode() const
 
         if (not asserting) {
             auto asm_ = disasm(code);
-            asm_.resize(m_screen.width - 49);
+            asm_.resize(m_screen.width - 49, ' ');
             addstr(asm_.c_str());
         }
         addch('\n');
