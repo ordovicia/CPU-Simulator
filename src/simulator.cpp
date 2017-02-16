@@ -250,8 +250,12 @@ void Simulator::checkMemoryIndex(int32_t idx)
     if (idx < 0 || idx >= static_cast<int32_t>(m_memory_num))
         FAIL("# Error: Memory index out of range: " << idx);
 #endif
+
     if (m_memory_idx_max < idx)
         m_memory_idx_max = idx;
+
+    if (m_output_memory)
+        m_memory_access_cnt[idx]++;
 }
 
 void Simulator::inputBreakpoint(char* input)
@@ -343,6 +347,9 @@ void Simulator::dumpLog() const
         ofs << hex;
         for (size_t i = 0; i < m_memory_num; i++)
             ofs << m_memory[i] << endl;
+        ofstream ofs2{"memory_access_cnt.log"};
+        for (std::pair<uint32_t, uint32_t> p : m_memory_access_cnt)
+            ofs2 << p.first << ' ' << p.second << endl;
     }
 
     addstr("done!\n");
