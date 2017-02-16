@@ -16,7 +16,6 @@ Simulator::PreState Simulator::in(Instruction inst)
 
     char in_;
     m_infile.get(in_);
-    // m_reg.at(op.rd) = static_cast<int32_t>(in_);
     m_reg.at(op.rd) = (m_reg.at(op.rd) & (~0u << 8))
                       | (static_cast<unsigned char>(in_) & 0xffu);
 
