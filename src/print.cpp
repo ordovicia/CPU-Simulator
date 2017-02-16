@@ -64,12 +64,12 @@ void Simulator::printState() const
         auto digits = [](decltype(min) x) {
             if (x <= 0)
                 return 1;
-            int digits = 0;
+            int d = 0;
             while (x) {
                 x /= 10;
-                digits++;
+                d++;
             }
-            return digits;
+            return d;
         };
 
         auto min_digits = digits(min);
