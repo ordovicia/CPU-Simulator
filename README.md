@@ -3,6 +3,8 @@ FELIS Simulator
 
 2016年度CPU実験B班の1stアーキテクチャ[FELIS](https://github.com/wafrelka/felis)用シミュレータ。
 
+![](screenshot.png)
+
 ## ビルド方法
 ```shell
 $ mkdir build; cd $_
