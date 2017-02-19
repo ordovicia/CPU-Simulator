@@ -7,7 +7,7 @@ Simulator::PreState Simulator::jal(Instruction inst)
     auto pre_state = makePreGPRegState(31);
 
     m_reg.at(31) = static_cast<int32_t>(m_pc + 4);
-    m_pc = op.addr << 2;
+    m_pc = (m_pc & 0xf0000003) | (op.addr << 2);
 
     return pre_state;
 }
