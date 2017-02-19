@@ -63,7 +63,7 @@ private:
     std::vector<int64_t> m_pc_called_cnt;  // PCごとの実行回数
 
     // State
-    int64_t m_pc = 0;
+    uint32_t m_pc = 0;
 
     /*
      * General purpose registers.
@@ -84,7 +84,7 @@ private:
     struct PreState {
         struct PCReg {
             bool changed = false;
-            int64_t preval;
+            uint32_t preval;
         } pc;
 
         struct GPReg {
@@ -106,7 +106,7 @@ private:
         } mem;
     };
 
-    PreState makePrePCState(int64_t pc) const
+    PreState makePrePCState(uint32_t pc) const
     {
         PreState pre_state;
         pre_state.pc.changed = true;

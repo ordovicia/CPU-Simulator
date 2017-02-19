@@ -13,7 +13,7 @@ Simulator::PreState Simulator::bgezal(Instruction inst)
         pre_state.gpreg.preval = m_reg.at(31);
 
         m_reg.at(31) = static_cast<int32_t>(m_pc + 4);
-        m_pc += static_cast<int64_t>(signExt(op.immediate, 16)) << 2;
+        m_pc += signExt(op.immediate, 16) * 4;
     } else
         m_pc += 4;
 

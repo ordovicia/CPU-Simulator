@@ -8,7 +8,7 @@ Simulator::PreState Simulator::beq(Instruction inst)
     auto pre_state = makePrePCState(m_pc);
 
     if (m_reg.at(op.rs) == m_reg.at(op.rt))
-        m_pc += static_cast<int32_t>(signExt(op.immediate, 16)) << 2;
+        m_pc += signExt(op.immediate, 16) * 4;
     else
         m_pc += 4;
 
