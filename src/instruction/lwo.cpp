@@ -7,7 +7,7 @@ Simulator::PreState Simulator::lwo(Instruction inst)
 
     auto pre_state = makePreGPRegState(op.rd);
 
-    auto addr = static_cast<int32_t>(m_reg.at(op.rs) + m_reg.at(op.rt)) / 4;
+    auto addr = (m_reg.at(op.rs) + m_reg.at(op.rt)) / 4;
     checkMemoryIndex(addr);
 
     m_reg.at(op.rd) = m_memory[addr];
