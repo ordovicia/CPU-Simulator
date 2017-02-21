@@ -250,11 +250,12 @@ void Simulator::checkMemoryIndex(int32_t idx)
         FAIL("# Error: Memory index out of range: " << idx);
 #endif
 
-    if (m_memory_idx_max < idx)
-        m_memory_idx_max = idx;
+    if (m_output_memory) {
+        if (m_memory_idx_max < idx)
+            m_memory_idx_max = idx;
 
-    if (m_output_memory)
         m_memory_access_cnt[idx]++;
+    }
 }
 
 void Simulator::inputBreakpoint(char* input)
