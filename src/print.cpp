@@ -185,6 +185,19 @@ void Simulator::printBreakPoints() const
     refresh();
 }
 
+void Simulator::printMemory(size_t idx) const
+{
+    auto min = idx >= 3 ? idx - 3 : 0;
+    auto max = idx <= m_memory_num - 3
+                   ? idx + 3
+                   : m_memory_num;
+    for (size_t i = min; i <= max; i++) {
+        printw("memory[%zu] = 0x%x", i, m_memory[i]);
+        if (i < max)
+            addch('\n');
+    }
+}
+
 void Simulator::printHelp() const
 {
 #define PRINT_CMD_DESC(cmd, desc)    \

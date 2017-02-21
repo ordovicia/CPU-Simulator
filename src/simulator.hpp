@@ -37,9 +37,9 @@ private:
     std::ofstream m_outfile;
 
     const size_t m_memory_num;
-    int32_t m_memory_idx_max = 0;
+    size_t m_memory_idx_max = 0;
 
-    std::unordered_map<uint32_t, uint32_t> m_memory_access_cnt;
+    std::unordered_map<size_t, uint32_t> m_memory_access_cnt;
 
     const bool m_interactive;
     const bool m_output_memory;
@@ -80,7 +80,7 @@ private:
 
     // Memory
     int32_t* m_memory;
-    void checkMemoryIndex(int32_t idx);
+    void checkMemoryIndex(size_t idx);
 
     // State history
     struct PreState {
@@ -258,6 +258,7 @@ private:
     void printState() const;
     void printCode() const;
     void printBreakPoints() const;
+    void printMemory(size_t idx) const;
 
     void printHelp() const;
 

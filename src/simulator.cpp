@@ -170,12 +170,12 @@ void Simulator::run()
                 m_halt = false;
                 continue;
             } else if (streqn(input, "pm", 2)) {
-                int32_t idx;
-                if (sscanf(input + 2, "%d", &idx) == 0) {
+                size_t idx;
+                if (sscanf(input + 2, "%zu", &idx) == 0)
                     addstr("# Error: Invalid memory index format");
-                } else {
+                else {
                     checkMemoryIndex(idx);
-                    printw("memory[%d] = 0x%x\n", idx, m_memory[idx]);
+                    printMemory(idx);
                 }
                 refresh();
                 getch();
@@ -240,7 +240,7 @@ void Simulator::disasm()
     }
 }
 
-void Simulator::checkMemoryIndex(int32_t idx)
+void Simulator::checkMemoryIndex(size_t idx)
 {
 #ifndef FELIS_SIM_NO_ASSERT
     if (idx < 0 || idx >= static_cast<int32_t>(m_memory_num))
@@ -297,7 +297,7 @@ void Simulator::reset()
         r = 0;
     for (auto& r : m_freg)
         r = 0;
-    for (int i = 0; i < m_memory_num; i++)
+    for (size_t i = 0; i < m_memory_num; i++)
         m_memory[i] = 0;
 
     for (auto& p : m_inst_cnt)
