@@ -50,11 +50,8 @@ std::string Simulator::disasm(Simulator::Instruction inst) const
 
         if (of[2] == Field::I) {
             auto imm_ext = static_cast<int32_t>(signExt(op.immediate, 16));
-            oss << ' ';
-            if (imm_ext < 0)
-                oss << imm_ext;
-            else
-                oss << op.immediate;
+            oss << ' ' << imm_ext
+                << "(0x" << std::hex << op.immediate << ')';
         } else {
             oss << "  - ";
         }
