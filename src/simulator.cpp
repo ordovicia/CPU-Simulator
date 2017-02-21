@@ -53,10 +53,7 @@ Simulator::Simulator(
     m_state_hist_iter = m_state_hist.deque.begin();
 }
 
-Simulator::~Simulator()
-{
-    std::free(m_memory);
-}
+Simulator::~Simulator() { std::free(m_memory); }
 
 void Simulator::run()
 {
@@ -279,10 +276,30 @@ void Simulator::inputBreakpoint(char* input)
 
 void Simulator::reset()
 {
+    m_memory_idx_max = 0;
+    for (auto& m : m_memory_access_cnt)
+        m.second = 0;
+
+    m_start_time = std::chrono::high_resolution_clock::now();
+
     m_halt = false;
     m_running = false;
 
+    for (auto& b : m_breakpoints)
+        b.second = 0;
+
     m_dynamic_inst_cnt = 0;
+    for (auto& c : m_pc_called_cnt)
+        c = 0;
+    m_pc = 0;
+
+    for (auto& r : m_reg)
+        r = 0;
+    for (auto& r : m_freg)
+        r = 0;
+    for (int i = 0; i < m_memory_num; i++)
+        m_memory[i] = 0;
+
     for (auto& p : m_inst_cnt)
         p.second = 0;
 
@@ -291,6 +308,9 @@ void Simulator::reset()
     m_state_hist.deque.clear();
     m_state_hist.push(PreState{});
     m_state_hist_iter = m_state_hist.deque.begin();
+
+    printConsole();
+    refresh();
 }
 
 Simulator::PreState Simulator::exec(OpCode opcode, Instruction inst)

@@ -181,7 +181,7 @@ void Simulator::printBreakPoints() const
     if (m_breakpoints.size() == 0)
         addstr("No breakpoint");
     for (auto b : m_breakpoints)
-        printw("%lld, ", b);
+        printw("%lld(delay %lld), ", b.first, b.second);
     refresh();
 }
 
