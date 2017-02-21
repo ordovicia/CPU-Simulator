@@ -17,7 +17,8 @@ Simulator::Simulator(
       m_interactive(interactive),
       m_output_memory(output_memory),
       m_prev_disable(prev_disable || (not interactive)),
-      m_quit_run(quit_run)
+      m_quit_run(quit_run),
+      m_refresh_inst_cnt(m_interactive ? 1 << 24 : 1 << 25)
 {
     initDisassembler();
 
@@ -60,8 +61,6 @@ Simulator::~Simulator()
 void Simulator::run()
 {
     int64_t step_cnt = 0;
-
-    constexpr int64_t REFRESH_INST_CNT = 1 << 25;
     m_start_time = std::chrono::high_resolution_clock::now();
 
     while (true) {
@@ -77,14 +76,14 @@ void Simulator::run()
                 }
                 return;
             }
-            if (m_dynamic_inst_cnt % REFRESH_INST_CNT == 0) {
+            if (m_dynamic_inst_cnt % m_refresh_inst_cnt == 0) {
                 printConsole();
                 refresh();
             }
         } else if (step_cnt > 0) {
             step_cnt--;
         } else if (m_running) {
-            if (m_dynamic_inst_cnt % REFRESH_INST_CNT == 0) {
+            if (m_dynamic_inst_cnt % m_refresh_inst_cnt == 0) {
                 printConsole();
                 refresh();
             }
@@ -202,7 +201,7 @@ void Simulator::run()
         if (not m_halt) {  // next instruction
             auto pc_idx = m_pc / 4;
 #ifndef FELIS_SIM_NO_ASSERT
-            if (pc_idx < 0 || static_cast<int64_t>(m_codes.size()) <= pc_idx)
+            if (m_codes.size() <= pc_idx)
                 FAIL("# Error: Program counter out of range");
 #endif
             Instruction inst = m_codes[pc_idx];  // fetch

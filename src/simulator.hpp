@@ -46,6 +46,8 @@ private:
     const bool m_prev_disable;
     const bool m_quit_run;
 
+    const int64_t m_refresh_inst_cnt;
+
     decltype(std::chrono::high_resolution_clock::now()) m_start_time;
 
     bool m_halt = false;
